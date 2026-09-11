@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Sports Journal is an independent sports publishing platform covering football, tennis, baseball and basketball."
+    >
+
+    <meta
+        name="theme-color"
+        content="#111111"
+    >
+
+    <title>Sports Journal</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+</head>
+
+
+<body>
+
+    <!-- =========================
+         MASTHEAD
+    ========================== -->
+
+    <header class="masthead">
+
+        <div class="container masthead-top">
+
+            <a
+                href="#home"
+                class="brand"
+            >
+                SPORTS
+                <span>JOURNAL</span>
+            </a>
+
+
+            <div class="edition-info">
+
+                <span id="current-date">
+                    SEPTEMBER 2026
+                </span>
+
+                <span>
+                    INDEPENDENT SPORTS DESK
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="masthead-nav">
+
+            <div class="container nav-content">
+
+                <nav aria-label="Sports categories">
+
+                    <a
+                        href="#articles"
+                        data-sport-nav="football"
+                    >
+                        Football
+                    </a>
+
+                    <a
+                        href="#articles"
+                        data-sport-nav="tennis"
+                    >
+                        Tennis
+                    </a>
+
+                    <a
+                        href="#articles"
+                        data-sport-nav="baseball"
+                    >
+                        Baseball
+                    </a>
+
+                    <a
+                        href="#articles"
+                        data-sport-nav="basketball"
+                    >
+                        Basketball
+                    </a>
+
+                </nav>
+
+
+                <a
+                    href="#publish"
+                    class="write-link"
+                >
+                    Write a story →
+                </a>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         TRENDING BAR
+    ========================== -->
+
+    <div class="trending-bar">
+
+        <div class="container trending-content">
+
+            <strong>
+                COVERAGE
+            </strong>
+
+            <div class="trending-text">
+
+                Football
+
+                <span>•</span>
+
+                Tennis
+
+                <span>•</span>
+
+                Baseball
+
+                <span>•</span>
+
+                Basketball
+
+                <span>•</span>
+
+                Analysis
+
+                <span>•</span>
+
+                Opinion
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <main>
+
+        <!-- =========================
+             FRONT PAGE
+        ========================== -->
+
+        <section
+            id="home"
+            class="front-page"
+        >
+
+            <div class="container">
+
+                <div class="edition-heading">
+
+                    <div>
+
+                        <p class="section-kicker">
+                            TODAY'S LEAD
+                        </p>
+
+                        <h1>
+                            The stories shaping the game.
+                        </h1>
+
+                    </div>
+
+
+                    <p
+                        id="article-count"
+                        class="article-count"
+                    >
+                        0 STORIES
+                    </p>
+
+                </div>
+
+
+                <div class="lead-layout">
+
+                    <!-- MAIN STORY -->
+
+                    <article
+                        id="lead-story"
+                        class="lead-story"
+                    >
+
+                        <div class="lead-placeholder">
+
+                            <span class="placeholder-number">
+                                01
+                            </span>
+
+                            <div>
+
+                                <p class="story-category">
+                                    YOUR FRONT PAGE
+                                </p>
+
+                                <h2>
+                                    Your biggest story will lead the edition.
+                                </h2>
+
+                                <p>
+                                    Publish your first article and Sports Journal
+                                    will begin building the front page automatically.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- SECONDARY STORIES -->
+
+                    <aside
+                        id="side-stories"
+                        class="side-stories"
+                        aria-label="More featured stories"
+                    >
+
+                        <article class="side-story-placeholder">
+
+                            <span>
+                                02
+                            </span>
+
+                            <div>
+
+                                <p class="story-category">
+                                    NEXT STORY
+                                </p>
+
+                                <h3>
+                                    Another headline will live here.
+                                </h3>
+
+                            </div>
+
+                        </article>
+
+
+                        <article class="side-story-placeholder">
+
+                            <span>
+                                03
+                            </span>
+
+                            <div>
+
+                                <p class="story-category">
+                                    FROM THE DESK
+                                </p>
+
+                                <h3>
+                                    Your newsroom grows as you publish.
+                                </h3>
+
+                            </div>
+
+                        </article>
+
+                    </aside>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             LATEST STORIES
+        ========================== -->
+
+        <section
+            id="articles"
+            class="latest-section"
+        >
+
+            <div class="container">
+
+                <div class="latest-heading">
+
+                    <h2>
+                        LATEST
+                    </h2>
+
+
+                    <div class="search-wrapper">
+
+                        <label
+                            for="search-input"
+                            class="visually-hidden"
+                        >
+                            Search articles
+                        </label>
+
+                        <input
+                            type="search"
+                            id="search-input"
+                            placeholder="SEARCH THE JOURNAL"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- FILTERS -->
+
+                <div
+                    class="filters"
+                    aria-label="Filter articles by sport"
+                >
+
+                    <button
+                        type="button"
+                        class="filter-button active"
+                        data-sport="all"
+                    >
+                        All
+                    </button>
+
+                    <button
+                        type="button"
+                        class="filter-button"
+                        data-sport="football"
+                    >
+                        Football
+                    </button>
+
+                    <button
+                        type="button"
+                        class="filter-button"
+                        data-sport="tennis"
+                    >
+                        Tennis
+                    </button>
+
+                    <button
+                        type="button"
+                        class="filter-button"
+                        data-sport="baseball"
+                    >
+                        Baseball
+                    </button>
+
+                    <button
+                        type="button"
+                        class="filter-button"
+                        data-sport="basketball"
+                    >
+                        Basketball
+                    </button>
+
+                </div>
+
+
+                <!-- JAVASCRIPT GENERATES STORIES -->
+
+                <div
+                    id="articles-list"
+                    class="articles-list"
+                ></div>
+
+
+                <div
+                    id="empty-state"
+                    class="empty-state"
+                >
+
+                    <span>
+                        00
+                    </span>
+
+                    <p>
+                        No stories published yet.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             NEWSROOM
+        ========================== -->
+
+        <section
+            id="publish"
+            class="newsroom"
+        >
+
+            <div class="newsroom-title">
+
+                <div class="container">
+
+                    <span>
+                        NEWSROOM
+                    </span>
+
+                    <span>
+                        WRITE / EDIT / PUBLISH
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="container newsroom-layout">
+
+                <!-- EDITOR INFO -->
+
+                <div class="newsroom-intro">
+
+                    <p>
+                        FROM THE EDITOR
+                    </p>
+
+                    <h2>
+                        Write the next story.
+                    </h2>
+
+
+                    <div class="editor-note">
+
+                        <span>
+                            01
+                        </span>
+
+                        <p>
+                            Choose your sport.
+                        </p>
+
+                    </div>
+
+
+                    <div class="editor-note">
+
+                        <span>
+                            02
+                        </span>
+
+                        <p>
+                            Write the headline and story.
+                        </p>
+
+                    </div>
+
+
+                    <div class="editor-note">
+
+                        <span>
+                            03
+                        </span>
+
+                        <p>
+                            Publish it to your journal.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ARTICLE EDITOR -->
+
+                <form
+                    id="article-form"
+                    class="article-form"
+                >
+
+                    <div class="editor-top-row">
+
+                        <!-- SPORT -->
+
+                        <div class="form-group">
+
+                            <label for="article-sport">
+                                SPORT
+                            </label>
+
+                            <select
+                                id="article-sport"
+                                name="sport"
+                                required
+                            >
+
+                                <option value="">
+                                    Select
+                                </option>
+
+                                <option value="football">
+                                    Football
+                                </option>
+
+                                <option value="tennis">
+                                    Tennis
+                                </option>
+
+                                <option value="baseball">
+                                    Baseball
+                                </option>
+
+                                <option value="basketball">
+                                    Basketball
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- AUTHOR -->
+
+                        <div class="form-group">
+
+                            <label for="article-author">
+                                AUTHOR
+                            </label>
+
+                            <input
+                                type="text"
+                                id="article-author"
+                                name="author"
+                                value="Jose Teran"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- HEADLINE -->
+
+                    <div class="form-group headline-group">
+
+                        <label for="article-title">
+                            HEADLINE
+                        </label>
+
+                        <input
+                            type="text"
+                            id="article-title"
+                            name="title"
+                            maxlength="100"
+                            placeholder="Your headline goes here"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- SUMMARY -->
+
+                    <div class="form-group">
+
+                        <label for="article-summary">
+                            DECK / SUMMARY
+                        </label>
+
+                        <textarea
+                            id="article-summary"
+                            name="summary"
+                            maxlength="220"
+                            placeholder="Give readers the short version..."
+                            required
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- ARTICLE -->
+
+                    <div class="form-group">
+
+                        <label for="article-content">
+                            STORY
+                        </label>
+
+                        <textarea
+                            id="article-content"
+                            name="content"
+                            placeholder="Start writing..."
+                            required
+                        ></textarea>
+
+                    </div>
+
+
+                    <div class="publish-row">
+
+                        <p
+                            id="form-status"
+                            aria-live="polite"
+                        ></p>
+
+
+                        <button
+                            type="submit"
+                            class="publish-button"
+                        >
+                            PUBLISH STORY →
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         ARTICLE READER
+    ========================== -->
+
+    <div
+        id="article-reader"
+        class="article-reader"
+        hidden
+    >
+
+        <article class="article-reader-content">
+
+            <button
+                type="button"
+                id="reader-close"
+                class="reader-close"
+                aria-label="Close article"
+            >
+                CLOSE ×
+            </button>
+
+
+            <p
+                id="reader-sport"
+                class="reader-sport"
+            ></p>
+
+
+            <h2 id="reader-title"></h2>
+
+
+            <div class="reader-meta">
+
+                <span id="reader-author"></span>
+
+                <span id="reader-date"></span>
+
+            </div>
+
+
+            <p
+                id="reader-summary"
+                class="reader-summary"
+            ></p>
+
+
+            <div
+                id="reader-body"
+                class="reader-body"
+            ></div>
+
+        </article>
+
+    </div>
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer>
+
+        <div class="container footer-content">
+
+            <div class="footer-brand">
+
+                SPORTS
+                <span>JOURNAL</span>
+
+            </div>
+
+
+            <p>
+                Football · Tennis · Baseball · Basketball
+            </p>
+
+
+            <p>
+                2026
+            </p>
+
+        </div>
+
+    </footer>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
