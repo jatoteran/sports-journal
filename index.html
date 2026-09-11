@@ -1051,7 +1051,7 @@
 
 
   <!-- =====================================================
-       MOVER PUBLICADA A BORRADOR
+       MOVER A BORRADOR
   ====================================================== -->
 
   <div
@@ -1126,6 +1126,8 @@
 
     <article class="reader-panel">
 
+      <!-- READER TOP BAR -->
+
       <div class="reader-topbar">
 
         <button
@@ -1135,6 +1137,10 @@
         >
           ← VOLVER A PORTADA
         </button>
+
+        <div class="reader-topbar-brand">
+          SPORTS JOURNAL
+        </div>
 
         <button
           class="close-button reader-close"
@@ -1148,6 +1154,8 @@
       </div>
 
 
+      <!-- ARTICLE HEADER -->
+
       <header class="reader-header">
 
         <div class="reader-kicker">
@@ -1156,7 +1164,7 @@
 
           <span>/</span>
 
-          <span id="readerDate"></span>
+          <span id="readerPublishedDate"></span>
 
         </div>
 
@@ -1170,24 +1178,68 @@
         ></p>
 
 
-        <div class="reader-byline">
-          POR <strong id="readerAuthor"></strong>
+        <div class="reader-meta-grid">
+
+          <div class="reader-meta-item">
+
+            <span>
+              POR
+            </span>
+
+            <strong id="readerAuthor"></strong>
+
+          </div>
+
+
+          <div class="reader-meta-item">
+
+            <span>
+              TIEMPO DE LECTURA
+            </span>
+
+            <strong id="readerReadTime">
+              1 MIN
+            </strong>
+
+          </div>
+
+
+          <div
+            class="reader-meta-item"
+            id="readerUpdatedBlock"
+            hidden
+          >
+
+            <span>
+              ACTUALIZADO
+            </span>
+
+            <strong id="readerUpdatedDate"></strong>
+
+          </div>
+
         </div>
 
       </header>
 
 
+      <!-- IMAGE -->
+
       <div
         class="reader-image"
         id="readerImageContainer"
       >
+
         <img
           id="readerImage"
           src=""
           alt=""
         />
+
       </div>
 
+
+      <!-- BODY -->
 
       <div
         class="reader-body"
@@ -1195,9 +1247,89 @@
       ></div>
 
 
+      <!-- RELATED -->
+
+      <section
+        class="reader-related"
+        id="readerRelatedSection"
+        hidden
+      >
+
+        <div class="reader-related-header">
+
+          <span class="reader-related-number">
+            03
+          </span>
+
+          <div>
+
+            <span class="reader-related-label">
+              SEGUIR LEYENDO
+            </span>
+
+            <h2 id="readerRelatedTitle">
+              MÁS DE FÚTBOL
+            </h2>
+
+          </div>
+
+        </div>
+
+
+        <div
+          class="reader-related-grid"
+          id="readerRelatedStories"
+        ></div>
+
+      </section>
+
+
+      <!-- PREVIOUS / NEXT -->
+
+      <nav
+        class="reader-navigation"
+        aria-label="Navegación entre noticias"
+      >
+
+        <button
+          class="reader-navigation-button previous"
+          id="readerPreviousButton"
+          type="button"
+          hidden
+        >
+
+          <span>
+            ← NOTICIA ANTERIOR
+          </span>
+
+          <strong id="readerPreviousTitle"></strong>
+
+        </button>
+
+
+        <button
+          class="reader-navigation-button next"
+          id="readerNextButton"
+          type="button"
+          hidden
+        >
+
+          <span>
+            SIGUIENTE NOTICIA →
+          </span>
+
+          <strong id="readerNextTitle"></strong>
+
+        </button>
+
+      </nav>
+
+
+      <!-- ADMIN FOOTER -->
+
       <footer class="reader-footer">
 
-        <div>
+        <div class="reader-footer-brand">
           SPORTS JOURNAL
         </div>
 
@@ -1404,4 +1536,4 @@
   <script src="script.js"></script>
 
 </body>
-</html>
+</html> 

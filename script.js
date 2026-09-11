@@ -281,11 +281,23 @@ const confirmMoveDraftButton =
 const readerModal =
   document.getElementById("readerModal");
 
+const readerPanel =
+  readerModal.querySelector(
+    ".reader-panel"
+  );
+
+const readerTopbar =
+  readerModal.querySelector(
+    ".reader-topbar"
+  );
+
 const readerSport =
   document.getElementById("readerSport");
 
-const readerDate =
-  document.getElementById("readerDate");
+const readerPublishedDate =
+  document.getElementById(
+    "readerPublishedDate"
+  );
 
 const readerTitle =
   document.getElementById("readerTitle");
@@ -295,6 +307,19 @@ const readerSummary =
 
 const readerAuthor =
   document.getElementById("readerAuthor");
+
+const readerReadTime =
+  document.getElementById("readerReadTime");
+
+const readerUpdatedBlock =
+  document.getElementById(
+    "readerUpdatedBlock"
+  );
+
+const readerUpdatedDate =
+  document.getElementById(
+    "readerUpdatedDate"
+  );
 
 const readerImageContainer =
   document.getElementById(
@@ -306,6 +331,41 @@ const readerImage =
 
 const readerBody =
   document.getElementById("readerBody");
+
+const readerRelatedSection =
+  document.getElementById(
+    "readerRelatedSection"
+  );
+
+const readerRelatedTitle =
+  document.getElementById(
+    "readerRelatedTitle"
+  );
+
+const readerRelatedStories =
+  document.getElementById(
+    "readerRelatedStories"
+  );
+
+const readerPreviousButton =
+  document.getElementById(
+    "readerPreviousButton"
+  );
+
+const readerPreviousTitle =
+  document.getElementById(
+    "readerPreviousTitle"
+  );
+
+const readerNextButton =
+  document.getElementById(
+    "readerNextButton"
+  );
+
+const readerNextTitle =
+  document.getElementById(
+    "readerNextTitle"
+  );
 
 const readerEditButton =
   document.getElementById(
@@ -362,6 +422,15 @@ const toast =
   document.getElementById("toast");
 
 
+/* DYNAMIC READER ELEMENTS */
+
+let readerProgressBar =
+  null;
+
+let readerBackToTopButton =
+  null;
+
+
 /* =========================================================
    INITIALIZE
    ========================================================= */
@@ -380,6 +449,12 @@ function initialize() {
   updateManagementCounts();
 
   updateBackupStatus();
+
+  createEditorFormattingGuide();
+
+  createReaderProgressBar();
+
+  createReaderBackToTopButton();
 
   bindEvents();
 
@@ -794,12 +869,6 @@ function normalizeArticle(article) {
     );
 
 
-  /*
-    Published stories must always have a safe
-    fallback for old or damaged data.
-
-    Drafts are allowed to be incomplete.
-  */
   if (
     safe.status === "published"
   ) {
@@ -866,6 +935,225 @@ function normalizeArticle(article) {
 
 
   return safe;
+
+}
+
+
+/* =========================================================
+   DYNAMIC EDITOR UI
+   ========================================================= */
+
+function createEditorFormattingGuide() {
+
+  if (
+    document.querySelector(
+      ".editor-format-guide"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  const guide =
+    document.createElement(
+      "div"
+    );
+
+
+  guide.className =
+    "editor-format-guide";
+
+
+  guide.innerHTML = `
+    <strong>FORMATO EDITORIAL RÁPIDO</strong>
+
+    <p>
+      <code>##</code> subtítulo ·
+      <code>###</code> sección ·
+      <code>&gt;</code> cita destacada ·
+      <code>-</code> lista ·
+      <code>---</code> separador
+    </p>
+  `;
+
+
+  contentInput.insertAdjacentElement(
+    "afterend",
+    guide
+  );
+
+}
+
+
+/* =========================================================
+   DYNAMIC READER UI
+   ========================================================= */
+
+function createReaderProgressBar() {
+
+  if (
+    readerTopbar.querySelector(
+      ".reader-progress-track"
+    )
+  ) {
+
+    readerProgressBar =
+      readerTopbar.querySelector(
+        ".reader-progress-bar"
+      );
+
+
+    return;
+
+  }
+
+
+  const track =
+    document.createElement(
+      "div"
+    );
+
+
+  track.className =
+    "reader-progress-track";
+
+
+  track.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  readerProgressBar =
+    document.createElement(
+      "div"
+    );
+
+
+  readerProgressBar.className =
+    "reader-progress-bar";
+
+
+  track.appendChild(
+    readerProgressBar
+  );
+
+
+  readerTopbar.appendChild(
+    track
+  );
+
+}
+
+
+function createReaderBackToTopButton() {
+
+  if (
+    readerPanel.querySelector(
+      ".reader-back-to-top"
+    )
+  ) {
+
+    readerBackToTopButton =
+      readerPanel.querySelector(
+        ".reader-back-to-top"
+      );
+
+
+    return;
+
+  }
+
+
+  readerBackToTopButton =
+    document.createElement(
+      "button"
+    );
+
+
+  readerBackToTopButton.type =
+    "button";
+
+
+  readerBackToTopButton.className =
+    "reader-back-to-top";
+
+
+  readerBackToTopButton.textContent =
+    "↑ ARRIBA";
+
+
+  readerBackToTopButton.setAttribute(
+    "aria-label",
+    "Volver al inicio del artículo"
+  );
+
+
+  readerBackToTopButton.addEventListener(
+    "click",
+    () => {
+
+      readerPanel.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    }
+  );
+
+
+  readerPanel.appendChild(
+    readerBackToTopButton
+  );
+
+}
+
+
+function updateReaderScrollUI() {
+
+  if (
+    !readerPanel ||
+    !readerProgressBar
+  ) {
+
+    return;
+
+  }
+
+
+  const scrollable =
+    readerPanel.scrollHeight -
+    readerPanel.clientHeight;
+
+
+  const progress =
+    scrollable > 0
+      ? readerPanel.scrollTop /
+        scrollable
+      : 0;
+
+
+  readerProgressBar.style.transform =
+    `scaleX(${clampNumber(
+      progress,
+      0,
+      1,
+      0
+    )})`;
+
+
+  if (
+    readerBackToTopButton
+  ) {
+
+    readerBackToTopButton.classList.toggle(
+      "visible",
+      readerPanel.scrollTop > 550
+    );
+
+  }
 
 }
 
@@ -1268,9 +1556,6 @@ function bindEvents() {
   );
 
 
-  /*
-    Publishing requires the complete form.
-  */
   articleForm.addEventListener(
     "submit",
     (event) => {
@@ -1286,9 +1571,6 @@ function bindEvents() {
   );
 
 
-  /*
-    Drafts can intentionally be incomplete.
-  */
   saveDraftButton.addEventListener(
     "click",
     requestDraftSave
@@ -1334,6 +1616,55 @@ function bindEvents() {
 
       }
 
+    }
+  );
+
+
+  readerPreviousButton.addEventListener(
+    "click",
+    () => {
+
+      const articleId =
+        readerPreviousButton.dataset.articleId;
+
+
+      if (articleId) {
+
+        openReader(
+          articleId
+        );
+
+      }
+
+    }
+  );
+
+
+  readerNextButton.addEventListener(
+    "click",
+    () => {
+
+      const articleId =
+        readerNextButton.dataset.articleId;
+
+
+      if (articleId) {
+
+        openReader(
+          articleId
+        );
+
+      }
+
+    }
+  );
+
+
+  readerPanel.addEventListener(
+    "scroll",
+    updateReaderScrollUI,
+    {
+      passive: true
     }
   );
 
@@ -2581,7 +2912,11 @@ function createStoryMetadata(
     )}`;
 
 
-  if (article.updatedAt) {
+  if (
+    hasMeaningfulUpdate(
+      article
+    )
+  ) {
 
     const updated =
       document.createElement(
@@ -3276,11 +3611,6 @@ function saveArticle(
   targetStatus
 ) {
 
-  /*
-    Drafts are intentionally allowed to be incomplete.
-
-    Publishing still requires all required fields.
-  */
   if (
     targetStatus === "published" &&
     !articleForm.reportValidity()
@@ -3689,7 +4019,7 @@ function openReader(
     );
 
 
-  readerDate.textContent =
+  readerPublishedDate.textContent =
     formatFullDate(
       article.publishedAt ||
       article.createdAt
@@ -3708,74 +4038,35 @@ function openReader(
     article.author;
 
 
-  if (article.imageUrl) {
-
-    readerImageContainer.classList.remove(
-      "hidden"
+  readerReadTime.textContent =
+    calculateReadingTime(
+      article
     );
 
 
-    readerImage.src =
-      article.imageUrl;
+  renderReaderUpdatedDate(
+    article
+  );
 
 
-    readerImage.alt =
-      article.title;
+  renderReaderImage(
+    article
+  );
 
 
-    readerImage.onerror =
-      () => {
-
-        readerImageContainer.classList.add(
-          "hidden"
-        );
-
-      };
-
-  } else {
-
-    readerImageContainer.classList.add(
-      "hidden"
-    );
+  renderReaderContent(
+    article.content
+  );
 
 
-    readerImage.removeAttribute(
-      "src"
-    );
-
-  }
+  renderReaderRelatedStories(
+    article
+  );
 
 
-  readerBody.innerHTML =
-    "";
-
-
-  article.content
-    .split(/\n\s*\n|\n/)
-    .map(
-      (text) =>
-        text.trim()
-    )
-    .filter(Boolean)
-    .forEach(
-      (text) => {
-
-        const paragraph =
-          document.createElement(
-            "p"
-          );
-
-
-        paragraph.textContent =
-          text;
-
-
-        readerBody.appendChild(
-          paragraph
-        );
-
-      }
-    );
+  renderReaderNavigation(
+    article
+  );
 
 
   readerModal.classList.add(
@@ -3789,18 +4080,11 @@ function openReader(
   );
 
 
-  const panel =
-    readerModal.querySelector(
-      ".reader-panel"
-    );
+  readerPanel.scrollTop =
+    0;
 
 
-  if (panel) {
-
-    panel.scrollTop =
-      0;
-
-  }
+  updateReaderScrollUI();
 
 
   syncBodyScrollState();
@@ -3825,7 +4109,755 @@ function closeReader() {
     null;
 
 
+  if (
+    readerProgressBar
+  ) {
+
+    readerProgressBar.style.transform =
+      "scaleX(0)";
+
+  }
+
+
+  if (
+    readerBackToTopButton
+  ) {
+
+    readerBackToTopButton.classList.remove(
+      "visible"
+    );
+
+  }
+
+
   syncBodyScrollState();
+
+}
+
+
+function renderReaderImage(
+  article
+) {
+
+  readerImage.onerror =
+    null;
+
+
+  if (
+    !article.imageUrl
+  ) {
+
+    readerImageContainer.classList.add(
+      "hidden"
+    );
+
+
+    readerImage.removeAttribute(
+      "src"
+    );
+
+
+    return;
+
+  }
+
+
+  readerImageContainer.classList.remove(
+    "hidden"
+  );
+
+
+  readerImage.src =
+    article.imageUrl;
+
+
+  readerImage.alt =
+    article.title;
+
+
+  readerImage.onerror =
+    () => {
+
+      readerImageContainer.classList.add(
+        "hidden"
+      );
+
+    };
+
+}
+
+
+/* =========================================================
+   ARTICLE BODY FORMATTER
+   ========================================================= */
+
+function renderReaderContent(
+  content
+) {
+
+  readerBody.innerHTML =
+    "";
+
+
+  const lines =
+    String(
+      content || ""
+    )
+      .replace(
+        /\r\n?/g,
+        "\n"
+      )
+      .split("\n");
+
+
+  let paragraphBuffer =
+    [];
+
+  let listBuffer =
+    [];
+
+
+  function flushParagraph() {
+
+    if (
+      paragraphBuffer.length === 0
+    ) {
+
+      return;
+
+    }
+
+
+    const paragraph =
+      document.createElement(
+        "p"
+      );
+
+
+    paragraph.textContent =
+      paragraphBuffer.join(
+        " "
+      );
+
+
+    readerBody.appendChild(
+      paragraph
+    );
+
+
+    paragraphBuffer =
+      [];
+
+  }
+
+
+  function flushList() {
+
+    if (
+      listBuffer.length === 0
+    ) {
+
+      return;
+
+    }
+
+
+    const list =
+      document.createElement(
+        "ul"
+      );
+
+
+    listBuffer.forEach(
+      (itemText) => {
+
+        const item =
+          document.createElement(
+            "li"
+          );
+
+
+        item.textContent =
+          itemText;
+
+
+        list.appendChild(
+          item
+        );
+
+      }
+    );
+
+
+    readerBody.appendChild(
+      list
+    );
+
+
+    listBuffer =
+      [];
+
+  }
+
+
+  lines.forEach(
+    (rawLine) => {
+
+      const line =
+        rawLine.trim();
+
+
+      if (!line) {
+
+        flushParagraph();
+
+        flushList();
+
+        return;
+
+      }
+
+
+      if (
+        /^###\s+/.test(
+          line
+        )
+      ) {
+
+        flushParagraph();
+
+        flushList();
+
+
+        const heading =
+          document.createElement(
+            "h3"
+          );
+
+
+        heading.textContent =
+          line.replace(
+            /^###\s+/,
+            ""
+          );
+
+
+        readerBody.appendChild(
+          heading
+        );
+
+
+        return;
+
+      }
+
+
+      if (
+        /^##\s+/.test(
+          line
+        )
+      ) {
+
+        flushParagraph();
+
+        flushList();
+
+
+        const heading =
+          document.createElement(
+            "h2"
+          );
+
+
+        heading.textContent =
+          line.replace(
+            /^##\s+/,
+            ""
+          );
+
+
+        readerBody.appendChild(
+          heading
+        );
+
+
+        return;
+
+      }
+
+
+      if (
+        /^>\s?/.test(
+          line
+        )
+      ) {
+
+        flushParagraph();
+
+        flushList();
+
+
+        const quote =
+          document.createElement(
+            "blockquote"
+          );
+
+
+        quote.textContent =
+          line.replace(
+            /^>\s?/,
+            ""
+          );
+
+
+        readerBody.appendChild(
+          quote
+        );
+
+
+        return;
+
+      }
+
+
+      if (
+        /^-{3,}$/.test(
+          line
+        )
+      ) {
+
+        flushParagraph();
+
+        flushList();
+
+
+        const divider =
+          document.createElement(
+            "hr"
+          );
+
+
+        readerBody.appendChild(
+          divider
+        );
+
+
+        return;
+
+      }
+
+
+      if (
+        /^-\s+/.test(
+          line
+        )
+      ) {
+
+        flushParagraph();
+
+
+        listBuffer.push(
+          line.replace(
+            /^-\s+/,
+            ""
+          )
+        );
+
+
+        return;
+
+      }
+
+
+      flushList();
+
+
+      paragraphBuffer.push(
+        line
+      );
+
+    }
+  );
+
+
+  flushParagraph();
+
+  flushList();
+
+}
+
+
+/* =========================================================
+   READER READING TIME
+   ========================================================= */
+
+function calculateReadingTime(
+  article
+) {
+
+  const text =
+    `${article.summary || ""} ${article.content || ""}`
+      .replace(
+        /[#>-]/g,
+        " "
+      )
+      .trim();
+
+
+  if (!text) {
+
+    return "1 MIN";
+
+  }
+
+
+  const words =
+    text
+      .split(/\s+/)
+      .filter(Boolean)
+      .length;
+
+
+  const minutes =
+    Math.max(
+      1,
+      Math.ceil(
+        words / 220
+      )
+    );
+
+
+  return `${minutes} MIN`;
+
+}
+
+
+function hasMeaningfulUpdate(
+  article
+) {
+
+  if (
+    !article.updatedAt
+  ) {
+
+    return false;
+
+  }
+
+
+  const updatedTime =
+    new Date(
+      article.updatedAt
+    ).getTime();
+
+
+  const publicationTime =
+    new Date(
+      article.publishedAt ||
+      article.createdAt
+    ).getTime();
+
+
+  if (
+    !Number.isFinite(updatedTime) ||
+    !Number.isFinite(publicationTime)
+  ) {
+
+    return false;
+
+  }
+
+
+  return Math.abs(
+    updatedTime -
+    publicationTime
+  ) > 60000;
+
+}
+
+
+function renderReaderUpdatedDate(
+  article
+) {
+
+  const showUpdated =
+    hasMeaningfulUpdate(
+      article
+    );
+
+
+  readerUpdatedBlock.hidden =
+    !showUpdated;
+
+
+  if (!showUpdated) {
+
+    readerUpdatedDate.textContent =
+      "";
+
+
+    return;
+
+  }
+
+
+  readerUpdatedDate.textContent =
+    formatEditorDateTime(
+      article.updatedAt
+    );
+
+}
+
+
+/* =========================================================
+   RELATED STORIES
+   ========================================================= */
+
+function renderReaderRelatedStories(
+  currentArticle
+) {
+
+  readerRelatedStories.innerHTML =
+    "";
+
+
+  const related =
+    getPublishedArticles()
+      .filter(
+        (article) =>
+          article.sport ===
+            currentArticle.sport &&
+          String(article.id) !==
+            String(currentArticle.id)
+      )
+      .slice(
+        0,
+        3
+      );
+
+
+  readerRelatedSection.hidden =
+    related.length === 0;
+
+
+  if (
+    related.length === 0
+  ) {
+
+    return;
+
+  }
+
+
+  readerRelatedTitle.textContent =
+    `MÁS DE ${getSportLabel(
+      currentArticle.sport
+    )}`;
+
+
+  related.forEach(
+    (article, index) => {
+
+      const card =
+        document.createElement(
+          "article"
+        );
+
+
+      card.className =
+        "reader-related-card";
+
+
+      card.tabIndex =
+        0;
+
+
+      const number =
+        document.createElement(
+          "div"
+        );
+
+
+      number.className =
+        "reader-related-index";
+
+
+      number.textContent =
+        String(
+          index + 1
+        ).padStart(
+          2,
+          "0"
+        );
+
+
+      const title =
+        document.createElement(
+          "h3"
+        );
+
+
+      title.textContent =
+        article.title;
+
+
+      const meta =
+        document.createElement(
+          "div"
+        );
+
+
+      meta.className =
+        "reader-related-meta";
+
+
+      meta.textContent =
+        `${article.author} · ${formatShortDate(
+          article.publishedAt ||
+          article.createdAt
+        )}`;
+
+
+      card.append(
+        number,
+        title,
+        meta
+      );
+
+
+      card.addEventListener(
+        "click",
+        () => {
+
+          openReader(
+            article.id
+          );
+
+        }
+      );
+
+
+      card.addEventListener(
+        "keydown",
+        (event) => {
+
+          if (
+            event.key === "Enter" ||
+            event.key === " "
+          ) {
+
+            event.preventDefault();
+
+
+            openReader(
+              article.id
+            );
+
+          }
+
+        }
+      );
+
+
+      readerRelatedStories.appendChild(
+        card
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   PREVIOUS / NEXT
+   ========================================================= */
+
+function renderReaderNavigation(
+  currentArticle
+) {
+
+  const published =
+    getPublishedArticles();
+
+
+  const currentIndex =
+    published.findIndex(
+      (article) =>
+        String(article.id) ===
+        String(currentArticle.id)
+    );
+
+
+  const newerArticle =
+    currentIndex > 0
+      ? published[
+          currentIndex - 1
+        ]
+      : null;
+
+
+  const olderArticle =
+    currentIndex >= 0 &&
+    currentIndex <
+      published.length - 1
+      ? published[
+          currentIndex + 1
+        ]
+      : null;
+
+
+  configureReaderNavigationButton(
+    readerPreviousButton,
+    readerPreviousTitle,
+    olderArticle
+  );
+
+
+  configureReaderNavigationButton(
+    readerNextButton,
+    readerNextTitle,
+    newerArticle
+  );
+
+}
+
+
+function configureReaderNavigationButton(
+  button,
+  titleElement,
+  article
+) {
+
+  if (!article) {
+
+    button.hidden =
+      true;
+
+
+    button.dataset.articleId =
+      "";
+
+
+    titleElement.textContent =
+      "";
+
+
+    return;
+
+  }
+
+
+  button.hidden =
+    false;
+
+
+  button.dataset.articleId =
+    article.id;
+
+
+  titleElement.textContent =
+    article.title;
 
 }
 
