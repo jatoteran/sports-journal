@@ -24,7 +24,6 @@
         id="menuButton"
         type="button"
         aria-label="Abrir menú del diario"
-        aria-controls="sideMenu"
       >
         ☰
       </button>
@@ -44,7 +43,6 @@
 
     </div>
 
-
     <div class="header-bottom">
 
       <div class="edition-label">
@@ -62,13 +60,10 @@
 
 
   <!-- =====================================================
-       NAVEGACIÓN DEPORTIVA
+       DEPORTES
   ====================================================== -->
 
-  <nav
-    class="sport-nav"
-    id="sportNav"
-  >
+  <nav class="sport-nav">
 
     <button
       class="sport-filter active"
@@ -143,12 +138,10 @@
 
 
   <!-- =====================================================
-       CONTENIDO PRINCIPAL
+       PORTADA
   ====================================================== -->
 
   <main>
-
-    <!-- NOTICIA PRINCIPAL -->
 
     <section class="lead-section">
 
@@ -170,8 +163,6 @@
 
     </section>
 
-
-    <!-- ÚLTIMAS -->
 
     <section class="latest-section">
 
@@ -200,7 +191,7 @@
 
 
   <!-- =====================================================
-       ESTADO VACÍO
+       EMPTY STATE
   ====================================================== -->
 
   <template id="emptyStateTemplate">
@@ -276,15 +267,8 @@
           id="frontPageMenuButton"
           type="button"
         >
-
-          <span>
-            PORTADA
-          </span>
-
-          <span>
-            →
-          </span>
-
+          <span>PORTADA</span>
+          <span>→</span>
         </button>
 
         <button
@@ -292,15 +276,47 @@
           id="menuWriteStoryButton"
           type="button"
         >
+          <span>ESCRIBIR NOTICIA</span>
+          <span>+</span>
+        </button>
 
-          <span>
-            ESCRIBIR NOTICIA
+      </div>
+
+
+      <div class="menu-block">
+
+        <span class="menu-section-label">
+          GESTIÓN
+        </span>
+
+        <button
+          class="journal-menu-button"
+          id="draftsMenuButton"
+          type="button"
+        >
+          <span>BORRADORES</span>
+
+          <span
+            class="menu-count"
+            id="draftCount"
+          >
+            0
           </span>
+        </button>
 
-          <span>
-            +
+        <button
+          class="journal-menu-button"
+          id="publishedMenuButton"
+          type="button"
+        >
+          <span>PUBLICADAS</span>
+
+          <span
+            class="menu-count"
+            id="publishedCount"
+          >
+            0
           </span>
-
         </button>
 
       </div>
@@ -335,15 +351,8 @@
           id="exportBackupButton"
           type="button"
         >
-
-          <span>
-            EXPORTAR RESPALDO
-          </span>
-
-          <span>
-            ↓
-          </span>
-
+          <span>EXPORTAR RESPALDO</span>
+          <span>↓</span>
         </button>
 
 
@@ -352,15 +361,8 @@
           id="restoreBackupButton"
           type="button"
         >
-
-          <span>
-            RESTAURAR RESPALDO
-          </span>
-
-          <span>
-            ↑
-          </span>
-
+          <span>RESTAURAR RESPALDO</span>
+          <span>↑</span>
         </button>
 
 
@@ -374,8 +376,8 @@
 
         <p class="backup-warning">
           Los respaldos JSON son la copia más segura porque
-          sobreviven a cambios de navegador, Live Server y
-          pérdidas de localStorage.
+          sobreviven a cambios del navegador y pérdidas
+          de localStorage.
         </p>
 
       </div>
@@ -399,7 +401,61 @@
 
 
   <!-- =====================================================
-       EDITOR DE NOTICIAS
+       BORRADORES
+  ====================================================== -->
+
+  <div
+    class="modal drafts-modal"
+    id="draftsModal"
+    aria-hidden="true"
+  >
+
+    <div
+      class="modal-backdrop"
+      data-close-drafts
+    ></div>
+
+
+    <div class="drafts-panel">
+
+      <div class="drafts-header">
+
+        <div>
+
+          <span class="eyebrow">
+            SPORTS JOURNAL
+          </span>
+
+          <h2>
+            BORRADORES
+          </h2>
+
+        </div>
+
+        <button
+          class="close-button"
+          type="button"
+          data-close-drafts
+          aria-label="Cerrar borradores"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div
+        class="drafts-list"
+        id="draftsList"
+      ></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       EDITOR
   ====================================================== -->
 
   <div
@@ -430,7 +486,6 @@
 
         </div>
 
-
         <button
           class="close-button"
           type="button"
@@ -457,7 +512,59 @@
         />
 
 
-        <!-- NOTICIA -->
+        <div class="editor-status-strip">
+
+          <div class="editor-status-group">
+
+            <span>
+              ESTADO
+            </span>
+
+            <strong
+              class="editor-status-value draft"
+              id="editorStatusValue"
+            >
+              BORRADOR NUEVO
+            </strong>
+
+          </div>
+
+
+          <div class="editor-status-group">
+
+            <span>
+              GUARDADO
+            </span>
+
+            <strong
+              class="editor-save-state clean"
+              id="editorSaveState"
+            >
+              SIN CAMBIOS
+            </strong>
+
+          </div>
+
+
+          <div class="editor-status-group editor-date-group">
+
+            <span>
+              ACTIVIDAD
+            </span>
+
+            <strong
+              class="editor-date-info"
+              id="editorDateInfo"
+            >
+              AÚN NO GUARDADA
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- INFORMACIÓN -->
 
         <div class="editor-section">
 
@@ -469,7 +576,7 @@
           <div class="editor-section-content">
 
             <h3>
-              NOTICIA
+              INFORMACIÓN
             </h3>
 
 
@@ -528,9 +635,20 @@
 
             <label class="field">
 
-              <span>
-                TITULAR
-              </span>
+              <div class="field-heading">
+
+                <span>
+                  TITULAR
+                </span>
+
+                <span
+                  class="field-character-count"
+                  id="titleCharacterCount"
+                >
+                  0 / 160
+                </span>
+
+              </div>
 
               <input
                 id="titleInput"
@@ -545,9 +663,20 @@
 
             <label class="field">
 
-              <span>
-                RESUMEN
-              </span>
+              <div class="field-heading">
+
+                <span>
+                  RESUMEN
+                </span>
+
+                <span
+                  class="field-character-count"
+                  id="summaryCharacterCount"
+                >
+                  0 / 350
+                </span>
+
+              </div>
 
               <textarea
                 id="summaryInput"
@@ -559,16 +688,35 @@
 
             </label>
 
+          </div>
+
+        </div>
+
+
+        <!-- ARTÍCULO -->
+
+        <div class="editor-section">
+
+          <div class="editor-section-number">
+            02
+          </div>
+
+
+          <div class="editor-section-content">
+
+            <h3>
+              ARTÍCULO
+            </h3>
 
             <label class="field">
 
               <span>
-                ARTÍCULO
+                CONTENIDO
               </span>
 
               <textarea
                 id="contentInput"
-                rows="12"
+                rows="14"
                 placeholder="Escribe la noticia completa..."
                 required
               ></textarea>
@@ -585,7 +733,7 @@
         <div class="editor-section">
 
           <div class="editor-section-number">
-            02
+            03
           </div>
 
 
@@ -596,7 +744,7 @@
             </h3>
 
             <p class="editor-note">
-              La imagen aparecerá en la portada solamente
+              La imagen aparecerá en portada solamente
               cuando esta noticia ocupe la posición #01.
             </p>
 
@@ -630,7 +778,6 @@
                   type="button"
                   data-image-mode="crop"
                 >
-
                   <strong>
                     RECORTAR / LLENAR
                   </strong>
@@ -638,7 +785,6 @@
                   <small>
                     Llena completamente el marco
                   </small>
-
                 </button>
 
 
@@ -647,7 +793,6 @@
                   type="button"
                   data-image-mode="full"
                 >
-
                   <strong>
                     MOSTRAR COMPLETA
                   </strong>
@@ -655,7 +800,6 @@
                   <small>
                     Nunca recorta la fotografía
                   </small>
-
                 </button>
 
               </div>
@@ -712,7 +856,6 @@
 
                 </div>
 
-
                 <button
                   class="reset-image-button"
                   id="resetImageButton"
@@ -727,15 +870,8 @@
               <label class="range-field">
 
                 <div>
-
-                  <span>
-                    HORIZONTAL
-                  </span>
-
-                  <output id="focusXOutput">
-                    50%
-                  </output>
-
+                  <span>HORIZONTAL</span>
+                  <output id="focusXOutput">50%</output>
                 </div>
 
                 <input
@@ -752,15 +888,8 @@
               <label class="range-field">
 
                 <div>
-
-                  <span>
-                    VERTICAL
-                  </span>
-
-                  <output id="focusYOutput">
-                    50%
-                  </output>
-
+                  <span>VERTICAL</span>
+                  <output id="focusYOutput">50%</output>
                 </div>
 
                 <input
@@ -777,15 +906,8 @@
               <label class="range-field">
 
                 <div>
-
-                  <span>
-                    ZOOM
-                  </span>
-
-                  <output id="zoomOutput">
-                    100%
-                  </output>
-
+                  <span>ZOOM</span>
+                  <output id="zoomOutput">100%</output>
                 </div>
 
                 <input
@@ -823,6 +945,8 @@
         </div>
 
 
+        <!-- ACCIONES -->
+
         <div class="editor-actions">
 
           <button
@@ -832,6 +956,18 @@
           >
             CANCELAR
           </button>
+
+
+          <button
+            type="button"
+            class="draft-button"
+            id="saveDraftButton"
+          >
+            <span id="saveDraftButtonText">
+              GUARDAR BORRADOR
+            </span>
+          </button>
+
 
           <button
             type="submit"
@@ -858,7 +994,122 @@
 
 
   <!-- =====================================================
-       LECTOR DE NOTICIAS
+       CAMBIOS SIN GUARDAR
+  ====================================================== -->
+
+  <div
+    class="modal unsaved-modal"
+    id="unsavedModal"
+    aria-hidden="true"
+  >
+
+    <div
+      class="modal-backdrop"
+      data-keep-editing
+    ></div>
+
+
+    <div class="unsaved-panel">
+
+      <span class="eyebrow">
+        CAMBIOS SIN GUARDAR
+      </span>
+
+      <h2>
+        ¿DESCARTAR CAMBIOS?
+      </h2>
+
+      <p>
+        Hay cambios en esta noticia que todavía no se han
+        guardado. Si sales ahora, esos cambios se perderán.
+      </p>
+
+
+      <div class="unsaved-actions">
+
+        <button
+          class="secondary-button"
+          id="keepEditingButton"
+          type="button"
+        >
+          SEGUIR EDITANDO
+        </button>
+
+        <button
+          class="discard-button"
+          id="discardChangesButton"
+          type="button"
+        >
+          DESCARTAR CAMBIOS
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       MOVER PUBLICADA A BORRADOR
+  ====================================================== -->
+
+  <div
+    class="modal move-draft-modal"
+    id="moveDraftModal"
+    aria-hidden="true"
+  >
+
+    <div
+      class="modal-backdrop"
+      data-close-move-draft
+    ></div>
+
+
+    <div class="move-draft-panel">
+
+      <span class="eyebrow">
+        CAMBIO DE ESTADO
+      </span>
+
+      <h2>
+        ¿MOVER A BORRADOR?
+      </h2>
+
+      <p>
+        Esta noticia dejará de aparecer en la portada
+        y en las secciones públicas. Podrás volver a
+        publicarla cuando quieras.
+      </p>
+
+
+      <div class="move-draft-actions">
+
+        <button
+          class="secondary-button"
+          id="keepPublishedButton"
+          type="button"
+        >
+          MANTENER PUBLICADA
+        </button>
+
+        <button
+          class="move-draft-button"
+          id="confirmMoveDraftButton"
+          type="button"
+        >
+          MOVER A BORRADOR
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       READER
   ====================================================== -->
 
   <div
@@ -884,7 +1135,6 @@
         >
           ← VOLVER A PORTADA
         </button>
-
 
         <button
           class="close-button reader-close"
@@ -921,11 +1171,7 @@
 
 
         <div class="reader-byline">
-
-          POR
-
-          <strong id="readerAuthor"></strong>
-
+          POR <strong id="readerAuthor"></strong>
         </div>
 
       </header>
@@ -935,13 +1181,11 @@
         class="reader-image"
         id="readerImageContainer"
       >
-
         <img
           id="readerImage"
           src=""
           alt=""
         />
-
       </div>
 
 
@@ -957,7 +1201,6 @@
           SPORTS JOURNAL
         </div>
 
-
         <div class="reader-story-actions">
 
           <button
@@ -967,7 +1210,6 @@
           >
             EDITAR NOTICIA
           </button>
-
 
           <button
             class="text-action-button danger"
@@ -987,7 +1229,7 @@
 
 
   <!-- =====================================================
-       CONFIRMACIÓN DE ELIMINACIÓN
+       DELETE
   ====================================================== -->
 
   <div
@@ -1014,7 +1256,7 @@
 
       <p>
         La noticia será eliminada del diario.
-        Primero se creará automáticamente una copia local.
+        Primero se creará una copia local automática.
       </p>
 
 
@@ -1027,7 +1269,6 @@
         >
           CONSERVAR
         </button>
-
 
         <button
           class="delete-button"
@@ -1045,7 +1286,7 @@
 
 
   <!-- =====================================================
-       RESTAURACIÓN
+       RESTORE
   ====================================================== -->
 
   <div
@@ -1077,9 +1318,7 @@
           ARCHIVO
         </span>
 
-        <strong id="restoreFileName">
-          RESPALDO.JSON
-        </strong>
+        <strong id="restoreFileName"></strong>
 
       </div>
 
@@ -1092,9 +1331,7 @@
             RESPALDO
           </span>
 
-          <strong id="restoreStoryCount">
-            0 NOTICIAS
-          </strong>
+          <strong id="restoreStoryCount"></strong>
 
         </div>
 
@@ -1105,9 +1342,7 @@
             DIARIO ACTUAL
           </span>
 
-          <strong id="currentStoryCount">
-            0 NOTICIAS
-          </strong>
+          <strong id="currentStoryCount"></strong>
 
         </div>
 
@@ -1115,11 +1350,9 @@
 
 
       <p class="restore-description">
-        COMBINAR conserva tus noticias actuales y agrega
+        COMBINAR conserva el diario actual y agrega
         las noticias del respaldo. REEMPLAZAR restaura
-        exactamente el contenido del respaldo. Antes de
-        cualquiera de las dos acciones se crea una copia
-        de seguridad local.
+        exactamente el contenido del archivo.
       </p>
 
 
@@ -1133,7 +1366,6 @@
           CANCELAR
         </button>
 
-
         <button
           class="merge-button"
           id="mergeBackupButton"
@@ -1141,7 +1373,6 @@
         >
           COMBINAR
         </button>
-
 
         <button
           class="replace-button"
@@ -1159,7 +1390,7 @@
 
 
   <!-- =====================================================
-       NOTIFICACIÓN
+       TOAST
   ====================================================== -->
 
   <div

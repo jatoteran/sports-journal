@@ -7,27 +7,14 @@
    STORAGE
    ========================================================= */
 
-const STORAGE_KEY = "sportsJournalArticles";
+const STORAGE_KEY =
+  "sportsJournalArticles";
 
-const BACKUPS_KEY = "sportsJournalAutomaticBackups";
+const BACKUPS_KEY =
+  "sportsJournalAutomaticBackups";
 
-const MAX_AUTOMATIC_BACKUPS = 16;
-
-
-/*
-  IMPORTANTE:
-
-  Los valores internos de los deportes permanecen
-  en inglés para no romper artículos, filtros ni backups.
-
-  Solo traducimos su representación visual.
-*/
-const SPORT_LABELS = {
-  football: "FÚTBOL",
-  tennis: "TENIS",
-  baseball: "BÉISBOL",
-  basketball: "BALONCESTO"
-};
+const MAX_AUTOMATIC_BACKUPS =
+  16;
 
 
 const LEGACY_STORAGE_KEYS = [
@@ -38,23 +25,44 @@ const LEGACY_STORAGE_KEYS = [
 ];
 
 
+const SPORT_LABELS = {
+  football: "FÚTBOL",
+  tennis: "TENIS",
+  baseball: "BÉISBOL",
+  basketball: "BALONCESTO"
+};
+
+
 /* =========================================================
    STATE
    ========================================================= */
 
-let articles = loadArticles();
+let articles =
+  loadArticles();
 
-let activeSport = "all";
+let activeSport =
+  "all";
 
-let searchTerm = "";
+let searchTerm =
+  "";
 
-let currentReaderArticleId = null;
+let currentReaderArticleId =
+  null;
 
-let pendingDeleteArticleId = null;
+let pendingDeleteArticleId =
+  null;
 
-let pendingRestore = null;
+let pendingRestore =
+  null;
 
-let toastTimeout = null;
+let toastTimeout =
+  null;
+
+let editorInitialState =
+  "";
+
+let editorHasUnsavedChanges =
+  false;
 
 
 /* =========================================================
@@ -75,6 +83,24 @@ const frontPageMenuButton =
 
 const menuWriteStoryButton =
   document.getElementById("menuWriteStoryButton");
+
+const draftsMenuButton =
+  document.getElementById("draftsMenuButton");
+
+const publishedMenuButton =
+  document.getElementById("publishedMenuButton");
+
+const draftCount =
+  document.getElementById("draftCount");
+
+const publishedCount =
+  document.getElementById("publishedCount");
+
+const draftsModal =
+  document.getElementById("draftsModal");
+
+const draftsList =
+  document.getElementById("draftsList");
 
 const exportBackupButton =
   document.getElementById("exportBackupButton");
@@ -112,11 +138,23 @@ const openEditorButton =
 const brandButton =
   document.getElementById("brandButton");
 
+
+/* EDITOR */
+
 const editorModal =
   document.getElementById("editorModal");
 
 const editorHeading =
   document.getElementById("editorHeading");
+
+const editorStatusValue =
+  document.getElementById("editorStatusValue");
+
+const editorSaveState =
+  document.getElementById("editorSaveState");
+
+const editorDateInfo =
+  document.getElementById("editorDateInfo");
 
 const articleForm =
   document.getElementById("articleForm");
@@ -139,6 +177,34 @@ const summaryInput =
 const contentInput =
   document.getElementById("contentInput");
 
+const titleCharacterCount =
+  document.getElementById(
+    "titleCharacterCount"
+  );
+
+const summaryCharacterCount =
+  document.getElementById(
+    "summaryCharacterCount"
+  );
+
+const saveDraftButton =
+  document.getElementById(
+    "saveDraftButton"
+  );
+
+const saveDraftButtonText =
+  document.getElementById(
+    "saveDraftButtonText"
+  );
+
+const publishButtonText =
+  document.getElementById(
+    "publishButtonText"
+  );
+
+
+/* IMAGE */
+
 const imageUrlInput =
   document.getElementById("imageUrlInput");
 
@@ -146,13 +212,17 @@ const imageModeInput =
   document.getElementById("imageMode");
 
 const imageModeButtons =
-  document.querySelectorAll("[data-image-mode]");
+  document.querySelectorAll(
+    "[data-image-mode]"
+  );
 
 const imagePreview =
   document.getElementById("imagePreview");
 
 const imagePreviewElement =
-  document.getElementById("imagePreviewElement");
+  document.getElementById(
+    "imagePreviewElement"
+  );
 
 const focusXInput =
   document.getElementById("focusXInput");
@@ -181,8 +251,32 @@ const fullImageInfo =
 const resetImageButton =
   document.getElementById("resetImageButton");
 
-const publishButtonText =
-  document.getElementById("publishButtonText");
+
+/* UNSAVED */
+
+const unsavedModal =
+  document.getElementById("unsavedModal");
+
+const keepEditingButton =
+  document.getElementById("keepEditingButton");
+
+const discardChangesButton =
+  document.getElementById("discardChangesButton");
+
+
+/* MOVE TO DRAFT */
+
+const moveDraftModal =
+  document.getElementById("moveDraftModal");
+
+const keepPublishedButton =
+  document.getElementById("keepPublishedButton");
+
+const confirmMoveDraftButton =
+  document.getElementById("confirmMoveDraftButton");
+
+
+/* READER */
 
 const readerModal =
   document.getElementById("readerModal");
@@ -203,7 +297,9 @@ const readerAuthor =
   document.getElementById("readerAuthor");
 
 const readerImageContainer =
-  document.getElementById("readerImageContainer");
+  document.getElementById(
+    "readerImageContainer"
+  );
 
 const readerImage =
   document.getElementById("readerImage");
@@ -212,16 +308,28 @@ const readerBody =
   document.getElementById("readerBody");
 
 const readerEditButton =
-  document.getElementById("readerEditButton");
+  document.getElementById(
+    "readerEditButton"
+  );
 
 const readerDeleteButton =
-  document.getElementById("readerDeleteButton");
+  document.getElementById(
+    "readerDeleteButton"
+  );
+
+
+/* DELETE */
 
 const confirmModal =
   document.getElementById("confirmModal");
 
 const confirmDeleteButton =
-  document.getElementById("confirmDeleteButton");
+  document.getElementById(
+    "confirmDeleteButton"
+  );
+
+
+/* RESTORE */
 
 const restoreModal =
   document.getElementById("restoreModal");
@@ -230,38 +338,51 @@ const restoreFileName =
   document.getElementById("restoreFileName");
 
 const restoreStoryCount =
-  document.getElementById("restoreStoryCount");
+  document.getElementById(
+    "restoreStoryCount"
+  );
 
 const currentStoryCount =
-  document.getElementById("currentStoryCount");
+  document.getElementById(
+    "currentStoryCount"
+  );
 
 const mergeBackupButton =
-  document.getElementById("mergeBackupButton");
+  document.getElementById(
+    "mergeBackupButton"
+  );
 
 const replaceBackupButton =
-  document.getElementById("replaceBackupButton");
+  document.getElementById(
+    "replaceBackupButton"
+  );
+
 
 const toast =
   document.getElementById("toast");
 
 
 /* =========================================================
-   INICIALIZACIÓN
+   INITIALIZE
    ========================================================= */
 
 initialize();
 
 
 function initialize() {
+
   normalizeExistingArticles();
 
   renderEditionDate();
 
   renderFrontPage();
 
+  updateManagementCounts();
+
   updateBackupStatus();
 
   bindEvents();
+
 }
 
 
@@ -270,36 +391,55 @@ function initialize() {
    ========================================================= */
 
 function loadArticles() {
+
   const primaryData =
-    readJsonFromStorage(STORAGE_KEY);
+    readJsonFromStorage(
+      STORAGE_KEY
+    );
 
 
-  if (Array.isArray(primaryData)) {
+  if (
+    Array.isArray(primaryData)
+  ) {
+
     return primaryData;
+
   }
 
 
-  for (const key of LEGACY_STORAGE_KEYS) {
+  for (
+    const key
+    of LEGACY_STORAGE_KEYS
+  ) {
+
     const legacyData =
       readJsonFromStorage(key);
 
 
-    if (Array.isArray(legacyData)) {
+    if (
+      Array.isArray(legacyData)
+    ) {
+
       try {
+
         localStorage.setItem(
           STORAGE_KEY,
-          JSON.stringify(legacyData)
+          JSON.stringify(
+            legacyData
+          )
         );
+
       } catch (error) {
-        console.error(
-          "No se pudo migrar el almacenamiento anterior:",
-          error
-        );
+
+        console.error(error);
+
       }
 
 
       return legacyData;
+
     }
+
   }
 
 
@@ -307,100 +447,117 @@ function loadArticles() {
     loadInternalBackups();
 
 
-  if (backups.length > 0) {
-    const newestBackup =
-      backups[0];
+  if (
+    backups.length > 0 &&
+    Array.isArray(
+      backups[0].articles
+    )
+  ) {
 
+    return backups[0].articles;
 
-    if (
-      Array.isArray(
-        newestBackup.articles
-      )
-    ) {
-      return newestBackup.articles;
-    }
   }
 
 
   return [];
+
 }
 
 
 function persistArticles() {
+
   try {
+
     localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify(articles)
     );
 
+
     return true;
+
   } catch (error) {
-    console.error(
-      "No se pudieron guardar las noticias:",
-      error
-    );
+
+    console.error(error);
 
 
     showToast(
-      "NO SE PUDO GUARDAR. EXPORTA UN RESPALDO ANTES DE CONTINUAR."
+      "NO SE PUDO GUARDAR. EXPORTA UN RESPALDO."
     );
 
 
     return false;
+
   }
+
 }
 
 
 function readJsonFromStorage(key) {
+
   const raw =
     localStorage.getItem(key);
 
 
   if (!raw) {
+
     return null;
+
   }
 
 
   try {
+
     return JSON.parse(raw);
+
   } catch (error) {
-    console.error(
-      `No se pudo leer ${key}:`,
-      error
-    );
+
+    console.error(error);
 
     return null;
+
   }
+
 }
 
 
 /* =========================================================
-   RESPALDOS INTERNOS
+   BACKUPS
    ========================================================= */
 
 function loadInternalBackups() {
+
   const saved =
-    readJsonFromStorage(BACKUPS_KEY);
+    readJsonFromStorage(
+      BACKUPS_KEY
+    );
 
 
   if (!Array.isArray(saved)) {
+
     return [];
+
   }
 
 
   return saved
-    .filter((backup) => {
-      return (
+    .filter(
+      (backup) =>
         backup &&
-        Array.isArray(backup.articles)
-      );
-    })
-    .sort((a, b) => {
-      return (
-        new Date(b.createdAt).getTime() -
-        new Date(a.createdAt).getTime()
-      );
-    });
+        Array.isArray(
+          backup.articles
+        )
+    )
+    .sort(
+      (a, b) =>
+        new Date(
+          b.createdAt
+        ).getTime() -
+        new Date(
+          a.createdAt
+        ).getTime()
+    );
+
 }
 
 
@@ -408,11 +565,22 @@ function createInternalBackup(
   reason,
   sourceArticles = articles
 ) {
+
   const backup = {
-    id: createArticleId(),
-    createdAt: new Date().toISOString(),
+
+    id:
+      createArticleId(),
+
+    createdAt:
+      new Date().toISOString(),
+
     reason,
-    articles: cloneArticles(sourceArticles)
+
+    articles:
+      cloneArticles(
+        sourceArticles
+      )
+
   };
 
 
@@ -420,115 +588,149 @@ function createInternalBackup(
     loadInternalBackups();
 
 
-  backups.unshift(backup);
-
-
-  const trimmedBackups =
-    backups.slice(
-      0,
-      MAX_AUTOMATIC_BACKUPS
-    );
+  backups.unshift(
+    backup
+  );
 
 
   try {
+
     localStorage.setItem(
       BACKUPS_KEY,
-      JSON.stringify(trimmedBackups)
+      JSON.stringify(
+        backups.slice(
+          0,
+          MAX_AUTOMATIC_BACKUPS
+        )
+      )
     );
 
 
     updateBackupStatus();
 
+
     return true;
+
   } catch (error) {
-    console.error(
-      "No se pudo crear la copia automática:",
-      error
-    );
+
+    console.error(error);
 
     return false;
+
   }
+
 }
 
 
-function cloneArticles(sourceArticles) {
+function cloneArticles(
+  sourceArticles
+) {
+
   return JSON.parse(
-    JSON.stringify(sourceArticles)
+    JSON.stringify(
+      sourceArticles
+    )
   );
+
 }
 
 
 function updateBackupStatus() {
+
   const backups =
     loadInternalBackups();
 
 
-  if (backups.length === 0) {
+  if (
+    backups.length === 0
+  ) {
+
     internalBackupStatus.textContent =
       "SIN COPIAS TODAVÍA";
 
+
     return;
+
   }
 
 
   const latest =
-    backups[0];
-
-
-  const date =
-    new Date(latest.createdAt);
-
-
-  if (Number.isNaN(date.getTime())) {
-    internalBackupStatus.textContent =
-      `${backups.length} COPIAS LOCALES`;
-
-    return;
-  }
+    new Date(
+      backups[0].createdAt
+    );
 
 
   internalBackupStatus.textContent =
-    `${backups.length} COPIAS · ${formatBackupTime(date)}`;
+    `${backups.length} COPIAS · ${formatBackupTime(latest)}`;
+
 }
 
 
 /* =========================================================
-   NORMALIZACIÓN
+   NORMALIZE
    ========================================================= */
 
 function normalizeExistingArticles() {
-  let changed = false;
+
+  let changed =
+    false;
 
 
-  articles = articles.map((article) => {
-    const normalized =
-      normalizeArticle(article);
+  articles =
+    articles.map(
+      (article) => {
+
+        const normalized =
+          normalizeArticle(
+            article
+          );
 
 
-    if (
-      JSON.stringify(normalized) !==
-      JSON.stringify(article)
-    ) {
-      changed = true;
-    }
+        if (
+          JSON.stringify(
+            normalized
+          ) !==
+          JSON.stringify(
+            article
+          )
+        ) {
+
+          changed =
+            true;
+
+        }
 
 
-    return normalized;
-  });
+        return normalized;
+
+      }
+    );
 
 
   if (changed) {
+
     persistArticles();
+
   }
+
 }
 
 
 function normalizeArticle(article) {
-  const safeArticle =
+
+  const safe =
     article &&
     typeof article === "object"
       ? { ...article }
       : {};
+
+
+  if (!safe.id) {
+
+    safe.id =
+      createArticleId();
+
+  }
 
 
   const validSports = [
@@ -539,88 +741,137 @@ function normalizeArticle(article) {
   ];
 
 
-  if (!safeArticle.id) {
-    safeArticle.id =
-      createArticleId();
+  if (
+    !validSports.includes(
+      safe.sport
+    )
+  ) {
+
+    safe.sport =
+      "football";
+
   }
 
 
   if (
-    !validSports.includes(
-      safeArticle.sport
-    )
+    safe.status !== "draft" &&
+    safe.status !== "published"
   ) {
-    safeArticle.sport =
-      "football";
+
+    safe.status =
+      "published";
+
   }
 
 
-  safeArticle.title =
+  safe.title =
     String(
-      safeArticle.title || "NOTICIA SIN TÍTULO"
+      safe.title ?? ""
     );
 
 
-  safeArticle.author =
+  safe.author =
     String(
-      safeArticle.author || "SPORTS JOURNAL"
+      safe.author ?? ""
     );
 
 
-  safeArticle.summary =
+  safe.summary =
     String(
-      safeArticle.summary || ""
+      safe.summary ?? ""
     );
 
 
-  safeArticle.content =
+  safe.content =
     String(
-      safeArticle.content || ""
+      safe.content ?? ""
     );
 
 
-  safeArticle.imageUrl =
+  safe.imageUrl =
     String(
-      safeArticle.imageUrl || ""
+      safe.imageUrl ?? ""
     );
 
 
-  if (!safeArticle.imageMode) {
-    safeArticle.imageMode =
-      "crop";
+  /*
+    Published stories must always have a safe
+    fallback for old or damaged data.
+
+    Drafts are allowed to be incomplete.
+  */
+  if (
+    safe.status === "published"
+  ) {
+
+    if (
+      !safe.title.trim()
+    ) {
+
+      safe.title =
+        "NOTICIA SIN TÍTULO";
+
+    }
+
+
+    if (
+      !safe.author.trim()
+    ) {
+
+      safe.author =
+        "SPORTS JOURNAL";
+
+    }
+
   }
 
 
-  safeArticle.imageMode =
-    safeArticle.imageMode === "full"
+  safe.imageMode =
+    safe.imageMode === "full"
       ? "full"
       : "crop";
 
 
-  if (!safeArticle.imagePosition) {
-    safeArticle.imagePosition =
+  if (!safe.imagePosition) {
+
+    safe.imagePosition =
       "50% 50%";
+
   }
 
 
-  safeArticle.imageZoom =
+  safe.imageZoom =
     normalizeZoom(
-      safeArticle.imageZoom
+      safe.imageZoom
     );
 
 
-  if (!safeArticle.createdAt) {
-    safeArticle.createdAt =
+  if (!safe.createdAt) {
+
+    safe.createdAt =
       new Date().toISOString();
+
   }
 
 
-  return safeArticle;
+  if (
+    safe.status === "published" &&
+    !safe.publishedAt
+  ) {
+
+    safe.publishedAt =
+      safe.createdAt;
+
+  }
+
+
+  return safe;
+
 }
 
 
 /* =========================================================
-   EVENTOS
+   EVENTS
    ========================================================= */
 
 function bindEvents() {
@@ -632,20 +883,29 @@ function bindEvents() {
 
 
   document
-    .querySelectorAll("[data-close-menu]")
-    .forEach((button) => {
-      button.addEventListener(
-        "click",
-        closeSideMenu
-      );
-    });
+    .querySelectorAll(
+      "[data-close-menu]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          closeSideMenu
+        );
+
+      }
+    );
 
 
   frontPageMenuButton.addEventListener(
     "click",
     () => {
+
       closeSideMenu();
+
       goToFrontPage();
+
     }
   );
 
@@ -653,10 +913,58 @@ function bindEvents() {
   menuWriteStoryButton.addEventListener(
     "click",
     () => {
+
       closeSideMenu();
+
       openEditor();
+
     }
   );
+
+
+  draftsMenuButton.addEventListener(
+    "click",
+    () => {
+
+      closeSideMenu();
+
+      openDraftsManager();
+
+    }
+  );
+
+
+  publishedMenuButton.addEventListener(
+    "click",
+    () => {
+
+      closeSideMenu();
+
+      goToFrontPage();
+
+
+      showToast(
+        `${getPublishedArticles().length} NOTICIAS PUBLICADAS.`
+      );
+
+    }
+  );
+
+
+  document
+    .querySelectorAll(
+      "[data-close-drafts]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          closeDraftsManager
+        );
+
+      }
+    );
 
 
   exportBackupButton.addEventListener(
@@ -668,8 +976,11 @@ function bindEvents() {
   restoreBackupButton.addEventListener(
     "click",
     () => {
+
       closeSideMenu();
+
       backupFileInput.click();
+
     }
   );
 
@@ -683,7 +994,9 @@ function bindEvents() {
   openEditorButton.addEventListener(
     "click",
     () => {
+
       openEditor();
+
     }
   );
 
@@ -691,78 +1004,201 @@ function bindEvents() {
   brandButton.addEventListener(
     "click",
     (event) => {
+
       event.preventDefault();
+
       goToFrontPage();
+
     }
   );
 
 
-  sportFilters.forEach((button) => {
-    button.addEventListener(
-      "click",
-      () => {
-        activeSport =
-          button.dataset.sport;
+  sportFilters.forEach(
+    (button) => {
 
-        updateActiveSportButton();
+      button.addEventListener(
+        "click",
+        () => {
 
-        renderFrontPage();
-      }
-    );
-  });
+          activeSport =
+            button.dataset.sport;
+
+
+          updateActiveSportButton();
+
+          renderFrontPage();
+
+        }
+      );
+
+    }
+  );
 
 
   searchInput.addEventListener(
     "input",
     () => {
+
       searchTerm =
         searchInput.value
           .trim()
           .toLowerCase();
 
+
       renderFrontPage();
+
     }
   );
 
 
   document
-    .querySelectorAll("[data-close-editor]")
-    .forEach((button) => {
-      button.addEventListener(
-        "click",
-        closeEditor
-      );
-    });
+    .querySelectorAll(
+      "[data-close-editor]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          requestCloseEditor
+        );
+
+      }
+    );
+
+
+  articleForm.addEventListener(
+    "input",
+    () => {
+
+      updateEditorDirtyState();
+
+      updateCharacterCounters();
+
+    }
+  );
+
+
+  articleForm.addEventListener(
+    "change",
+    () => {
+
+      updateEditorDirtyState();
+
+      updateCharacterCounters();
+
+    }
+  );
 
 
   document
-    .querySelectorAll("[data-close-reader]")
-    .forEach((button) => {
-      button.addEventListener(
-        "click",
-        closeReader
-      );
-    });
+    .querySelectorAll(
+      "[data-close-reader]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          closeReader
+        );
+
+      }
+    );
 
 
   document
-    .querySelectorAll("[data-close-confirm]")
-    .forEach((button) => {
-      button.addEventListener(
-        "click",
-        closeConfirmModal
-      );
-    });
+    .querySelectorAll(
+      "[data-close-confirm]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          closeConfirmModal
+        );
+
+      }
+    );
 
 
   document
-    .querySelectorAll("[data-close-restore]")
-    .forEach((button) => {
-      button.addEventListener(
-        "click",
-        closeRestoreModal
+    .querySelectorAll(
+      "[data-close-restore]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          closeRestoreModal
+        );
+
+      }
+    );
+
+
+  document
+    .querySelectorAll(
+      "[data-keep-editing]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          closeUnsavedModal
+        );
+
+      }
+    );
+
+
+  document
+    .querySelectorAll(
+      "[data-close-move-draft]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          closeMoveDraftModal
+        );
+
+      }
+    );
+
+
+  keepEditingButton.addEventListener(
+    "click",
+    closeUnsavedModal
+  );
+
+
+  discardChangesButton.addEventListener(
+    "click",
+    discardEditorChanges
+  );
+
+
+  keepPublishedButton.addEventListener(
+    "click",
+    closeMoveDraftModal
+  );
+
+
+  confirmMoveDraftButton.addEventListener(
+    "click",
+    () => {
+
+      saveArticle(
+        "draft"
       );
-    });
+
+    }
+  );
 
 
   imageUrlInput.addEventListener(
@@ -771,16 +1207,25 @@ function bindEvents() {
   );
 
 
-  imageModeButtons.forEach((button) => {
-    button.addEventListener(
-      "click",
-      () => {
-        setImageMode(
-          button.dataset.imageMode
-        );
-      }
-    );
-  });
+  imageModeButtons.forEach(
+    (button) => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          setImageMode(
+            button.dataset.imageMode
+          );
+
+
+          updateEditorDirtyState();
+
+        }
+      );
+
+    }
+  );
 
 
   focusXInput.addEventListener(
@@ -804,38 +1249,73 @@ function bindEvents() {
   resetImageButton.addEventListener(
     "click",
     () => {
-      focusXInput.value = 50;
 
-      focusYInput.value = 50;
+      focusXInput.value =
+        50;
 
-      imageZoomInput.value = 100;
+      focusYInput.value =
+        50;
+
+      imageZoomInput.value =
+        100;
+
 
       updateImagePreview();
+
+      updateEditorDirtyState();
+
     }
   );
 
 
+  /*
+    Publishing requires the complete form.
+  */
   articleForm.addEventListener(
     "submit",
-    handleArticleSubmit
+    (event) => {
+
+      event.preventDefault();
+
+
+      saveArticle(
+        "published"
+      );
+
+    }
+  );
+
+
+  /*
+    Drafts can intentionally be incomplete.
+  */
+  saveDraftButton.addEventListener(
+    "click",
+    requestDraftSave
   );
 
 
   readerEditButton.addEventListener(
     "click",
     () => {
-      if (!currentReaderArticleId) {
+
+      if (
+        !currentReaderArticleId
+      ) {
+
         return;
+
       }
 
 
-      const articleId =
+      const id =
         currentReaderArticleId;
 
 
       closeReader();
 
-      openEditor(articleId);
+      openEditor(id);
+
     }
   );
 
@@ -843,14 +1323,17 @@ function bindEvents() {
   readerDeleteButton.addEventListener(
     "click",
     () => {
-      if (!currentReaderArticleId) {
-        return;
+
+      if (
+        currentReaderArticleId
+      ) {
+
+        openDeleteConfirmation(
+          currentReaderArticleId
+        );
+
       }
 
-
-      openDeleteConfirmation(
-        currentReaderArticleId
-      );
     }
   );
 
@@ -873,11 +1356,64 @@ function bindEvents() {
   );
 
 
+  window.addEventListener(
+    "beforeunload",
+    (event) => {
+
+      if (
+        editorModal.classList.contains(
+          "open"
+        ) &&
+        editorHasUnsavedChanges
+      ) {
+
+        event.preventDefault();
+
+        event.returnValue =
+          "";
+
+      }
+
+    }
+  );
+
+
   document.addEventListener(
     "keydown",
     (event) => {
-      if (event.key !== "Escape") {
+
+      if (
+        event.key !== "Escape"
+      ) {
+
         return;
+
+      }
+
+
+      if (
+        moveDraftModal.classList.contains(
+          "open"
+        )
+      ) {
+
+        closeMoveDraftModal();
+
+        return;
+
+      }
+
+
+      if (
+        unsavedModal.classList.contains(
+          "open"
+        )
+      ) {
+
+        closeUnsavedModal();
+
+        return;
+
       }
 
 
@@ -886,8 +1422,11 @@ function bindEvents() {
           "open"
         )
       ) {
+
         closeRestoreModal();
+
         return;
+
       }
 
 
@@ -896,8 +1435,11 @@ function bindEvents() {
           "open"
         )
       ) {
+
         closeConfirmModal();
+
         return;
+
       }
 
 
@@ -906,8 +1448,24 @@ function bindEvents() {
           "open"
         )
       ) {
-        closeEditor();
+
+        requestCloseEditor();
+
         return;
+
+      }
+
+
+      if (
+        draftsModal.classList.contains(
+          "open"
+        )
+      ) {
+
+        closeDraftsManager();
+
+        return;
+
       }
 
 
@@ -916,8 +1474,11 @@ function bindEvents() {
           "open"
         )
       ) {
+
         closeReader();
+
         return;
+
       }
 
 
@@ -926,23 +1487,346 @@ function bindEvents() {
           "open"
         )
       ) {
+
         closeSideMenu();
+
       }
+
     }
   );
+
 }
 
 
 /* =========================================================
-   PORTADA
+   MANAGEMENT
+   ========================================================= */
+
+function getDraftArticles() {
+
+  return articles
+    .filter(
+      (article) =>
+        article.status ===
+        "draft"
+    )
+    .sort(
+      (a, b) =>
+        getArticleActivityTime(b) -
+        getArticleActivityTime(a)
+    );
+
+}
+
+
+function getPublishedArticles() {
+
+  return articles
+    .filter(
+      (article) =>
+        article.status ===
+        "published"
+    )
+    .sort(
+      sortArticlesNewestFirst
+    );
+
+}
+
+
+function updateManagementCounts() {
+
+  draftCount.textContent =
+    getDraftArticles().length;
+
+
+  publishedCount.textContent =
+    getPublishedArticles().length;
+
+}
+
+
+/* =========================================================
+   DRAFT MANAGER
+   ========================================================= */
+
+function openDraftsManager() {
+
+  renderDraftsManager();
+
+
+  draftsModal.classList.add(
+    "open"
+  );
+
+
+  draftsModal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+function closeDraftsManager() {
+
+  draftsModal.classList.remove(
+    "open"
+  );
+
+
+  draftsModal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+function renderDraftsManager() {
+
+  draftsList.innerHTML =
+    "";
+
+
+  const drafts =
+    getDraftArticles();
+
+
+  if (
+    drafts.length === 0
+  ) {
+
+    draftsList.innerHTML = `
+      <div class="empty-state">
+
+        <span>
+          SIN BORRADORES
+        </span>
+
+        <p>
+          Las noticias guardadas como borrador
+          aparecerán aquí.
+        </p>
+
+      </div>
+    `;
+
+
+    return;
+
+  }
+
+
+  drafts.forEach(
+    (article, index) => {
+
+      const card =
+        document.createElement(
+          "article"
+        );
+
+
+      card.className =
+        "draft-card";
+
+
+      const number =
+        document.createElement(
+          "div"
+        );
+
+
+      number.className =
+        "draft-card-number";
+
+
+      number.textContent =
+        String(
+          index + 1
+        ).padStart(
+          2,
+          "0"
+        );
+
+
+      const copy =
+        document.createElement(
+          "div"
+        );
+
+
+      const sport =
+        document.createElement(
+          "div"
+        );
+
+
+      sport.className =
+        "story-sport";
+
+
+      sport.textContent =
+        getSportLabel(
+          article.sport
+        );
+
+
+      const title =
+        document.createElement(
+          "h3"
+        );
+
+
+      title.className =
+        "draft-card-title";
+
+
+      title.textContent =
+        article.title.trim() ||
+        "BORRADOR SIN TÍTULO";
+
+
+      const meta =
+        document.createElement(
+          "div"
+        );
+
+
+      meta.className =
+        "draft-card-meta";
+
+
+      meta.textContent =
+        article.updatedAt
+          ? `EDITADO ${formatShortDate(article.updatedAt)}`
+          : `CREADO ${formatShortDate(article.createdAt)}`;
+
+
+      copy.append(
+        sport,
+        title,
+        meta
+      );
+
+
+      const actions =
+        document.createElement(
+          "div"
+        );
+
+
+      actions.className =
+        "draft-card-actions";
+
+
+      const editButton =
+        document.createElement(
+          "button"
+        );
+
+
+      editButton.className =
+        "edit-draft-button";
+
+
+      editButton.type =
+        "button";
+
+
+      editButton.textContent =
+        "EDITAR";
+
+
+      editButton.addEventListener(
+        "click",
+        () => {
+
+          closeDraftsManager();
+
+
+          openEditor(
+            article.id
+          );
+
+        }
+      );
+
+
+      const deleteButton =
+        document.createElement(
+          "button"
+        );
+
+
+      deleteButton.className =
+        "delete-draft-button";
+
+
+      deleteButton.type =
+        "button";
+
+
+      deleteButton.textContent =
+        "ELIMINAR";
+
+
+      deleteButton.addEventListener(
+        "click",
+        () => {
+
+          openDeleteConfirmation(
+            article.id
+          );
+
+        }
+      );
+
+
+      actions.append(
+        editButton,
+        deleteButton
+      );
+
+
+      card.append(
+        number,
+        copy,
+        actions
+      );
+
+
+      draftsList.appendChild(
+        card
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   FRONT PAGE
    ========================================================= */
 
 function goToFrontPage() {
-  activeSport = "all";
 
-  searchTerm = "";
+  activeSport =
+    "all";
 
-  searchInput.value = "";
+  searchTerm =
+    "";
+
+  searchInput.value =
+    "";
+
 
   updateActiveSportButton();
 
@@ -953,82 +1837,56 @@ function goToFrontPage() {
     top: 0,
     behavior: "smooth"
   });
+
 }
 
-
-/* =========================================================
-   MENÚ
-   ========================================================= */
-
-function openSideMenu() {
-  sideMenu.classList.add("open");
-
-
-  sideMenu.setAttribute(
-    "aria-hidden",
-    "false"
-  );
-
-
-  updateBackupStatus();
-
-  syncBodyScrollState();
-}
-
-
-function closeSideMenu() {
-  sideMenu.classList.remove("open");
-
-
-  sideMenu.setAttribute(
-    "aria-hidden",
-    "true"
-  );
-
-
-  syncBodyScrollState();
-}
-
-
-/* =========================================================
-   FILTRADO
-   ========================================================= */
 
 function getFilteredArticles() {
-  return [...articles]
-    .filter((article) => {
 
-      if (
-        activeSport !== "all" &&
-        article.sport !== activeSport
-      ) {
-        return false;
+  return getPublishedArticles()
+    .filter(
+      (article) => {
+
+        if (
+          activeSport !== "all" &&
+          article.sport !== activeSport
+        ) {
+
+          return false;
+
+        }
+
+
+        if (!searchTerm) {
+
+          return true;
+
+        }
+
+
+        const searchableText = [
+
+          article.title,
+          article.author,
+          article.summary,
+          article.content,
+
+          getSportLabel(
+            article.sport
+          )
+
+        ]
+          .join(" ")
+          .toLowerCase();
+
+
+        return searchableText.includes(
+          searchTerm
+        );
+
       }
+    );
 
-
-      if (!searchTerm) {
-        return true;
-      }
-
-
-      const searchableText = [
-        article.title,
-        article.sport,
-        getSportLabel(article.sport),
-        article.author,
-        article.summary,
-        article.content
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-
-
-      return searchableText.includes(
-        searchTerm
-      );
-    })
-    .sort(sortArticlesNewestFirst);
 }
 
 
@@ -1036,98 +1894,97 @@ function sortArticlesNewestFirst(
   a,
   b
 ) {
-  const aDate =
+
+  const aTime =
     new Date(
+      a.publishedAt ||
       a.createdAt ||
-      a.updatedAt ||
       0
     ).getTime();
 
 
-  const bDate =
+  const bTime =
     new Date(
+      b.publishedAt ||
       b.createdAt ||
-      b.updatedAt ||
       0
     ).getTime();
 
 
-  return bDate - aDate;
+  return bTime - aTime;
+
 }
 
 
-/* =========================================================
-   RENDER PORTADA
-   ========================================================= */
-
 function renderFrontPage() {
+
   const filteredArticles =
     getFilteredArticles();
 
 
   storyCount.textContent =
-    `${filteredArticles.length} ` +
-    `${filteredArticles.length === 1
-      ? "NOTICIA"
-      : "NOTICIAS"}`;
+    `${filteredArticles.length} ${
+      filteredArticles.length === 1
+        ? "NOTICIA"
+        : "NOTICIAS"
+    }`;
 
 
-  leadStories.innerHTML = "";
+  leadStories.innerHTML =
+    "";
 
-  latestStories.innerHTML = "";
+  latestStories.innerHTML =
+    "";
 
 
   if (
     filteredArticles.length === 0
   ) {
+
     leadStories.appendChild(
       emptyStateTemplate
         .content
         .cloneNode(true)
     );
 
+
     return;
+
   }
 
 
-  const leadArticle =
-    filteredArticles[0];
-
-
-  const secondaryArticles =
-    filteredArticles.slice(
-      1,
-      3
-    );
-
-
-  const latestArticles =
-    filteredArticles.slice(3);
-
-
   renderPrimaryLead(
-    leadArticle
+    filteredArticles[0]
   );
 
 
   renderSecondaryLeads(
-    secondaryArticles
+    filteredArticles.slice(
+      1,
+      3
+    )
   );
 
 
   renderLatestStories(
-    latestArticles
+    filteredArticles.slice(3)
   );
+
 }
 
 
 /* =========================================================
-   NOTICIA #01
+   PRIMARY STORY
    ========================================================= */
 
-function renderPrimaryLead(article) {
+function renderPrimaryLead(
+  article
+) {
+
   const wrapper =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
 
   wrapper.className =
@@ -1135,11 +1992,15 @@ function renderPrimaryLead(article) {
 
 
   const imageFrame =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
 
   const imageMode =
-    getArticleImageMode(article);
+    getArticleImageMode(
+      article
+    );
 
 
   imageFrame.className =
@@ -1147,8 +2008,11 @@ function renderPrimaryLead(article) {
 
 
   if (article.imageUrl) {
+
     const image =
-      document.createElement("img");
+      document.createElement(
+        "img"
+      );
 
 
     image.src =
@@ -1162,15 +2026,10 @@ function renderPrimaryLead(article) {
     if (
       imageMode === "crop"
     ) {
+
       const position =
         parseImagePosition(
           article.imagePosition
-        );
-
-
-      const zoom =
-        normalizeZoom(
-          article.imageZoom
         );
 
 
@@ -1179,25 +2038,32 @@ function renderPrimaryLead(article) {
 
 
       image.style.transform =
-        `scale(${zoom / 100})`;
+        `scale(${normalizeZoom(article.imageZoom) / 100})`;
+
     } else {
+
       image.style.objectPosition =
         "center";
 
 
       image.style.transform =
         "none";
+
     }
 
 
     image.addEventListener(
       "error",
       () => {
-        imageFrame.innerHTML = "";
+
+        imageFrame.innerHTML =
+          "";
+
 
         imageFrame.appendChild(
           createImagePlaceholder()
         );
+
       }
     );
 
@@ -1205,35 +2071,44 @@ function renderPrimaryLead(article) {
     imageFrame.appendChild(
       image
     );
+
   } else {
+
     imageFrame.appendChild(
       createImagePlaceholder()
     );
+
   }
 
 
   const copy =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
 
   copy.className =
     "lead-copy";
 
 
-  const storyIndex =
-    document.createElement("div");
+  const index =
+    document.createElement(
+      "div"
+    );
 
 
-  storyIndex.className =
+  index.className =
     "story-index";
 
 
-  storyIndex.textContent =
+  index.textContent =
     "01";
 
 
   const sport =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
 
   sport.className =
@@ -1247,7 +2122,9 @@ function renderPrimaryLead(article) {
 
 
   const title =
-    document.createElement("h2");
+    document.createElement(
+      "h2"
+    );
 
 
   title.className =
@@ -1259,7 +2136,9 @@ function renderPrimaryLead(article) {
 
 
   const summary =
-    document.createElement("p");
+    document.createElement(
+      "p"
+    );
 
 
   summary.className =
@@ -1276,39 +2155,43 @@ function renderPrimaryLead(article) {
     );
 
 
-  const readButton =
-    document.createElement("button");
+  const button =
+    document.createElement(
+      "button"
+    );
 
 
-  readButton.className =
+  button.className =
     "read-button";
 
 
-  readButton.type =
+  button.type =
     "button";
 
 
-  readButton.textContent =
+  button.textContent =
     "LEER NOTICIA →";
 
 
-  readButton.addEventListener(
+  button.addEventListener(
     "click",
     () => {
+
       openReader(
         article.id
       );
+
     }
   );
 
 
   copy.append(
-    storyIndex,
+    index,
     sport,
     title,
     summary,
     metadata,
-    readButton
+    button
   );
 
 
@@ -1321,25 +2204,31 @@ function renderPrimaryLead(article) {
   leadStories.appendChild(
     wrapper
   );
+
 }
 
 
 /* =========================================================
-   NOTICIAS #02 Y #03
+   SECONDARY STORIES
    ========================================================= */
 
 function renderSecondaryLeads(
   secondaryArticles
 ) {
+
   if (
     secondaryArticles.length === 0
   ) {
+
     return;
+
   }
 
 
   const wrapper =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
 
   wrapper.className =
@@ -1359,7 +2248,8 @@ function renderSecondaryLeads(
         "secondary-story";
 
 
-      card.tabIndex = 0;
+      card.tabIndex =
+        0;
 
 
       const number =
@@ -1407,26 +2297,24 @@ function renderSecondaryLeads(
         article.title;
 
 
-      const metadata =
-        createStoryMetadata(
-          article
-        );
-
-
       card.append(
         number,
         sport,
         title,
-        metadata
+        createStoryMetadata(
+          article
+        )
       );
 
 
       card.addEventListener(
         "click",
         () => {
+
           openReader(
             article.id
           );
+
         }
       );
 
@@ -1434,16 +2322,21 @@ function renderSecondaryLeads(
       card.addEventListener(
         "keydown",
         (event) => {
+
           if (
             event.key === "Enter" ||
             event.key === " "
           ) {
+
             event.preventDefault();
+
 
             openReader(
               article.id
             );
+
           }
+
         }
       );
 
@@ -1451,6 +2344,7 @@ function renderSecondaryLeads(
       wrapper.appendChild(
         card
       );
+
     }
   );
 
@@ -1458,19 +2352,22 @@ function renderSecondaryLeads(
   leadStories.appendChild(
     wrapper
   );
+
 }
 
 
 /* =========================================================
-   ÚLTIMAS
+   LATEST
    ========================================================= */
 
 function renderLatestStories(
   latestArticles
 ) {
+
   if (
     latestArticles.length === 0
   ) {
+
     const message =
       document.createElement(
         "div"
@@ -1498,6 +2395,7 @@ function renderLatestStories(
 
 
     return;
+
   }
 
 
@@ -1514,7 +2412,8 @@ function renderLatestStories(
         "latest-story";
 
 
-      row.tabIndex = 0;
+      row.tabIndex =
+        0;
 
 
       const number =
@@ -1594,6 +2493,7 @@ function renderLatestStories(
 
       date.textContent =
         formatShortDate(
+          article.publishedAt ||
           article.createdAt
         );
 
@@ -1615,9 +2515,11 @@ function renderLatestStories(
       row.addEventListener(
         "click",
         () => {
+
           openReader(
             article.id
           );
+
         }
       );
 
@@ -1625,16 +2527,21 @@ function renderLatestStories(
       row.addEventListener(
         "keydown",
         (event) => {
+
           if (
             event.key === "Enter" ||
             event.key === " "
           ) {
+
             event.preventDefault();
+
 
             openReader(
               article.id
             );
+
           }
+
         }
       );
 
@@ -1642,48 +2549,21 @@ function renderLatestStories(
       latestStories.appendChild(
         row
       );
+
     }
   );
+
 }
 
 
 /* =========================================================
-   PLACEHOLDER DE IMAGEN
-   ========================================================= */
-
-function createImagePlaceholder() {
-  const placeholder =
-    document.createElement("div");
-
-
-  placeholder.className =
-    "lead-image-placeholder";
-
-
-  const label =
-    document.createElement("span");
-
-
-  label.textContent =
-    "SIN IMAGEN DE PORTADA";
-
-
-  placeholder.appendChild(
-    label
-  );
-
-
-  return placeholder;
-}
-
-
-/* =========================================================
-   METADATOS
+   METADATA
    ========================================================= */
 
 function createStoryMetadata(
   article
 ) {
+
   const metadata =
     document.createElement(
       "div"
@@ -1694,63 +2574,14 @@ function createStoryMetadata(
     "story-meta";
 
 
-  const author =
-    document.createElement(
-      "span"
-    );
-
-
-  author.textContent =
-    `POR ${article.author}`;
-
-
-  const divider =
-    document.createElement(
-      "span"
-    );
-
-
-  divider.className =
-    "meta-divider";
-
-
-  divider.textContent =
-    "/";
-
-
-  const date =
-    document.createElement(
-      "span"
-    );
-
-
-  date.textContent =
-    formatShortDate(
+  metadata.textContent =
+    `POR ${article.author} / ${formatShortDate(
+      article.publishedAt ||
       article.createdAt
-    );
-
-
-  metadata.append(
-    author,
-    divider,
-    date
-  );
+    )}`;
 
 
   if (article.updatedAt) {
-    const updateDivider =
-      document.createElement(
-        "span"
-      );
-
-
-    updateDivider.className =
-      "meta-divider";
-
-
-    updateDivider.textContent =
-      "/";
-
 
     const updated =
       document.createElement(
@@ -1759,37 +2590,42 @@ function createStoryMetadata(
 
 
     updated.textContent =
-      "ACTUALIZADO";
+      " / ACTUALIZADO";
 
 
-    metadata.append(
-      updateDivider,
+    metadata.appendChild(
       updated
     );
+
   }
 
 
   return metadata;
+
 }
 
 
 /* =========================================================
-   EDITOR
+   EDITOR OPEN / CLOSE
    ========================================================= */
 
 function openEditor(
   articleId = null
 ) {
+
   resetEditor();
 
 
   if (articleId) {
+
     const article =
       findArticle(articleId);
 
 
     if (!article) {
+
       return;
+
     }
 
 
@@ -1802,16 +2638,48 @@ function openEditor(
       "EDITAR NOTICIA";
 
 
-    publishButtonText.textContent =
-      "GUARDAR CAMBIOS";
+    updateEditorStatus(
+      article.status
+    );
+
+
+    updateEditorDateInfo(
+      article
+    );
+
+
+    updateEditorActionLabels(
+      article
+    );
+
   } else {
+
     editorHeading.textContent =
       "NUEVA NOTICIA";
 
 
-    publishButtonText.textContent =
-      "PUBLICAR NOTICIA";
+    updateEditorStatus(
+      "draft",
+      true
+    );
+
+
+    updateEditorDateInfo(
+      null
+    );
+
+
+    updateEditorActionLabels(
+      null
+    );
+
   }
+
+
+  updateCharacterCounters();
+
+
+  captureEditorInitialState();
 
 
   editorModal.classList.add(
@@ -1830,14 +2698,39 @@ function openEditor(
 
   setTimeout(
     () => {
+
       titleInput.focus();
+
     },
     50
   );
+
 }
 
 
-function closeEditor() {
+function requestCloseEditor() {
+
+  updateEditorDirtyState();
+
+
+  if (
+    editorHasUnsavedChanges
+  ) {
+
+    openUnsavedModal();
+
+    return;
+
+  }
+
+
+  closeEditorImmediately();
+
+}
+
+
+function closeEditorImmediately() {
+
   editorModal.classList.remove(
     "open"
   );
@@ -1849,11 +2742,24 @@ function closeEditor() {
   );
 
 
+  editorHasUnsavedChanges =
+    false;
+
+
+  editorInitialState =
+    "";
+
+
+  updateEditorSaveStateDisplay();
+
+
   syncBodyScrollState();
+
 }
 
 
 function resetEditor() {
+
   articleForm.reset();
 
 
@@ -1879,12 +2785,21 @@ function resetEditor() {
 
 
   updateImagePreview();
+
+
+  editorHasUnsavedChanges =
+    false;
+
+
+  updateEditorSaveStateDisplay();
+
 }
 
 
 function populateEditor(
   article
 ) {
+
   articleIdInput.value =
     article.id;
 
@@ -1894,23 +2809,23 @@ function populateEditor(
 
 
   authorInput.value =
-    article.author || "";
+    article.author;
 
 
   titleInput.value =
-    article.title || "";
+    article.title;
 
 
   summaryInput.value =
-    article.summary || "";
+    article.summary;
 
 
   contentInput.value =
-    article.content || "";
+    article.content;
 
 
   imageUrlInput.value =
-    article.imageUrl || "";
+    article.imageUrl;
 
 
   const position =
@@ -1934,21 +2849,648 @@ function populateEditor(
 
 
   setImageMode(
-    getArticleImageMode(
-      article
-    )
+    article.imageMode
   );
 
 
   updateImagePreview();
+
+}
+
+
+function updateEditorStatus(
+  status,
+  isNew = false
+) {
+
+  editorStatusValue.classList.remove(
+    "draft",
+    "published"
+  );
+
+
+  if (
+    status === "published"
+  ) {
+
+    editorStatusValue.classList.add(
+      "published"
+    );
+
+
+    editorStatusValue.textContent =
+      "PUBLICADA";
+
+  } else {
+
+    editorStatusValue.classList.add(
+      "draft"
+    );
+
+
+    editorStatusValue.textContent =
+      isNew
+        ? "BORRADOR NUEVO"
+        : "BORRADOR";
+
+  }
+
+}
+
+
+function updateEditorActionLabels(
+  article
+) {
+
+  if (
+    article?.status === "published"
+  ) {
+
+    saveDraftButtonText.textContent =
+      "MOVER A BORRADOR";
+
+
+    publishButtonText.textContent =
+      "GUARDAR CAMBIOS";
+
+
+    return;
+
+  }
+
+
+  saveDraftButtonText.textContent =
+    "GUARDAR BORRADOR";
+
+
+  publishButtonText.textContent =
+    "PUBLICAR NOTICIA";
+
 }
 
 
 /* =========================================================
-   MODO DE IMAGEN
+   COUNTERS / EDITOR DATES
+   ========================================================= */
+
+function updateCharacterCounters() {
+
+  updateCharacterCounter(
+    titleInput.value.length,
+    160,
+    titleCharacterCount
+  );
+
+
+  updateCharacterCounter(
+    summaryInput.value.length,
+    350,
+    summaryCharacterCount
+  );
+
+}
+
+
+function updateCharacterCounter(
+  current,
+  maximum,
+  element
+) {
+
+  element.textContent =
+    `${current} / ${maximum}`;
+
+
+  const warningPoint =
+    Math.floor(
+      maximum * 0.85
+    );
+
+
+  element.classList.toggle(
+    "warning",
+    current >= warningPoint &&
+    current < maximum
+  );
+
+
+  element.classList.toggle(
+    "limit",
+    current >= maximum
+  );
+
+}
+
+
+function updateEditorDateInfo(
+  article
+) {
+
+  if (!article) {
+
+    editorDateInfo.textContent =
+      "AÚN NO GUARDADA";
+
+
+    return;
+
+  }
+
+
+  const createdText =
+    formatEditorDateTime(
+      article.createdAt
+    );
+
+
+  if (article.updatedAt) {
+
+    const updatedText =
+      formatEditorDateTime(
+        article.updatedAt
+      );
+
+
+    editorDateInfo.textContent =
+      `CREADA ${createdText} · EDITADA ${updatedText}`;
+
+
+    return;
+
+  }
+
+
+  editorDateInfo.textContent =
+    `CREADA ${createdText}`;
+
+}
+
+
+/* =========================================================
+   UNSAVED CHANGES
+   ========================================================= */
+
+function getEditorState() {
+
+  return JSON.stringify({
+
+    articleId:
+      articleIdInput.value,
+
+    sport:
+      sportInput.value,
+
+    author:
+      authorInput.value,
+
+    title:
+      titleInput.value,
+
+    summary:
+      summaryInput.value,
+
+    content:
+      contentInput.value,
+
+    imageUrl:
+      imageUrlInput.value,
+
+    imageMode:
+      imageModeInput.value,
+
+    focusX:
+      focusXInput.value,
+
+    focusY:
+      focusYInput.value,
+
+    zoom:
+      imageZoomInput.value
+
+  });
+
+}
+
+
+function captureEditorInitialState() {
+
+  editorInitialState =
+    getEditorState();
+
+
+  editorHasUnsavedChanges =
+    false;
+
+
+  updateEditorSaveStateDisplay();
+
+}
+
+
+function updateEditorDirtyState() {
+
+  if (!editorInitialState) {
+
+    return;
+
+  }
+
+
+  editorHasUnsavedChanges =
+    getEditorState() !==
+    editorInitialState;
+
+
+  updateEditorSaveStateDisplay();
+
+}
+
+
+function updateEditorSaveStateDisplay() {
+
+  editorSaveState.classList.remove(
+    "clean",
+    "dirty"
+  );
+
+
+  if (
+    editorHasUnsavedChanges
+  ) {
+
+    editorSaveState.classList.add(
+      "dirty"
+    );
+
+
+    editorSaveState.textContent =
+      "CAMBIOS SIN GUARDAR";
+
+  } else {
+
+    editorSaveState.classList.add(
+      "clean"
+    );
+
+
+    editorSaveState.textContent =
+      "SIN CAMBIOS";
+
+  }
+
+}
+
+
+function openUnsavedModal() {
+
+  unsavedModal.classList.add(
+    "open"
+  );
+
+
+  unsavedModal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+function closeUnsavedModal() {
+
+  unsavedModal.classList.remove(
+    "open"
+  );
+
+
+  unsavedModal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+function discardEditorChanges() {
+
+  editorHasUnsavedChanges =
+    false;
+
+
+  closeUnsavedModal();
+
+  closeEditorImmediately();
+
+
+  showToast(
+    "CAMBIOS DESCARTADOS."
+  );
+
+}
+
+
+/* =========================================================
+   MOVE PUBLISHED STORY TO DRAFT
+   ========================================================= */
+
+function requestDraftSave() {
+
+  const existingId =
+    articleIdInput.value.trim();
+
+
+  const existingArticle =
+    existingId
+      ? findArticle(
+          existingId
+        )
+      : null;
+
+
+  if (
+    existingArticle?.status ===
+    "published"
+  ) {
+
+    openMoveDraftModal();
+
+    return;
+
+  }
+
+
+  saveArticle(
+    "draft"
+  );
+
+}
+
+
+function openMoveDraftModal() {
+
+  moveDraftModal.classList.add(
+    "open"
+  );
+
+
+  moveDraftModal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+function closeMoveDraftModal() {
+
+  moveDraftModal.classList.remove(
+    "open"
+  );
+
+
+  moveDraftModal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+/* =========================================================
+   SAVE ARTICLE
+   ========================================================= */
+
+function saveArticle(
+  targetStatus
+) {
+
+  /*
+    Drafts are intentionally allowed to be incomplete.
+
+    Publishing still requires all required fields.
+  */
+  if (
+    targetStatus === "published" &&
+    !articleForm.reportValidity()
+  ) {
+
+    showToast(
+      "COMPLETA LOS CAMPOS OBLIGATORIOS PARA PUBLICAR."
+    );
+
+
+    return;
+
+  }
+
+
+  const existingId =
+    articleIdInput.value.trim();
+
+
+  const existingArticle =
+    existingId
+      ? findArticle(
+          existingId
+        )
+      : null;
+
+
+  const now =
+    new Date().toISOString();
+
+
+  createInternalBackup(
+    targetStatus === "draft"
+      ? "Antes de guardar borrador"
+      : "Antes de publicar noticia"
+  );
+
+
+  const articleData = {
+
+    title:
+      titleInput.value.trim(),
+
+    sport:
+      sportInput.value,
+
+    author:
+      authorInput.value.trim(),
+
+    summary:
+      summaryInput.value.trim(),
+
+    content:
+      contentInput.value.trim(),
+
+    imageUrl:
+      imageUrlInput.value.trim(),
+
+    imagePosition:
+      `${focusXInput.value}% ${focusYInput.value}%`,
+
+    imageZoom:
+      Number(
+        imageZoomInput.value
+      ),
+
+    imageMode:
+      imageModeInput.value,
+
+    status:
+      targetStatus,
+
+    updatedAt:
+      now
+
+  };
+
+
+  if (
+    targetStatus === "published"
+  ) {
+
+    articleData.publishedAt =
+      existingArticle?.status === "published" &&
+      existingArticle?.publishedAt
+        ? existingArticle.publishedAt
+        : now;
+
+  }
+
+
+  if (
+    targetStatus === "draft"
+  ) {
+
+    articleData.publishedAt =
+      null;
+
+  }
+
+
+  if (existingArticle) {
+
+    const index =
+      articles.findIndex(
+        (article) =>
+          String(article.id) ===
+          String(existingId)
+      );
+
+
+    articles[index] = {
+
+      ...existingArticle,
+
+      ...articleData
+
+    };
+
+  } else {
+
+    articles.unshift({
+
+      id:
+        createArticleId(),
+
+      ...articleData,
+
+      createdAt:
+        now
+
+    });
+
+  }
+
+
+  if (!persistArticles()) {
+
+    return;
+
+  }
+
+
+  createInternalBackup(
+    targetStatus === "draft"
+      ? "Después de guardar borrador"
+      : "Después de publicar noticia"
+  );
+
+
+  moveDraftModal.classList.remove(
+    "open"
+  );
+
+
+  moveDraftModal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  editorHasUnsavedChanges =
+    false;
+
+
+  editorInitialState =
+    "";
+
+
+  closeEditorImmediately();
+
+
+  renderFrontPage();
+
+  updateManagementCounts();
+
+  updateBackupStatus();
+
+
+  if (
+    targetStatus === "draft"
+  ) {
+
+    showToast(
+      existingArticle?.status ===
+        "published"
+        ? "NOTICIA MOVIDA A BORRADORES."
+        : "BORRADOR GUARDADO."
+    );
+
+  } else {
+
+    showToast(
+      existingArticle?.status ===
+        "published"
+        ? "NOTICIA ACTUALIZADA."
+        : "NOTICIA PUBLICADA."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   IMAGE MODE
    ========================================================= */
 
 function setImageMode(mode) {
+
   const safeMode =
     mode === "full"
       ? "full"
@@ -1961,11 +3503,13 @@ function setImageMode(mode) {
 
   imageModeButtons.forEach(
     (button) => {
+
       button.classList.toggle(
         "active",
         button.dataset.imageMode ===
           safeMode
       );
+
     }
   );
 
@@ -1997,29 +3541,23 @@ function setImageMode(mode) {
 
 
   updateImagePreview();
+
 }
 
 
-/* =========================================================
-   VISTA PREVIA
-   ========================================================= */
-
 function updateImagePreview() {
+
   const url =
     imageUrlInput.value.trim();
 
 
-  const mode =
-    imageModeInput.value;
-
-
-  const focusX =
+  const x =
     Number(
       focusXInput.value
     );
 
 
-  const focusY =
+  const y =
     Number(
       focusYInput.value
     );
@@ -2032,11 +3570,11 @@ function updateImagePreview() {
 
 
   focusXOutput.value =
-    `${focusX}%`;
+    `${x}%`;
 
 
   focusYOutput.value =
-    `${focusY}%`;
+    `${y}%`;
 
 
   zoomOutput.value =
@@ -2044,6 +3582,7 @@ function updateImagePreview() {
 
 
   if (!url) {
+
     imagePreview.classList.remove(
       "has-image"
     );
@@ -2063,6 +3602,7 @@ function updateImagePreview() {
 
 
     return;
+
   }
 
 
@@ -2070,201 +3610,72 @@ function updateImagePreview() {
     url;
 
 
-  imagePreview.classList.add(
-    "has-image"
-  );
+  if (
+    imageModeInput.value ===
+    "crop"
+  ) {
 
-
-  if (mode === "crop") {
     imagePreviewElement.style.objectPosition =
-      `${focusX}% ${focusY}%`;
+      `${x}% ${y}%`;
 
 
     imagePreviewElement.style.transform =
       `scale(${zoom / 100})`;
+
   } else {
+
     imagePreviewElement.style.objectPosition =
       "center";
 
 
     imagePreviewElement.style.transform =
       "none";
+
   }
-
-
-  imagePreviewElement.onerror =
-    () => {
-      imagePreview.classList.remove(
-        "has-image"
-      );
-    };
 
 
   imagePreviewElement.onload =
     () => {
+
       imagePreview.classList.add(
         "has-image"
       );
+
     };
+
+
+  imagePreviewElement.onerror =
+    () => {
+
+      imagePreview.classList.remove(
+        "has-image"
+      );
+
+    };
+
 }
 
 
 /* =========================================================
-   CREAR / EDITAR NOTICIA
-   ========================================================= */
-
-function handleArticleSubmit(
-  event
-) {
-  event.preventDefault();
-
-
-  const existingId =
-    articleIdInput.value.trim();
-
-
-  const now =
-    new Date().toISOString();
-
-
-  const imageMode =
-    imageModeInput.value === "full"
-      ? "full"
-      : "crop";
-
-
-  const articleData = {
-    title:
-      titleInput.value.trim(),
-
-    sport:
-      sportInput.value,
-
-    author:
-      authorInput.value.trim(),
-
-    summary:
-      summaryInput.value.trim(),
-
-    content:
-      contentInput.value.trim(),
-
-    imageUrl:
-      imageUrlInput.value.trim(),
-
-    imagePosition:
-      `${focusXInput.value}% ${focusYInput.value}%`,
-
-    imageZoom:
-      Number(
-        imageZoomInput.value
-      ),
-
-    imageMode
-  };
-
-
-  createInternalBackup(
-    existingId
-      ? "Antes de editar noticia"
-      : "Antes de publicar noticia"
-  );
-
-
-  if (existingId) {
-    const articleIndex =
-      articles.findIndex(
-        (article) => {
-          return (
-            String(article.id) ===
-            String(existingId)
-          );
-        }
-      );
-
-
-    if (articleIndex === -1) {
-      showToast(
-        "NO SE PUDO ENCONTRAR LA NOTICIA."
-      );
-
-      return;
-    }
-
-
-    articles[articleIndex] = {
-      ...articles[articleIndex],
-      ...articleData,
-      updatedAt: now
-    };
-
-
-    if (!persistArticles()) {
-      return;
-    }
-
-
-    createInternalBackup(
-      "Después de editar noticia"
-    );
-
-
-    showToast(
-      "NOTICIA ACTUALIZADA + RESPALDO CREADO."
-    );
-  } else {
-    const article = {
-      id:
-        createArticleId(),
-
-      ...articleData,
-
-      createdAt: now
-    };
-
-
-    articles.unshift(
-      article
-    );
-
-
-    if (!persistArticles()) {
-      return;
-    }
-
-
-    createInternalBackup(
-      "Después de publicar noticia"
-    );
-
-
-    showToast(
-      "NOTICIA PUBLICADA + RESPALDO CREADO."
-    );
-  }
-
-
-  closeEditor();
-
-  renderFrontPage();
-
-  updateBackupStatus();
-}
-
-
-/* =========================================================
-   LECTOR
+   READER
    ========================================================= */
 
 function openReader(
   articleId
 ) {
+
   const article =
     findArticle(articleId);
 
 
-  if (!article) {
+  if (
+    !article ||
+    article.status !==
+      "published"
+  ) {
+
     return;
+
   }
 
 
@@ -2280,6 +3691,7 @@ function openReader(
 
   readerDate.textContent =
     formatFullDate(
+      article.publishedAt ||
       article.createdAt
     );
 
@@ -2297,9 +3709,10 @@ function openReader(
 
 
   if (article.imageUrl) {
-    readerImageContainer
-      .classList
-      .remove("hidden");
+
+    readerImageContainer.classList.remove(
+      "hidden"
+    );
 
 
     readerImage.src =
@@ -2312,25 +3725,57 @@ function openReader(
 
     readerImage.onerror =
       () => {
-        readerImageContainer
-          .classList
-          .add("hidden");
+
+        readerImageContainer.classList.add(
+          "hidden"
+        );
+
       };
+
   } else {
-    readerImageContainer
-      .classList
-      .add("hidden");
+
+    readerImageContainer.classList.add(
+      "hidden"
+    );
 
 
     readerImage.removeAttribute(
       "src"
     );
+
   }
 
 
-  renderReaderContent(
-    article.content
-  );
+  readerBody.innerHTML =
+    "";
+
+
+  article.content
+    .split(/\n\s*\n|\n/)
+    .map(
+      (text) =>
+        text.trim()
+    )
+    .filter(Boolean)
+    .forEach(
+      (text) => {
+
+        const paragraph =
+          document.createElement(
+            "p"
+          );
+
+
+        paragraph.textContent =
+          text;
+
+
+        readerBody.appendChild(
+          paragraph
+        );
+
+      }
+    );
 
 
   readerModal.classList.add(
@@ -2344,13 +3789,27 @@ function openReader(
   );
 
 
+  const panel =
+    readerModal.querySelector(
+      ".reader-panel"
+    );
+
+
+  if (panel) {
+
+    panel.scrollTop =
+      0;
+
+  }
+
+
   syncBodyScrollState();
 
-  readerPanelScrollTop();
 }
 
 
 function closeReader() {
+
   readerModal.classList.remove(
     "open"
   );
@@ -2367,65 +3826,18 @@ function closeReader() {
 
 
   syncBodyScrollState();
-}
 
-
-function renderReaderContent(
-  content
-) {
-  readerBody.innerHTML =
-    "";
-
-
-  const paragraphs =
-    content
-      .split(/\n\s*\n|\n/)
-      .map((paragraph) => {
-        return paragraph.trim();
-      })
-      .filter(Boolean);
-
-
-  paragraphs.forEach(
-    (text) => {
-      const paragraph =
-        document.createElement(
-          "p"
-        );
-
-
-      paragraph.textContent =
-        text;
-
-
-      readerBody.appendChild(
-        paragraph
-      );
-    }
-  );
-}
-
-
-function readerPanelScrollTop() {
-  const panel =
-    readerModal.querySelector(
-      ".reader-panel"
-    );
-
-
-  if (panel) {
-    panel.scrollTop = 0;
-  }
 }
 
 
 /* =========================================================
-   ELIMINAR
+   DELETE
    ========================================================= */
 
 function openDeleteConfirmation(
   articleId
 ) {
+
   pendingDeleteArticleId =
     articleId;
 
@@ -2442,10 +3854,12 @@ function openDeleteConfirmation(
 
 
   syncBodyScrollState();
+
 }
 
 
 function closeConfirmModal() {
+
   confirmModal.classList.remove(
     "open"
   );
@@ -2462,13 +3876,23 @@ function closeConfirmModal() {
 
 
   syncBodyScrollState();
+
 }
 
 
 function permanentlyDeleteArticle() {
+
   if (!pendingDeleteArticleId) {
+
     return;
+
   }
+
+
+  const draftManagerWasOpen =
+    draftsModal.classList.contains(
+      "open"
+    );
 
 
   createInternalBackup(
@@ -2478,19 +3902,18 @@ function permanentlyDeleteArticle() {
 
   articles =
     articles.filter(
-      (article) => {
-        return (
-          String(article.id) !==
-          String(
-            pendingDeleteArticleId
-          )
-        );
-      }
+      (article) =>
+        String(article.id) !==
+        String(
+          pendingDeleteArticleId
+        )
     );
 
 
   if (!persistArticles()) {
+
     return;
+
   }
 
 
@@ -2529,58 +3952,125 @@ function permanentlyDeleteArticle() {
     null;
 
 
-  syncBodyScrollState();
-
   renderFrontPage();
+
+  updateManagementCounts();
 
   updateBackupStatus();
 
 
+  if (
+    draftManagerWasOpen
+  ) {
+
+    renderDraftsManager();
+
+  }
+
+
+  syncBodyScrollState();
+
+
   showToast(
-    "NOTICIA ELIMINADA. RESPALDO DE SEGURIDAD CREADO."
+    "NOTICIA ELIMINADA."
   );
+
 }
 
 
 /* =========================================================
-   EXPORTAR RESPALDO
+   SIDE MENU
+   ========================================================= */
+
+function openSideMenu() {
+
+  updateManagementCounts();
+
+  updateBackupStatus();
+
+
+  sideMenu.classList.add(
+    "open"
+  );
+
+
+  sideMenu.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+function closeSideMenu() {
+
+  sideMenu.classList.remove(
+    "open"
+  );
+
+
+  sideMenu.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+/* =========================================================
+   EXPORT BACKUP
    ========================================================= */
 
 function exportJournalBackup() {
+
   createInternalBackup(
     "Exportación manual JSON"
   );
 
 
   const payload = {
+
     app:
       "Sports Journal",
 
     version:
-      1,
+      2,
 
     exportedAt:
       new Date().toISOString(),
 
-    storyCount:
+    articleCount:
       articles.length,
 
+    publishedCount:
+      getPublishedArticles().length,
+
+    draftCount:
+      getDraftArticles().length,
+
     articles:
-      cloneArticles(articles)
+      cloneArticles(
+        articles
+      )
+
   };
-
-
-  const json =
-    JSON.stringify(
-      payload,
-      null,
-      2
-    );
 
 
   const blob =
     new Blob(
-      [json],
+      [
+        JSON.stringify(
+          payload,
+          null,
+          2
+        )
+      ],
       {
         type:
           "application/json"
@@ -2615,7 +4105,6 @@ function exportJournalBackup() {
 
   link.click();
 
-
   link.remove();
 
 
@@ -2626,180 +4115,124 @@ function exportJournalBackup() {
 
   closeSideMenu();
 
-  updateBackupStatus();
-
 
   showToast(
-    "RESPALDO EXPORTADO. GUARDA EL ARCHIVO JSON EN UN LUGAR SEGURO."
+    "RESPALDO EXPORTADO."
   );
+
 }
 
 
 /* =========================================================
-   IMPORTAR RESPALDO
+   IMPORT BACKUP
    ========================================================= */
 
 async function handleBackupFileSelection(
   event
 ) {
+
   const file =
     event.target.files[0];
 
 
   if (!file) {
+
     return;
+
   }
 
 
   try {
-    const text =
-      await file.text();
-
 
     const parsed =
-      JSON.parse(text);
-
-
-    const importedArticles =
-      extractArticlesFromBackup(
-        parsed
+      JSON.parse(
+        await file.text()
       );
 
 
-    if (!importedArticles) {
+    const imported =
+      Array.isArray(parsed)
+        ? parsed
+        : parsed.articles;
+
+
+    if (
+      !Array.isArray(imported)
+    ) {
+
       throw new Error(
-        "Respaldo de Sports Journal no válido."
+        "Formato de respaldo inválido."
       );
+
     }
 
 
-    const normalizedArticles =
-      importedArticles.map(
-        (article) => {
-          return normalizeArticle(
-            article
-          );
-        }
-      );
-
-
     pendingRestore = {
+
       fileName:
         file.name,
 
       articles:
-        normalizedArticles
+        imported.map(
+          normalizeArticle
+        )
+
     };
 
 
-    openRestoreModal();
-  } catch (error) {
-    console.error(
-      "Error al restaurar respaldo:",
-      error
+    restoreFileName.textContent =
+      file.name;
+
+
+    restoreStoryCount.textContent =
+      `${pendingRestore.articles.length} ${
+        pendingRestore.articles.length === 1
+          ? "NOTICIA"
+          : "NOTICIAS"
+      }`;
+
+
+    currentStoryCount.textContent =
+      `${articles.length} ${
+        articles.length === 1
+          ? "NOTICIA"
+          : "NOTICIAS"
+      }`;
+
+
+    restoreModal.classList.add(
+      "open"
     );
 
 
-    pendingRestore =
-      null;
+    restoreModal.setAttribute(
+      "aria-hidden",
+      "false"
+    );
+
+
+    syncBodyScrollState();
+
+  } catch (error) {
+
+    console.error(error);
 
 
     showToast(
-      "NO SE PUDO LEER EL ARCHIVO DE RESPALDO."
+      "NO SE PUDO LEER EL RESPALDO."
     );
-  } finally {
-    backupFileInput.value =
-      "";
-  }
-}
 
-
-function extractArticlesFromBackup(
-  parsed
-) {
-  if (
-    parsed &&
-    typeof parsed === "object" &&
-    Array.isArray(parsed.articles)
-  ) {
-    return validateImportedArticles(
-      parsed.articles
-    )
-      ? parsed.articles
-      : null;
   }
 
 
-  if (
-    Array.isArray(parsed)
-  ) {
-    return validateImportedArticles(
-      parsed
-    )
-      ? parsed
-      : null;
-  }
+  backupFileInput.value =
+    "";
 
-
-  return null;
-}
-
-
-function validateImportedArticles(
-  importedArticles
-) {
-  return importedArticles.every(
-    (article) => {
-      return (
-        article &&
-        typeof article === "object" &&
-        typeof article.title === "string"
-      );
-    }
-  );
-}
-
-
-function openRestoreModal() {
-  if (!pendingRestore) {
-    return;
-  }
-
-
-  restoreFileName.textContent =
-    pendingRestore.fileName;
-
-
-  restoreStoryCount.textContent =
-    `${pendingRestore.articles.length} ` +
-    `${pendingRestore.articles.length === 1
-      ? "NOTICIA"
-      : "NOTICIAS"}`;
-
-
-  currentStoryCount.textContent =
-    `${articles.length} ` +
-    `${articles.length === 1
-      ? "NOTICIA"
-      : "NOTICIAS"}`;
-
-
-  restoreModal.classList.add(
-    "open"
-  );
-
-
-  restoreModal.setAttribute(
-    "aria-hidden",
-    "false"
-  );
-
-
-  syncBodyScrollState();
 }
 
 
 function closeRestoreModal() {
+
   restoreModal.classList.remove(
     "open"
   );
@@ -2816,21 +4249,21 @@ function closeRestoreModal() {
 
 
   syncBodyScrollState();
+
 }
 
 
-/* =========================================================
-   RESTAURAR: REEMPLAZAR
-   ========================================================= */
-
 function replaceWithPendingBackup() {
+
   if (!pendingRestore) {
+
     return;
+
   }
 
 
   createInternalBackup(
-    "Antes de reemplazar el diario desde respaldo externo"
+    "Antes de reemplazar respaldo"
   );
 
 
@@ -2841,99 +4274,92 @@ function replaceWithPendingBackup() {
 
 
   if (!persistArticles()) {
+
     return;
+
   }
 
 
   createInternalBackup(
-    "Después de restaurar respaldo externo"
+    "Después de restaurar respaldo"
   );
 
 
-  restoreModal.classList.remove(
-    "open"
+  finishRestore(
+    "DIARIO RESTAURADO."
   );
 
-
-  restoreModal.setAttribute(
-    "aria-hidden",
-    "true"
-  );
-
-
-  pendingRestore =
-    null;
-
-
-  goToFrontPage();
-
-  updateBackupStatus();
-
-  syncBodyScrollState();
-
-
-  showToast(
-    "DIARIO RESTAURADO DESDE EL RESPALDO."
-  );
 }
 
 
-/* =========================================================
-   RESTAURAR: COMBINAR
-   ========================================================= */
-
 function mergePendingBackup() {
+
   if (!pendingRestore) {
+
     return;
+
   }
 
 
   createInternalBackup(
-    "Antes de combinar respaldo externo"
+    "Antes de combinar respaldo"
   );
 
 
-  const storyMap =
+  const map =
     new Map();
 
 
   articles.forEach(
     (article) => {
-      storyMap.set(
+
+      map.set(
         String(article.id),
         article
       );
+
     }
   );
 
 
   pendingRestore.articles.forEach(
     (article) => {
-      storyMap.set(
+
+      map.set(
         String(article.id),
         article
       );
+
     }
   );
 
 
   articles =
     Array.from(
-      storyMap.values()
-    ).sort(
-      sortArticlesNewestFirst
+      map.values()
     );
 
 
   if (!persistArticles()) {
+
     return;
+
   }
 
 
   createInternalBackup(
-    "Después de combinar respaldo externo"
+    "Después de combinar respaldo"
   );
 
+
+  finishRestore(
+    "RESPALDO COMBINADO."
+  );
+
+}
+
+
+function finishRestore(message) {
 
   restoreModal.classList.remove(
     "open"
@@ -2950,78 +4376,113 @@ function mergePendingBackup() {
     null;
 
 
-  goToFrontPage();
+  normalizeExistingArticles();
+
+  renderFrontPage();
+
+  updateManagementCounts();
 
   updateBackupStatus();
 
   syncBodyScrollState();
 
+  showToast(message);
 
-  showToast(
-    "RESPALDO COMBINADO CON EL DIARIO ACTUAL."
-  );
 }
 
 
 /* =========================================================
-   DEPORTES
+   HELPERS
    ========================================================= */
 
-function getSportLabel(
-  sport
-) {
+function createImagePlaceholder() {
+
+  const placeholder =
+    document.createElement(
+      "div"
+    );
+
+
+  placeholder.className =
+    "lead-image-placeholder";
+
+
+  const label =
+    document.createElement(
+      "span"
+    );
+
+
+  label.textContent =
+    "SIN IMAGEN DE PORTADA";
+
+
+  placeholder.appendChild(
+    label
+  );
+
+
+  return placeholder;
+
+}
+
+
+function getSportLabel(sport) {
+
   return (
     SPORT_LABELS[sport] ||
-    String(sport || "").toUpperCase()
+    String(
+      sport || ""
+    ).toUpperCase()
   );
+
 }
 
 
-/* =========================================================
-   IMÁGENES
-   ========================================================= */
+function findArticle(id) {
+
+  return articles.find(
+    (article) =>
+      String(article.id) ===
+      String(id)
+  );
+
+}
+
+
+function getArticleActivityTime(
+  article
+) {
+
+  return new Date(
+    article.updatedAt ||
+    article.createdAt ||
+    0
+  ).getTime();
+
+}
+
 
 function getArticleImageMode(
   article
 ) {
-  return (
-    article.imageMode === "full"
-      ? "full"
-      : "crop"
-  );
+
+  return article.imageMode ===
+    "full"
+    ? "full"
+    : "crop";
+
 }
 
 
 function parseImagePosition(
   position
 ) {
-  if (
-    position &&
-    typeof position === "object"
-  ) {
-    return {
-      x:
-        clampNumber(
-          position.x,
-          0,
-          100,
-          50
-        ),
-
-      y:
-        clampNumber(
-          position.y,
-          0,
-          100,
-          50
-        )
-    };
-  }
-
 
   if (
     typeof position === "string"
   ) {
+
     const values =
       position
         .replaceAll("%", "")
@@ -3036,7 +4497,9 @@ function parseImagePosition(
         Number.isFinite
       )
     ) {
+
       return {
+
         x:
           clampNumber(
             values[0],
@@ -3052,64 +4515,33 @@ function parseImagePosition(
             100,
             50
           )
+
       };
+
     }
+
   }
 
 
   return {
+
     x: 50,
     y: 50
+
   };
+
 }
 
 
-function normalizeZoom(
-  value
-) {
+function normalizeZoom(value) {
+
   return clampNumber(
-    Number(value),
+    value,
     100,
     180,
     100
   );
-}
 
-
-/* =========================================================
-   HELPERS
-   ========================================================= */
-
-function findArticle(
-  articleId
-) {
-  return articles.find(
-    (article) => {
-      return (
-        String(article.id) ===
-        String(articleId)
-      );
-    }
-  );
-}
-
-
-function createArticleId() {
-  if (
-    typeof crypto !== "undefined" &&
-    typeof crypto.randomUUID ===
-      "function"
-  ) {
-    return crypto.randomUUID();
-  }
-
-
-  return (
-    `${Date.now()}-` +
-    `${Math.random()
-      .toString(16)
-      .slice(2)}`
-  );
 }
 
 
@@ -3119,6 +4551,7 @@ function clampNumber(
   max,
   fallback
 ) {
+
   const number =
     Number(value);
 
@@ -3126,7 +4559,9 @@ function clampNumber(
   if (
     !Number.isFinite(number)
   ) {
+
     return fallback;
+
   }
 
 
@@ -3137,25 +4572,66 @@ function clampNumber(
     ),
     max
   );
+
+}
+
+
+function createArticleId() {
+
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID ===
+      "function"
+  ) {
+
+    return crypto.randomUUID();
+
+  }
+
+
+  return (
+    `${Date.now()}-` +
+    Math.random()
+      .toString(16)
+      .slice(2)
+  );
+
 }
 
 
 function updateActiveSportButton() {
+
   sportFilters.forEach(
     (button) => {
+
       button.classList.toggle(
         "active",
         button.dataset.sport ===
           activeSport
       );
+
     }
   );
+
 }
 
 
 function syncBodyScrollState() {
-  const overlayOpen =
+
+  const open =
+    sideMenu.classList.contains(
+      "open"
+    ) ||
+    draftsModal.classList.contains(
+      "open"
+    ) ||
     editorModal.classList.contains(
+      "open"
+    ) ||
+    unsavedModal.classList.contains(
+      "open"
+    ) ||
+    moveDraftModal.classList.contains(
       "open"
     ) ||
     readerModal.classList.contains(
@@ -3166,24 +4642,19 @@ function syncBodyScrollState() {
     ) ||
     restoreModal.classList.contains(
       "open"
-    ) ||
-    sideMenu.classList.contains(
-      "open"
     );
 
 
   document.body.classList.toggle(
     "modal-open",
-    overlayOpen
+    open
   );
+
 }
 
 
-/* =========================================================
-   NOTIFICACIONES
-   ========================================================= */
-
 function showToast(message) {
+
   clearTimeout(
     toastTimeout
   );
@@ -3201,53 +4672,57 @@ function showToast(message) {
   toastTimeout =
     setTimeout(
       () => {
+
         toast.classList.remove(
           "show"
         );
+
       },
-      3200
+      3000
     );
+
 }
 
 
 /* =========================================================
-   FECHAS
+   DATES
    ========================================================= */
 
 function renderEditionDate() {
-  const formatter =
+
+  editionDate.textContent =
     new Intl.DateTimeFormat(
       "es-ES",
       {
         weekday:
           "long",
 
-        month:
-          "long",
-
         day:
           "numeric",
+
+        month:
+          "long",
 
         year:
           "numeric"
       }
-    );
-
-
-  editionDate.textContent =
-    formatter
+    )
       .format(
         new Date()
       )
       .toUpperCase();
+
 }
 
 
 function formatShortDate(
   dateString
 ) {
+
   if (!dateString) {
+
     return "";
+
   }
 
 
@@ -3262,7 +4737,9 @@ function formatShortDate(
       date.getTime()
     )
   ) {
+
     return "";
+
   }
 
 
@@ -3281,14 +4758,18 @@ function formatShortDate(
   )
     .format(date)
     .toUpperCase();
+
 }
 
 
 function formatFullDate(
   dateString
 ) {
+
   if (!dateString) {
+
     return "";
+
   }
 
 
@@ -3303,7 +4784,9 @@ function formatFullDate(
       date.getTime()
     )
   ) {
+
     return "";
+
   }
 
 
@@ -3322,12 +4805,79 @@ function formatFullDate(
   )
     .format(date)
     .toUpperCase();
+
+}
+
+
+function formatEditorDateTime(
+  dateString
+) {
+
+  if (!dateString) {
+
+    return "";
+
+  }
+
+
+  const date =
+    new Date(
+      dateString
+    );
+
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+
+    return "";
+
+  }
+
+
+  return new Intl.DateTimeFormat(
+    "es-ES",
+    {
+      day:
+        "numeric",
+
+      month:
+        "short",
+
+      year:
+        "numeric",
+
+      hour:
+        "2-digit",
+
+      minute:
+        "2-digit"
+    }
+  )
+    .format(date)
+    .toUpperCase();
+
 }
 
 
 function formatBackupTime(
   date
 ) {
+
+  if (
+    !date ||
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+
+    return "";
+
+  }
+
+
   return new Intl.DateTimeFormat(
     "es-ES",
     {
@@ -3346,35 +4896,34 @@ function formatBackupTime(
   )
     .format(date)
     .toUpperCase();
+
 }
 
 
 function getBackupFileDate() {
+
   const date =
     new Date();
 
 
-  const year =
-    date.getFullYear();
+  return [
 
+    date.getFullYear(),
 
-  const month =
     String(
       date.getMonth() + 1
     ).padStart(
       2,
       "0"
-    );
+    ),
 
-
-  const day =
     String(
       date.getDate()
     ).padStart(
       2,
       "0"
-    );
+    )
 
+  ].join("-");
 
-  return `${year}-${month}-${day}`;
 }
