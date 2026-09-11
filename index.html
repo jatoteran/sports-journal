@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -23,7 +23,7 @@
         class="menu-button"
         id="menuButton"
         type="button"
-        aria-label="Open journal menu"
+        aria-label="Abrir menú del diario"
         aria-controls="sideMenu"
       >
         ☰
@@ -39,7 +39,7 @@
         id="openEditorButton"
         type="button"
       >
-        + WRITE STORY
+        + ESCRIBIR NOTICIA
       </button>
 
     </div>
@@ -48,7 +48,7 @@
     <div class="header-bottom">
 
       <div class="edition-label">
-        INDEPENDENT SPORTS DESK
+        REDACCIÓN DEPORTIVA INDEPENDIENTE
       </div>
 
       <div
@@ -62,7 +62,7 @@
 
 
   <!-- =====================================================
-       SPORTS NAVIGATION
+       NAVEGACIÓN DEPORTIVA
   ====================================================== -->
 
   <nav
@@ -75,7 +75,7 @@
       data-sport="all"
       type="button"
     >
-      ALL
+      TODOS
     </button>
 
     <button
@@ -83,7 +83,7 @@
       data-sport="football"
       type="button"
     >
-      FOOTBALL
+      FÚTBOL
     </button>
 
     <button
@@ -91,7 +91,7 @@
       data-sport="tennis"
       type="button"
     >
-      TENNIS
+      TENIS
     </button>
 
     <button
@@ -99,7 +99,7 @@
       data-sport="baseball"
       type="button"
     >
-      BASEBALL
+      BÉISBOL
     </button>
 
     <button
@@ -107,26 +107,26 @@
       data-sport="basketball"
       type="button"
     >
-      BASKETBALL
+      BALONCESTO
     </button>
 
   </nav>
 
 
   <!-- =====================================================
-       SEARCH
+       BÚSQUEDA
   ====================================================== -->
 
   <section class="search-strip">
 
     <label class="search-box">
 
-      <span>SEARCH</span>
+      <span>BUSCAR</span>
 
       <input
         id="searchInput"
         type="search"
-        placeholder="PLAYER, TEAM, STORY..."
+        placeholder="JUGADOR, EQUIPO, NOTICIA..."
         autocomplete="off"
       />
 
@@ -136,19 +136,19 @@
       class="story-count"
       id="storyCount"
     >
-      0 STORIES
+      0 NOTICIAS
     </div>
 
   </section>
 
 
   <!-- =====================================================
-       MAIN
+       CONTENIDO PRINCIPAL
   ====================================================== -->
 
   <main>
 
-    <!-- TODAY'S LEAD -->
+    <!-- NOTICIA PRINCIPAL -->
 
     <section class="lead-section">
 
@@ -159,7 +159,7 @@
         </span>
 
         <h1>
-          TODAY'S LEAD
+          NOTICIA PRINCIPAL
         </h1>
 
         <span class="section-line"></span>
@@ -171,7 +171,7 @@
     </section>
 
 
-    <!-- LATEST -->
+    <!-- ÚLTIMAS -->
 
     <section class="latest-section">
 
@@ -182,7 +182,7 @@
         </span>
 
         <h2>
-          LATEST
+          ÚLTIMAS
         </h2>
 
         <span class="section-line"></span>
@@ -200,7 +200,7 @@
 
 
   <!-- =====================================================
-       EMPTY STATE TEMPLATE
+       ESTADO VACÍO
   ====================================================== -->
 
   <template id="emptyStateTemplate">
@@ -208,12 +208,12 @@
     <div class="empty-state">
 
       <span>
-        NO STORIES FOUND
+        NO HAY NOTICIAS
       </span>
 
       <p>
-        Change the filter, search for something else,
-        or publish a new story.
+        Cambia el filtro, realiza otra búsqueda
+        o publica una nueva noticia.
       </p>
 
     </div>
@@ -222,7 +222,7 @@
 
 
   <!-- =====================================================
-       JOURNAL SIDE MENU
+       MENÚ LATERAL
   ====================================================== -->
 
   <div
@@ -248,7 +248,7 @@
           </span>
 
           <h2>
-            JOURNAL MENU
+            MENÚ DEL DIARIO
           </h2>
 
         </div>
@@ -257,7 +257,7 @@
           class="menu-close-button"
           type="button"
           data-close-menu
-          aria-label="Close menu"
+          aria-label="Cerrar menú"
         >
           ×
         </button>
@@ -268,7 +268,7 @@
       <div class="menu-block">
 
         <span class="menu-section-label">
-          JOURNAL
+          DIARIO
         </span>
 
         <button
@@ -278,7 +278,7 @@
         >
 
           <span>
-            FRONT PAGE
+            PORTADA
           </span>
 
           <span>
@@ -294,7 +294,7 @@
         >
 
           <span>
-            WRITE STORY
+            ESCRIBIR NOTICIA
           </span>
 
           <span>
@@ -309,22 +309,22 @@
       <div class="menu-block data-block">
 
         <span class="menu-section-label">
-          DATA PROTECTION
+          PROTECCIÓN DE DATOS
         </span>
 
         <div class="backup-status-card">
 
           <span class="backup-status-label">
-            AUTOMATIC BACKUPS
+            COPIAS AUTOMÁTICAS
           </span>
 
           <strong id="internalBackupStatus">
-            NO BACKUP YET
+            SIN COPIAS TODAVÍA
           </strong>
 
           <p>
-            Sports Journal keeps local snapshots when
-            stories are created, edited, deleted or restored.
+            Sports Journal crea copias locales cuando
+            publicas, editas, eliminas o restauras noticias.
           </p>
 
         </div>
@@ -337,7 +337,7 @@
         >
 
           <span>
-            EXPORT BACKUP
+            EXPORTAR RESPALDO
           </span>
 
           <span>
@@ -354,7 +354,7 @@
         >
 
           <span>
-            RESTORE BACKUP
+            RESTAURAR RESPALDO
           </span>
 
           <span>
@@ -373,11 +373,9 @@
 
 
         <p class="backup-warning">
-
-          Exported JSON backups are the safest copy because
-          they survive browser resets, Live Server changes
-          and localStorage loss.
-
+          Los respaldos JSON son la copia más segura porque
+          sobreviven a cambios de navegador, Live Server y
+          pérdidas de localStorage.
         </p>
 
       </div>
@@ -386,7 +384,7 @@
       <div class="menu-footer">
 
         <span>
-          LOCAL EDITION
+          EDICIÓN LOCAL
         </span>
 
         <span>
@@ -401,7 +399,7 @@
 
 
   <!-- =====================================================
-       ARTICLE EDITOR
+       EDITOR DE NOTICIAS
   ====================================================== -->
 
   <div
@@ -423,11 +421,11 @@
         <div>
 
           <span class="eyebrow">
-            SPORTS JOURNAL DESK
+            REDACCIÓN SPORTS JOURNAL
           </span>
 
           <h2 id="editorHeading">
-            NEW STORY
+            NUEVA NOTICIA
           </h2>
 
         </div>
@@ -437,7 +435,7 @@
           class="close-button"
           type="button"
           data-close-editor
-          aria-label="Close editor"
+          aria-label="Cerrar editor"
         >
           ×
         </button>
@@ -459,7 +457,7 @@
         />
 
 
-        <!-- STORY -->
+        <!-- NOTICIA -->
 
         <div class="editor-section">
 
@@ -471,7 +469,7 @@
           <div class="editor-section-content">
 
             <h3>
-              STORY
+              NOTICIA
             </h3>
 
 
@@ -480,7 +478,7 @@
               <label class="field">
 
                 <span>
-                  SPORT
+                  DEPORTE
                 </span>
 
                 <select
@@ -489,19 +487,19 @@
                 >
 
                   <option value="football">
-                    Football
+                    Fútbol
                   </option>
 
                   <option value="tennis">
-                    Tennis
+                    Tenis
                   </option>
 
                   <option value="baseball">
-                    Baseball
+                    Béisbol
                   </option>
 
                   <option value="basketball">
-                    Basketball
+                    Baloncesto
                   </option>
 
                 </select>
@@ -512,14 +510,14 @@
               <label class="field">
 
                 <span>
-                  AUTHOR
+                  AUTOR
                 </span>
 
                 <input
                   id="authorInput"
                   type="text"
                   maxlength="80"
-                  placeholder="Your name"
+                  placeholder="Tu nombre"
                   required
                 />
 
@@ -531,14 +529,14 @@
             <label class="field">
 
               <span>
-                HEADLINE
+                TITULAR
               </span>
 
               <input
                 id="titleInput"
                 type="text"
                 maxlength="160"
-                placeholder="WRITE THE HEADLINE"
+                placeholder="ESCRIBE EL TITULAR"
                 required
               />
 
@@ -548,14 +546,14 @@
             <label class="field">
 
               <span>
-                SUMMARY
+                RESUMEN
               </span>
 
               <textarea
                 id="summaryInput"
                 rows="3"
                 maxlength="350"
-                placeholder="Short front-page summary..."
+                placeholder="Resumen corto para la portada..."
                 required
               ></textarea>
 
@@ -565,13 +563,13 @@
             <label class="field">
 
               <span>
-                STORY
+                ARTÍCULO
               </span>
 
               <textarea
                 id="contentInput"
                 rows="12"
-                placeholder="Write the full story..."
+                placeholder="Escribe la noticia completa..."
                 required
               ></textarea>
 
@@ -582,7 +580,7 @@
         </div>
 
 
-        <!-- IMAGE -->
+        <!-- IMAGEN -->
 
         <div class="editor-section">
 
@@ -594,19 +592,19 @@
           <div class="editor-section-content">
 
             <h3>
-              COVER IMAGE
+              IMAGEN DE PORTADA
             </h3>
 
             <p class="editor-note">
-              The cover image appears only when this story
-              becomes the #01 lead story.
+              La imagen aparecerá en la portada solamente
+              cuando esta noticia ocupe la posición #01.
             </p>
 
 
             <label class="field">
 
               <span>
-                IMAGE URL
+                URL DE LA IMAGEN
               </span>
 
               <input
@@ -621,7 +619,7 @@
             <div class="image-mode-area">
 
               <span class="field-label">
-                DISPLAY MODE
+                MODO DE VISUALIZACIÓN
               </span>
 
 
@@ -634,11 +632,11 @@
                 >
 
                   <strong>
-                    CROP / FILL
+                    RECORTAR / LLENAR
                   </strong>
 
                   <small>
-                    Fill the entire frame
+                    Llena completamente el marco
                   </small>
 
                 </button>
@@ -651,11 +649,11 @@
                 >
 
                   <strong>
-                    SHOW FULL IMAGE
+                    MOSTRAR COMPLETA
                   </strong>
 
                   <small>
-                    Never crop the photograph
+                    Nunca recorta la fotografía
                   </small>
 
                 </button>
@@ -668,7 +666,7 @@
             <div class="image-preview-block">
 
               <div class="preview-label">
-                FRONT PAGE PREVIEW
+                VISTA PREVIA EN PORTADA
               </div>
 
               <div
@@ -680,7 +678,7 @@
                   class="image-preview-empty"
                   id="imagePreviewEmpty"
                 >
-                  IMAGE PREVIEW
+                  VISTA PREVIA
                 </div>
 
                 <img
@@ -704,12 +702,12 @@
                 <div>
 
                   <strong>
-                    FOCUS POINT
+                    PUNTO DE ENFOQUE
                   </strong>
 
                   <p>
-                    Move the important area of the photograph
-                    inside the front-page frame.
+                    Mueve la zona importante de la fotografía
+                    dentro del marco de portada.
                   </p>
 
                 </div>
@@ -720,7 +718,7 @@
                   id="resetImageButton"
                   type="button"
                 >
-                  RESET
+                  RESTABLECER
                 </button>
 
               </div>
@@ -810,12 +808,12 @@
             >
 
               <strong>
-                FULL IMAGE MODE
+                IMAGEN COMPLETA
               </strong>
 
               <p>
-                Focus point and zoom are disabled because
-                the entire photograph remains visible.
+                El punto de enfoque y el zoom están desactivados
+                porque toda la fotografía permanecerá visible.
               </p>
 
             </div>
@@ -832,7 +830,7 @@
             class="secondary-button"
             data-close-editor
           >
-            CANCEL
+            CANCELAR
           </button>
 
           <button
@@ -841,7 +839,7 @@
           >
 
             <span id="publishButtonText">
-              PUBLISH STORY
+              PUBLICAR NOTICIA
             </span>
 
             <span>
@@ -860,7 +858,7 @@
 
 
   <!-- =====================================================
-       ARTICLE READER
+       LECTOR DE NOTICIAS
   ====================================================== -->
 
   <div
@@ -884,7 +882,7 @@
           type="button"
           data-close-reader
         >
-          ← BACK TO FRONT PAGE
+          ← VOLVER A PORTADA
         </button>
 
 
@@ -892,7 +890,7 @@
           class="close-button reader-close"
           type="button"
           data-close-reader
-          aria-label="Close story"
+          aria-label="Cerrar noticia"
         >
           ×
         </button>
@@ -924,7 +922,7 @@
 
         <div class="reader-byline">
 
-          BY
+          POR
 
           <strong id="readerAuthor"></strong>
 
@@ -967,7 +965,7 @@
             id="readerEditButton"
             type="button"
           >
-            EDIT STORY
+            EDITAR NOTICIA
           </button>
 
 
@@ -976,7 +974,7 @@
             id="readerDeleteButton"
             type="button"
           >
-            DELETE
+            ELIMINAR
           </button>
 
         </div>
@@ -989,7 +987,7 @@
 
 
   <!-- =====================================================
-       DELETE CONFIRMATION
+       CONFIRMACIÓN DE ELIMINACIÓN
   ====================================================== -->
 
   <div
@@ -1007,16 +1005,16 @@
     <div class="confirm-panel">
 
       <span class="eyebrow">
-        PERMANENT ACTION
+        ACCIÓN PERMANENTE
       </span>
 
       <h2>
-        DELETE STORY?
+        ¿ELIMINAR NOTICIA?
       </h2>
 
       <p>
-        This story will be removed from the journal.
-        An automatic local snapshot will be created first.
+        La noticia será eliminada del diario.
+        Primero se creará automáticamente una copia local.
       </p>
 
 
@@ -1027,7 +1025,7 @@
           type="button"
           data-close-confirm
         >
-          KEEP STORY
+          CONSERVAR
         </button>
 
 
@@ -1036,7 +1034,7 @@
           id="confirmDeleteButton"
           type="button"
         >
-          DELETE
+          ELIMINAR
         </button>
 
       </div>
@@ -1047,7 +1045,7 @@
 
 
   <!-- =====================================================
-       RESTORE BACKUP CONFIRMATION
+       RESTAURACIÓN
   ====================================================== -->
 
   <div
@@ -1065,22 +1063,22 @@
     <div class="restore-panel">
 
       <span class="eyebrow">
-        BACKUP DETECTED
+        RESPALDO DETECTADO
       </span>
 
       <h2>
-        RESTORE JOURNAL?
+        ¿RESTAURAR DIARIO?
       </h2>
 
 
       <div class="restore-file-card">
 
         <span>
-          FILE
+          ARCHIVO
         </span>
 
         <strong id="restoreFileName">
-          BACKUP.JSON
+          RESPALDO.JSON
         </strong>
 
       </div>
@@ -1091,11 +1089,11 @@
         <div>
 
           <span>
-            BACKUP
+            RESPALDO
           </span>
 
           <strong id="restoreStoryCount">
-            0 STORIES
+            0 NOTICIAS
           </strong>
 
         </div>
@@ -1104,11 +1102,11 @@
         <div>
 
           <span>
-            CURRENT JOURNAL
+            DIARIO ACTUAL
           </span>
 
           <strong id="currentStoryCount">
-            0 STORIES
+            0 NOTICIAS
           </strong>
 
         </div>
@@ -1117,9 +1115,11 @@
 
 
       <p class="restore-description">
-        MERGE keeps your current stories and adds the
-        backup stories. REPLACE restores the backup exactly.
-        A local safety snapshot is created before either action.
+        COMBINAR conserva tus noticias actuales y agrega
+        las noticias del respaldo. REEMPLAZAR restaura
+        exactamente el contenido del respaldo. Antes de
+        cualquiera de las dos acciones se crea una copia
+        de seguridad local.
       </p>
 
 
@@ -1130,7 +1130,7 @@
           type="button"
           data-close-restore
         >
-          CANCEL
+          CANCELAR
         </button>
 
 
@@ -1139,7 +1139,7 @@
           id="mergeBackupButton"
           type="button"
         >
-          MERGE
+          COMBINAR
         </button>
 
 
@@ -1148,7 +1148,7 @@
           id="replaceBackupButton"
           type="button"
         >
-          REPLACE
+          REEMPLAZAR
         </button>
 
       </div>
@@ -1159,7 +1159,7 @@
 
 
   <!-- =====================================================
-       TOAST
+       NOTIFICACIÓN
   ====================================================== -->
 
   <div

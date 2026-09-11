@@ -437,7 +437,19 @@ main {
 
 .secondary-leads {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+
+  /*
+    IMPORTANT:
+    Same proportions as .lead-primary.
+
+    This makes the vertical divider between #02 and #03
+    line up perfectly with the divider between the
+    #01 image and #01 copy.
+  */
+  grid-template-columns:
+    minmax(0, 1.07fr)
+    minmax(360px, 0.93fr);
+
   border-left: var(--border);
   border-right: var(--border);
   border-bottom: var(--border);
@@ -451,8 +463,20 @@ main {
   cursor: pointer;
 }
 
-.secondary-story:first-child {
+/*
+  Only show the middle divider when both
+  #02 and #03 actually exist.
+*/
+.secondary-story:first-child:not(:only-child) {
   border-right: var(--border);
+}
+
+/*
+  If there is only #02, let it use the entire row
+  instead of leaving an empty fake space for #03.
+*/
+.secondary-story:only-child {
+  grid-column: 1 / -1;
 }
 
 .secondary-story:hover {

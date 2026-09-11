@@ -15,11 +15,21 @@ const MAX_AUTOMATIC_BACKUPS = 16;
 
 
 /*
-  Older possible storage names.
+  IMPORTANTE:
 
-  We keep these only so future code changes have a better
-  chance of recovering older data.
+  Los valores internos de los deportes permanecen
+  en inglés para no romper artículos, filtros ni backups.
+
+  Solo traducimos su representación visual.
 */
+const SPORT_LABELS = {
+  football: "FÚTBOL",
+  tennis: "TENIS",
+  baseball: "BÉISBOL",
+  basketball: "BALONCESTO"
+};
+
+
 const LEGACY_STORAGE_KEYS = [
   "sportsArticles",
   "sports-journal-articles",
@@ -236,7 +246,7 @@ const toast =
 
 
 /* =========================================================
-   INITIALIZE
+   INICIALIZACIÓN
    ========================================================= */
 
 initialize();
@@ -269,9 +279,6 @@ function loadArticles() {
   }
 
 
-  /*
-    Try legacy keys.
-  */
   for (const key of LEGACY_STORAGE_KEYS) {
     const legacyData =
       readJsonFromStorage(key);
@@ -285,7 +292,7 @@ function loadArticles() {
         );
       } catch (error) {
         console.error(
-          "Could not migrate old storage:",
+          "No se pudo migrar el almacenamiento anterior:",
           error
         );
       }
@@ -296,19 +303,20 @@ function loadArticles() {
   }
 
 
-  /*
-    If the main storage is unreadable but automatic
-    backups still exist, recover the newest snapshot.
-  */
   const backups =
     loadInternalBackups();
 
 
   if (backups.length > 0) {
-    const newestBackup = backups[0];
+    const newestBackup =
+      backups[0];
 
 
-    if (Array.isArray(newestBackup.articles)) {
+    if (
+      Array.isArray(
+        newestBackup.articles
+      )
+    ) {
       return newestBackup.articles;
     }
   }
@@ -328,13 +336,15 @@ function persistArticles() {
     return true;
   } catch (error) {
     console.error(
-      "Could not save articles:",
+      "No se pudieron guardar las noticias:",
       error
     );
 
+
     showToast(
-      "COULD NOT SAVE. EXPORT A BACKUP BEFORE CONTINUING."
+      "NO SE PUDO GUARDAR. EXPORTA UN RESPALDO ANTES DE CONTINUAR."
     );
+
 
     return false;
   }
@@ -355,7 +365,7 @@ function readJsonFromStorage(key) {
     return JSON.parse(raw);
   } catch (error) {
     console.error(
-      `Could not parse ${key}:`,
+      `No se pudo leer ${key}:`,
       error
     );
 
@@ -365,7 +375,7 @@ function readJsonFromStorage(key) {
 
 
 /* =========================================================
-   AUTOMATIC INTERNAL BACKUPS
+   RESPALDOS INTERNOS
    ========================================================= */
 
 function loadInternalBackups() {
@@ -426,12 +436,13 @@ function createInternalBackup(
       JSON.stringify(trimmedBackups)
     );
 
+
     updateBackupStatus();
 
     return true;
   } catch (error) {
     console.error(
-      "Could not create automatic backup:",
+      "No se pudo crear la copia automática:",
       error
     );
 
@@ -454,7 +465,7 @@ function updateBackupStatus() {
 
   if (backups.length === 0) {
     internalBackupStatus.textContent =
-      "NO BACKUP YET";
+      "SIN COPIAS TODAVÍA";
 
     return;
   }
@@ -470,19 +481,19 @@ function updateBackupStatus() {
 
   if (Number.isNaN(date.getTime())) {
     internalBackupStatus.textContent =
-      `${backups.length} LOCAL SNAPSHOTS`;
+      `${backups.length} COPIAS LOCALES`;
 
     return;
   }
 
 
   internalBackupStatus.textContent =
-    `${backups.length} SNAPSHOTS · ${formatBackupTime(date)}`;
+    `${backups.length} COPIAS · ${formatBackupTime(date)}`;
 }
 
 
 /* =========================================================
-   NORMALIZE ARTICLES
+   NORMALIZACIÓN
    ========================================================= */
 
 function normalizeExistingArticles() {
@@ -546,7 +557,7 @@ function normalizeArticle(article) {
 
   safeArticle.title =
     String(
-      safeArticle.title || "UNTITLED STORY"
+      safeArticle.title || "NOTICIA SIN TÍTULO"
     );
 
 
@@ -609,12 +620,10 @@ function normalizeArticle(article) {
 
 
 /* =========================================================
-   EVENTS
+   EVENTOS
    ========================================================= */
 
 function bindEvents() {
-
-  /* MENU */
 
   menuButton.addEventListener(
     "click",
@@ -636,7 +645,6 @@ function bindEvents() {
     "click",
     () => {
       closeSideMenu();
-
       goToFrontPage();
     }
   );
@@ -646,7 +654,6 @@ function bindEvents() {
     "click",
     () => {
       closeSideMenu();
-
       openEditor();
     }
   );
@@ -662,7 +669,6 @@ function bindEvents() {
     "click",
     () => {
       closeSideMenu();
-
       backupFileInput.click();
     }
   );
@@ -673,8 +679,6 @@ function bindEvents() {
     handleBackupFileSelection
   );
 
-
-  /* MAIN HEADER */
 
   openEditorButton.addEventListener(
     "click",
@@ -688,13 +692,10 @@ function bindEvents() {
     "click",
     (event) => {
       event.preventDefault();
-
       goToFrontPage();
     }
   );
 
-
-  /* FILTERS */
 
   sportFilters.forEach((button) => {
     button.addEventListener(
@@ -724,8 +725,6 @@ function bindEvents() {
   );
 
 
-  /* EDITOR CLOSE */
-
   document
     .querySelectorAll("[data-close-editor]")
     .forEach((button) => {
@@ -735,8 +734,6 @@ function bindEvents() {
       );
     });
 
-
-  /* READER CLOSE */
 
   document
     .querySelectorAll("[data-close-reader]")
@@ -748,8 +745,6 @@ function bindEvents() {
     });
 
 
-  /* DELETE CLOSE */
-
   document
     .querySelectorAll("[data-close-confirm]")
     .forEach((button) => {
@@ -760,8 +755,6 @@ function bindEvents() {
     });
 
 
-  /* RESTORE CLOSE */
-
   document
     .querySelectorAll("[data-close-restore]")
     .forEach((button) => {
@@ -771,8 +764,6 @@ function bindEvents() {
       );
     });
 
-
-  /* IMAGE */
 
   imageUrlInput.addEventListener(
     "input",
@@ -824,15 +815,11 @@ function bindEvents() {
   );
 
 
-  /* STORY SUBMIT */
-
   articleForm.addEventListener(
     "submit",
     handleArticleSubmit
   );
 
-
-  /* READER ACTIONS */
 
   readerEditButton.addEventListener(
     "click",
@@ -874,8 +861,6 @@ function bindEvents() {
   );
 
 
-  /* RESTORE ACTIONS */
-
   mergeBackupButton.addEventListener(
     "click",
     mergePendingBackup
@@ -887,8 +872,6 @@ function bindEvents() {
     replaceWithPendingBackup
   );
 
-
-  /* ESC */
 
   document.addEventListener(
     "keydown",
@@ -904,7 +887,6 @@ function bindEvents() {
         )
       ) {
         closeRestoreModal();
-
         return;
       }
 
@@ -915,7 +897,6 @@ function bindEvents() {
         )
       ) {
         closeConfirmModal();
-
         return;
       }
 
@@ -926,7 +907,6 @@ function bindEvents() {
         )
       ) {
         closeEditor();
-
         return;
       }
 
@@ -937,7 +917,6 @@ function bindEvents() {
         )
       ) {
         closeReader();
-
         return;
       }
 
@@ -955,7 +934,7 @@ function bindEvents() {
 
 
 /* =========================================================
-   FRONT PAGE NAVIGATION
+   PORTADA
    ========================================================= */
 
 function goToFrontPage() {
@@ -978,16 +957,18 @@ function goToFrontPage() {
 
 
 /* =========================================================
-   SIDE MENU
+   MENÚ
    ========================================================= */
 
 function openSideMenu() {
   sideMenu.classList.add("open");
 
+
   sideMenu.setAttribute(
     "aria-hidden",
     "false"
   );
+
 
   updateBackupStatus();
 
@@ -998,17 +979,19 @@ function openSideMenu() {
 function closeSideMenu() {
   sideMenu.classList.remove("open");
 
+
   sideMenu.setAttribute(
     "aria-hidden",
     "true"
   );
+
 
   syncBodyScrollState();
 }
 
 
 /* =========================================================
-   FILTERING
+   FILTRADO
    ========================================================= */
 
 function getFilteredArticles() {
@@ -1031,6 +1014,7 @@ function getFilteredArticles() {
       const searchableText = [
         article.title,
         article.sport,
+        getSportLabel(article.sport),
         article.author,
         article.summary,
         article.content
@@ -1073,7 +1057,7 @@ function sortArticlesNewestFirst(
 
 
 /* =========================================================
-   FRONT PAGE RENDER
+   RENDER PORTADA
    ========================================================= */
 
 function renderFrontPage() {
@@ -1084,8 +1068,8 @@ function renderFrontPage() {
   storyCount.textContent =
     `${filteredArticles.length} ` +
     `${filteredArticles.length === 1
-      ? "STORY"
-      : "STORIES"}`;
+      ? "NOTICIA"
+      : "NOTICIAS"}`;
 
 
   leadStories.innerHTML = "";
@@ -1138,7 +1122,7 @@ function renderFrontPage() {
 
 
 /* =========================================================
-   PRIMARY LEAD
+   NOTICIA #01
    ========================================================= */
 
 function renderPrimaryLead(article) {
@@ -1257,7 +1241,9 @@ function renderPrimaryLead(article) {
 
 
   sport.textContent =
-    article.sport;
+    getSportLabel(
+      article.sport
+    );
 
 
   const title =
@@ -1303,7 +1289,7 @@ function renderPrimaryLead(article) {
 
 
   readButton.textContent =
-    "READ STORY →";
+    "LEER NOTICIA →";
 
 
   readButton.addEventListener(
@@ -1339,7 +1325,7 @@ function renderPrimaryLead(article) {
 
 
 /* =========================================================
-   SECONDARY LEADS
+   NOTICIAS #02 Y #03
    ========================================================= */
 
 function renderSecondaryLeads(
@@ -1406,7 +1392,9 @@ function renderSecondaryLeads(
 
 
       sport.textContent =
-        article.sport;
+        getSportLabel(
+          article.sport
+        );
 
 
       const title =
@@ -1474,7 +1462,7 @@ function renderSecondaryLeads(
 
 
 /* =========================================================
-   LATEST
+   ÚLTIMAS
    ========================================================= */
 
 function renderLatestStories(
@@ -1494,12 +1482,12 @@ function renderLatestStories(
 
 
     message.innerHTML = `
-      <span>END OF DESK</span>
+      <span>FIN DE LA PORTADA</span>
 
       <p>
-        New stories will appear here after
-        the three front-page lead positions
-        are filled.
+        Las nuevas noticias aparecerán aquí
+        cuando las tres posiciones principales
+        estén ocupadas.
       </p>
     `;
 
@@ -1559,7 +1547,9 @@ function renderLatestStories(
 
 
       sport.textContent =
-        article.sport;
+        getSportLabel(
+          article.sport
+        );
 
 
       const title =
@@ -1658,7 +1648,7 @@ function renderLatestStories(
 
 
 /* =========================================================
-   IMAGE PLACEHOLDER
+   PLACEHOLDER DE IMAGEN
    ========================================================= */
 
 function createImagePlaceholder() {
@@ -1675,7 +1665,7 @@ function createImagePlaceholder() {
 
 
   label.textContent =
-    "NO COVER IMAGE";
+    "SIN IMAGEN DE PORTADA";
 
 
   placeholder.appendChild(
@@ -1688,7 +1678,7 @@ function createImagePlaceholder() {
 
 
 /* =========================================================
-   STORY METADATA
+   METADATOS
    ========================================================= */
 
 function createStoryMetadata(
@@ -1711,7 +1701,7 @@ function createStoryMetadata(
 
 
   author.textContent =
-    `BY ${article.author}`;
+    `POR ${article.author}`;
 
 
   const divider =
@@ -1769,7 +1759,7 @@ function createStoryMetadata(
 
 
     updated.textContent =
-      "UPDATED";
+      "ACTUALIZADO";
 
 
     metadata.append(
@@ -1809,18 +1799,18 @@ function openEditor(
 
 
     editorHeading.textContent =
-      "EDIT STORY";
+      "EDITAR NOTICIA";
 
 
     publishButtonText.textContent =
-      "SAVE CHANGES";
+      "GUARDAR CAMBIOS";
   } else {
     editorHeading.textContent =
-      "NEW STORY";
+      "NUEVA NOTICIA";
 
 
     publishButtonText.textContent =
-      "PUBLISH STORY";
+      "PUBLICAR NOTICIA";
   }
 
 
@@ -1955,7 +1945,7 @@ function populateEditor(
 
 
 /* =========================================================
-   IMAGE MODE
+   MODO DE IMAGEN
    ========================================================= */
 
 function setImageMode(mode) {
@@ -2011,7 +2001,7 @@ function setImageMode(mode) {
 
 
 /* =========================================================
-   IMAGE PREVIEW
+   VISTA PREVIA
    ========================================================= */
 
 function updateImagePreview() {
@@ -2120,7 +2110,7 @@ function updateImagePreview() {
 
 
 /* =========================================================
-   CREATE / EDIT STORY
+   CREAR / EDITAR NOTICIA
    ========================================================= */
 
 function handleArticleSubmit(
@@ -2174,13 +2164,10 @@ function handleArticleSubmit(
   };
 
 
-  /*
-    Backup BEFORE changing anything.
-  */
   createInternalBackup(
     existingId
-      ? "Before editing story"
-      : "Before publishing story"
+      ? "Antes de editar noticia"
+      : "Antes de publicar noticia"
   );
 
 
@@ -2198,7 +2185,7 @@ function handleArticleSubmit(
 
     if (articleIndex === -1) {
       showToast(
-        "STORY COULD NOT BE FOUND."
+        "NO SE PUDO ENCONTRAR LA NOTICIA."
       );
 
       return;
@@ -2218,12 +2205,12 @@ function handleArticleSubmit(
 
 
     createInternalBackup(
-      "After editing story"
+      "Después de editar noticia"
     );
 
 
     showToast(
-      "STORY UPDATED + BACKUP CREATED."
+      "NOTICIA ACTUALIZADA + RESPALDO CREADO."
     );
   } else {
     const article = {
@@ -2247,12 +2234,12 @@ function handleArticleSubmit(
 
 
     createInternalBackup(
-      "After publishing story"
+      "Después de publicar noticia"
     );
 
 
     showToast(
-      "STORY PUBLISHED + BACKUP CREATED."
+      "NOTICIA PUBLICADA + RESPALDO CREADO."
     );
   }
 
@@ -2266,7 +2253,7 @@ function handleArticleSubmit(
 
 
 /* =========================================================
-   READER
+   LECTOR
    ========================================================= */
 
 function openReader(
@@ -2286,7 +2273,9 @@ function openReader(
 
 
   readerSport.textContent =
-    article.sport.toUpperCase();
+    getSportLabel(
+      article.sport
+    );
 
 
   readerDate.textContent =
@@ -2307,9 +2296,6 @@ function openReader(
     article.author;
 
 
-  /*
-    Reader always uses the natural image proportion.
-  */
   if (article.imageUrl) {
     readerImageContainer
       .classList
@@ -2434,7 +2420,7 @@ function readerPanelScrollTop() {
 
 
 /* =========================================================
-   DELETE
+   ELIMINAR
    ========================================================= */
 
 function openDeleteConfirmation(
@@ -2485,11 +2471,8 @@ function permanentlyDeleteArticle() {
   }
 
 
-  /*
-    Snapshot contains the article BEFORE deletion.
-  */
   createInternalBackup(
-    "Before deleting story"
+    "Antes de eliminar noticia"
   );
 
 
@@ -2512,7 +2495,7 @@ function permanentlyDeleteArticle() {
 
 
   createInternalBackup(
-    "After deleting story"
+    "Después de eliminar noticia"
   );
 
 
@@ -2554,18 +2537,18 @@ function permanentlyDeleteArticle() {
 
 
   showToast(
-    "STORY DELETED. SAFETY BACKUP CREATED."
+    "NOTICIA ELIMINADA. RESPALDO DE SEGURIDAD CREADO."
   );
 }
 
 
 /* =========================================================
-   EXPORT EXTERNAL BACKUP
+   EXPORTAR RESPALDO
    ========================================================= */
 
 function exportJournalBackup() {
   createInternalBackup(
-    "Manual JSON export"
+    "Exportación manual JSON"
   );
 
 
@@ -2622,7 +2605,7 @@ function exportJournalBackup() {
 
 
   link.download =
-    `sports-journal-backup-${getBackupFileDate()}.json`;
+    `sports-journal-respaldo-${getBackupFileDate()}.json`;
 
 
   document.body.appendChild(
@@ -2643,18 +2626,17 @@ function exportJournalBackup() {
 
   closeSideMenu();
 
-
   updateBackupStatus();
 
 
   showToast(
-    "BACKUP EXPORTED. KEEP THE JSON FILE SAFE."
+    "RESPALDO EXPORTADO. GUARDA EL ARCHIVO JSON EN UN LUGAR SEGURO."
   );
 }
 
 
 /* =========================================================
-   IMPORT / RESTORE BACKUP
+   IMPORTAR RESPALDO
    ========================================================= */
 
 async function handleBackupFileSelection(
@@ -2686,7 +2668,7 @@ async function handleBackupFileSelection(
 
     if (!importedArticles) {
       throw new Error(
-        "Invalid Sports Journal backup."
+        "Respaldo de Sports Journal no válido."
       );
     }
 
@@ -2713,7 +2695,7 @@ async function handleBackupFileSelection(
     openRestoreModal();
   } catch (error) {
     console.error(
-      "Backup restore error:",
+      "Error al restaurar respaldo:",
       error
     );
 
@@ -2723,13 +2705,9 @@ async function handleBackupFileSelection(
 
 
     showToast(
-      "BACKUP FILE COULD NOT BE READ."
+      "NO SE PUDO LEER EL ARCHIVO DE RESPALDO."
     );
   } finally {
-    /*
-      Reset input so the same file can be
-      selected again later.
-    */
     backupFileInput.value =
       "";
   }
@@ -2739,9 +2717,6 @@ async function handleBackupFileSelection(
 function extractArticlesFromBackup(
   parsed
 ) {
-  /*
-    Current Sports Journal JSON format.
-  */
   if (
     parsed &&
     typeof parsed === "object" &&
@@ -2755,9 +2730,6 @@ function extractArticlesFromBackup(
   }
 
 
-  /*
-    Also accept a raw array for future / old exports.
-  */
   if (
     Array.isArray(parsed)
   ) {
@@ -2801,15 +2773,15 @@ function openRestoreModal() {
   restoreStoryCount.textContent =
     `${pendingRestore.articles.length} ` +
     `${pendingRestore.articles.length === 1
-      ? "STORY"
-      : "STORIES"}`;
+      ? "NOTICIA"
+      : "NOTICIAS"}`;
 
 
   currentStoryCount.textContent =
     `${articles.length} ` +
     `${articles.length === 1
-      ? "STORY"
-      : "STORIES"}`;
+      ? "NOTICIA"
+      : "NOTICIAS"}`;
 
 
   restoreModal.classList.add(
@@ -2848,7 +2820,7 @@ function closeRestoreModal() {
 
 
 /* =========================================================
-   RESTORE: REPLACE
+   RESTAURAR: REEMPLAZAR
    ========================================================= */
 
 function replaceWithPendingBackup() {
@@ -2857,11 +2829,8 @@ function replaceWithPendingBackup() {
   }
 
 
-  /*
-    Protect current journal first.
-  */
   createInternalBackup(
-    "Before replacing journal from external backup"
+    "Antes de reemplazar el diario desde respaldo externo"
   );
 
 
@@ -2877,7 +2846,7 @@ function replaceWithPendingBackup() {
 
 
   createInternalBackup(
-    "After restoring external backup"
+    "Después de restaurar respaldo externo"
   );
 
 
@@ -2904,13 +2873,13 @@ function replaceWithPendingBackup() {
 
 
   showToast(
-    "JOURNAL REPLACED FROM BACKUP."
+    "DIARIO RESTAURADO DESDE EL RESPALDO."
   );
 }
 
 
 /* =========================================================
-   RESTORE: MERGE
+   RESTAURAR: COMBINAR
    ========================================================= */
 
 function mergePendingBackup() {
@@ -2920,7 +2889,7 @@ function mergePendingBackup() {
 
 
   createInternalBackup(
-    "Before merging external backup"
+    "Antes de combinar respaldo externo"
   );
 
 
@@ -2928,9 +2897,6 @@ function mergePendingBackup() {
     new Map();
 
 
-  /*
-    Current articles first.
-  */
   articles.forEach(
     (article) => {
       storyMap.set(
@@ -2941,10 +2907,6 @@ function mergePendingBackup() {
   );
 
 
-  /*
-    Imported versions replace matching IDs,
-    while new IDs are added.
-  */
   pendingRestore.articles.forEach(
     (article) => {
       storyMap.set(
@@ -2969,7 +2931,7 @@ function mergePendingBackup() {
 
 
   createInternalBackup(
-    "After merging external backup"
+    "Después de combinar respaldo externo"
   );
 
 
@@ -2996,13 +2958,27 @@ function mergePendingBackup() {
 
 
   showToast(
-    "BACKUP MERGED WITH CURRENT JOURNAL."
+    "RESPALDO COMBINADO CON EL DIARIO ACTUAL."
   );
 }
 
 
 /* =========================================================
-   IMAGE HELPERS
+   DEPORTES
+   ========================================================= */
+
+function getSportLabel(
+  sport
+) {
+  return (
+    SPORT_LABELS[sport] ||
+    String(sport || "").toUpperCase()
+  );
+}
+
+
+/* =========================================================
+   IMÁGENES
    ========================================================= */
 
 function getArticleImageMode(
@@ -3101,7 +3077,7 @@ function normalizeZoom(
 
 
 /* =========================================================
-   GENERAL HELPERS
+   HELPERS
    ========================================================= */
 
 function findArticle(
@@ -3204,7 +3180,7 @@ function syncBodyScrollState() {
 
 
 /* =========================================================
-   TOAST
+   NOTIFICACIONES
    ========================================================= */
 
 function showToast(message) {
@@ -3235,13 +3211,13 @@ function showToast(message) {
 
 
 /* =========================================================
-   DATES
+   FECHAS
    ========================================================= */
 
 function renderEditionDate() {
   const formatter =
     new Intl.DateTimeFormat(
-      "en-US",
+      "es-ES",
       {
         weekday:
           "long",
@@ -3291,13 +3267,13 @@ function formatShortDate(
 
 
   return new Intl.DateTimeFormat(
-    "en-US",
+    "es-ES",
     {
-      month:
-        "short",
-
       day:
         "numeric",
+
+      month:
+        "short",
 
       year:
         "numeric"
@@ -3332,13 +3308,13 @@ function formatFullDate(
 
 
   return new Intl.DateTimeFormat(
-    "en-US",
+    "es-ES",
     {
-      month:
-        "long",
-
       day:
         "numeric",
+
+      month:
+        "long",
 
       year:
         "numeric"
@@ -3353,16 +3329,16 @@ function formatBackupTime(
   date
 ) {
   return new Intl.DateTimeFormat(
-    "en-US",
+    "es-ES",
     {
-      month:
-        "short",
-
       day:
         "numeric",
 
+      month:
+        "short",
+
       hour:
-        "numeric",
+        "2-digit",
 
       minute:
         "2-digit"
