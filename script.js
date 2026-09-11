@@ -21,6 +21,9 @@ const sportInput =
 const authorInput =
     document.querySelector("#article-author");
 
+const imageInput =
+    document.querySelector("#article-image");
+
 const summaryInput =
     document.querySelector("#article-summary");
 
@@ -35,6 +38,16 @@ const publishButton =
 
 const publishRow =
     document.querySelector(".publish-row");
+
+
+const imagePreview =
+    document.querySelector("#image-preview");
+
+const imagePreviewImg =
+    document.querySelector("#image-preview-img");
+
+const imagePreviewError =
+    document.querySelector("#image-preview-error");
 
 
 const articlesList =
@@ -73,6 +86,9 @@ const articleReader =
 
 const readerClose =
     document.querySelector("#reader-close");
+
+const readerImage =
+    document.querySelector("#reader-image");
 
 const readerSport =
     document.querySelector("#reader-sport");
@@ -135,28 +151,40 @@ publishRow.insertBefore(
 // ==========================
 
 function loadArticles() {
+
     const savedArticles =
-        localStorage.getItem(STORAGE_KEY);
+        localStorage.getItem(
+            STORAGE_KEY
+        );
+
 
     if (!savedArticles) {
         return [];
     }
 
+
     try {
+
         const parsedArticles =
-            JSON.parse(savedArticles);
+            JSON.parse(
+                savedArticles
+            );
+
 
         if (!Array.isArray(parsedArticles)) {
             return [];
         }
 
+
         return parsedArticles;
 
     } catch (error) {
+
         console.error(
             "Could not load articles:",
             error
         );
+
 
         return [];
     }
@@ -164,6 +192,7 @@ function loadArticles() {
 
 
 function saveArticles() {
+
     localStorage.setItem(
         STORAGE_KEY,
         JSON.stringify(articles)
@@ -176,6 +205,7 @@ function saveArticles() {
 // ==========================
 
 function createArticleId() {
+
     return `${Date.now()}-${Math.random()
         .toString(16)
         .slice(2)}`;
@@ -183,6 +213,7 @@ function createArticleId() {
 
 
 function formatSport(sport) {
+
     const sportNames = {
         football: "Football",
         tennis: "Tennis",
@@ -190,11 +221,13 @@ function formatSport(sport) {
         basketball: "Basketball"
     };
 
+
     return sportNames[sport] || sport;
 }
 
 
 function formatArticleDate(date) {
+
     return new Intl.DateTimeFormat(
         "en-US",
         {
@@ -203,14 +236,18 @@ function formatArticleDate(date) {
             year: "numeric"
         }
     )
-        .format(new Date(date))
+        .format(
+            new Date(date)
+        )
         .toUpperCase();
 }
 
 
 function sortArticles(list) {
+
     return [...list].sort(
         function (a, b) {
+
             return (
                 new Date(b.createdAt) -
                 new Date(a.createdAt)
@@ -220,12 +257,48 @@ function sortArticles(list) {
 }
 
 
+function getValidImageUrl(value) {
+
+    const trimmedValue =
+        value.trim();
+
+
+    if (!trimmedValue) {
+        return "";
+    }
+
+
+    try {
+
+        const url =
+            new URL(trimmedValue);
+
+
+        if (
+            url.protocol !== "http:" &&
+            url.protocol !== "https:"
+        ) {
+            return "";
+        }
+
+
+        return url.href;
+
+    } catch {
+        return "";
+    }
+}
+
+
 // ==========================
 // CURRENT DATE
 // ==========================
 
 function renderCurrentDate() {
-    const today = new Date();
+
+    const today =
+        new Date();
+
 
     currentDate.textContent =
         new Intl.DateTimeFormat(
@@ -242,12 +315,110 @@ function renderCurrentDate() {
 
 
 // ==========================
-// CREATE / UPDATE ARTICLE
+// IMAGE PREVIEW
+// ==========================
+
+imageInput.addEventListener(
+    "change",
+    updateImagePreview
+);
+
+
+imageInput.addEventListener(
+    "blur",
+    updateImagePreview
+);
+
+
+function updateImagePreview() {
+
+    const imageUrl =
+        getValidImageUrl(
+            imageInput.value
+        );
+
+
+    imagePreviewImg.removeAttribute(
+        "src"
+    );
+
+    imagePreviewError.hidden =
+        true;
+
+
+    if (!imageInput.value.trim()) {
+
+        imagePreview.hidden =
+            true;
+
+        return;
+    }
+
+
+    if (!imageUrl) {
+
+        imagePreview.hidden =
+            false;
+
+        imagePreviewImg.hidden =
+            true;
+
+        imagePreviewError.hidden =
+            false;
+
+        return;
+    }
+
+
+    imagePreview.hidden =
+        false;
+
+    imagePreviewImg.hidden =
+        false;
+
+    imagePreviewError.hidden =
+        true;
+
+
+    imagePreviewImg.src =
+        imageUrl;
+}
+
+
+imagePreviewImg.addEventListener(
+    "load",
+    function () {
+
+        imagePreviewImg.hidden =
+            false;
+
+        imagePreviewError.hidden =
+            true;
+    }
+);
+
+
+imagePreviewImg.addEventListener(
+    "error",
+    function () {
+
+        imagePreviewImg.hidden =
+            true;
+
+        imagePreviewError.hidden =
+            false;
+    }
+);
+
+
+// ==========================
+// CREATE / UPDATE
 // ==========================
 
 articleForm.addEventListener(
     "submit",
     function (event) {
+
         event.preventDefault();
 
         clearFormStatus();
@@ -261,6 +432,14 @@ articleForm.addEventListener(
 
         const author =
             authorInput.value.trim();
+
+        const rawImageUrl =
+            imageInput.value.trim();
+
+        const imageUrl =
+            getValidImageUrl(
+                rawImageUrl
+            );
 
         const summary =
             summaryInput.value.trim();
@@ -276,17 +455,34 @@ articleForm.addEventListener(
             !summary ||
             !content
         ) {
+
             showFormStatus(
-                "Complete every field before publishing.",
+                "Complete every required field before publishing.",
                 "error"
             );
+
+
+            return;
+        }
+
+
+        if (
+            rawImageUrl &&
+            !imageUrl
+        ) {
+
+            showFormStatus(
+                "Enter a valid http or https image URL.",
+                "error"
+            );
+
 
             return;
         }
 
 
         // ==========================
-        // UPDATE EXISTING ARTICLE
+        // UPDATE
         // ==========================
 
         if (editingArticleId) {
@@ -294,6 +490,7 @@ articleForm.addEventListener(
             const articleIndex =
                 articles.findIndex(
                     function (article) {
+
                         return (
                             article.id ===
                             editingArticleId
@@ -303,26 +500,31 @@ articleForm.addEventListener(
 
 
             if (articleIndex === -1) {
+
                 showFormStatus(
                     "The story could not be found.",
                     "error"
                 );
+
 
                 return;
             }
 
 
             articles[articleIndex] = {
+
                 ...articles[articleIndex],
 
                 title,
                 sport,
                 author,
+                imageUrl,
                 summary,
                 content,
 
                 updatedAt:
-                    new Date().toISOString()
+                    new Date()
+                        .toISOString()
             };
 
 
@@ -351,24 +553,29 @@ articleForm.addEventListener(
 
 
         // ==========================
-        // CREATE NEW ARTICLE
+        // CREATE
         // ==========================
 
         const article = {
+
             id: createArticleId(),
 
             title,
             sport,
             author,
+            imageUrl,
             summary,
             content,
 
             createdAt:
-                new Date().toISOString()
+                new Date()
+                    .toISOString()
         };
 
 
-        articles.push(article);
+        articles.push(
+            article
+        );
 
 
         saveArticles();
@@ -397,12 +604,18 @@ articleForm.addEventListener(
 // EDIT ARTICLE
 // ==========================
 
-function startEditingArticle(articleId) {
+function startEditingArticle(
+    articleId
+) {
 
     const article =
         articles.find(
             function (item) {
-                return item.id === articleId;
+
+                return (
+                    item.id ===
+                    articleId
+                );
             }
         );
 
@@ -425,6 +638,9 @@ function startEditingArticle(articleId) {
     authorInput.value =
         article.author;
 
+    imageInput.value =
+        article.imageUrl || "";
+
     summaryInput.value =
         article.summary;
 
@@ -432,8 +648,12 @@ function startEditingArticle(articleId) {
         article.content;
 
 
+    updateImagePreview();
+
+
     publishButton.textContent =
         "SAVE CHANGES →";
+
 
     cancelEditButton.hidden =
         false;
@@ -454,7 +674,9 @@ function startEditingArticle(articleId) {
 
     setTimeout(
         function () {
+
             titleInput.focus();
+
         },
         500
     );
@@ -468,6 +690,7 @@ function startEditingArticle(articleId) {
 cancelEditButton.addEventListener(
     "click",
     function () {
+
         resetEditor();
 
         clearFormStatus();
@@ -479,7 +702,8 @@ function resetEditor() {
 
     articleForm.reset();
 
-    editingArticleId = null;
+    editingArticleId =
+        null;
 
 
     publishButton.textContent =
@@ -488,19 +712,39 @@ function resetEditor() {
 
     cancelEditButton.hidden =
         true;
+
+
+    imagePreview.hidden =
+        true;
+
+    imagePreviewImg.hidden =
+        false;
+
+    imagePreviewError.hidden =
+        true;
+
+    imagePreviewImg.removeAttribute(
+        "src"
+    );
 }
 
 
 // ==========================
-// DELETE ARTICLE
+// DELETE
 // ==========================
 
-function deleteArticle(articleId) {
+function deleteArticle(
+    articleId
+) {
 
     const article =
         articles.find(
             function (item) {
-                return item.id === articleId;
+
+                return (
+                    item.id ===
+                    articleId
+                );
             }
         );
 
@@ -524,7 +768,11 @@ function deleteArticle(articleId) {
     articles =
         articles.filter(
             function (item) {
-                return item.id !== articleId;
+
+                return (
+                    item.id !==
+                    articleId
+                );
             }
         );
 
@@ -532,11 +780,13 @@ function deleteArticle(articleId) {
     saveArticles();
 
 
-    // If the deleted article was being edited,
-    // reset the newsroom.
+    if (
+        editingArticleId ===
+        articleId
+    ) {
 
-    if (editingArticleId === articleId) {
         resetEditor();
+
         clearFormStatus();
     }
 
@@ -549,7 +799,10 @@ function deleteArticle(articleId) {
 // FORM STATUS
 // ==========================
 
-function showFormStatus(message, type) {
+function showFormStatus(
+    message,
+    type
+) {
 
     formStatus.textContent =
         message;
@@ -562,6 +815,7 @@ function showFormStatus(message, type) {
 
 
     if (type === "success") {
+
         formStatus.classList.add(
             "form-success"
         );
@@ -569,6 +823,7 @@ function showFormStatus(message, type) {
 
 
     if (type === "error") {
+
         formStatus.classList.add(
             "form-error"
         );
@@ -578,7 +833,8 @@ function showFormStatus(message, type) {
 
 function clearFormStatus() {
 
-    formStatus.textContent = "";
+    formStatus.textContent =
+        "";
 
 
     formStatus.classList.remove(
@@ -598,12 +854,15 @@ function getFilteredArticles() {
         searchTerm.toLowerCase();
 
 
-    return sortArticles(articles).filter(
+    return sortArticles(
+        articles
+    ).filter(
         function (article) {
 
             const matchesSport =
                 activeSport === "all" ||
-                article.sport === activeSport;
+                article.sport ===
+                activeSport;
 
 
             const searchableText = `
@@ -669,7 +928,8 @@ filterButtons.forEach(
 
 function setActiveSport(sport) {
 
-    activeSport = sport;
+    activeSport =
+        sport;
 
 
     filterButtons.forEach(
@@ -677,7 +937,8 @@ function setActiveSport(sport) {
 
             button.classList.toggle(
                 "active",
-                button.dataset.sport === sport
+                button.dataset.sport ===
+                    sport
             );
         }
     );
@@ -705,11 +966,15 @@ sportNavLinks.forEach(
                     link.dataset.sportNav;
 
 
-                setActiveSport(sport);
+                setActiveSport(
+                    sport
+                );
 
 
                 document
-                    .querySelector("#articles")
+                    .querySelector(
+                        "#articles"
+                    )
                     .scrollIntoView({
                         behavior: "smooth"
                     });
@@ -745,7 +1010,9 @@ function renderArticleCount() {
 function renderFrontPage() {
 
     const sortedArticles =
-        sortArticles(articles);
+        sortArticles(
+            articles
+        );
 
 
     renderLeadStory(
@@ -754,7 +1021,10 @@ function renderFrontPage() {
 
 
     renderSideStories(
-        sortedArticles.slice(1, 3)
+        sortedArticles.slice(
+            1,
+            3
+        )
     );
 }
 
@@ -763,92 +1033,33 @@ function renderFrontPage() {
 // LEAD STORY
 // ==========================
 
-function renderLeadStory(article) {
+function renderLeadStory(
+    article
+) {
 
     leadStory.replaceChildren();
 
 
     if (!article) {
 
-        const placeholder =
-            document.createElement("div");
-
-
-        placeholder.className =
-            "lead-placeholder";
-
-
-        const number =
-            document.createElement("span");
-
-
-        number.className =
-            "placeholder-number";
-
-        number.textContent = "01";
-
-
-        const content =
-            document.createElement("div");
-
-
-        const category =
-            document.createElement("p");
-
-
-        category.className =
-            "story-category";
-
-        category.textContent =
-            "YOUR FRONT PAGE";
-
-
-        const title =
-            document.createElement("h2");
-
-
-        title.textContent =
-            "Your biggest story will lead the edition.";
-
-
-        const description =
-            document.createElement("p");
-
-
-        description.textContent =
-            "Publish your first article and Sports Journal will begin building the front page automatically.";
-
-
-        content.append(
-            category,
-            title,
-            description
-        );
-
-
-        placeholder.append(
-            number,
-            content
-        );
-
-
-        leadStory.append(
-            placeholder
-        );
-
+        renderLeadPlaceholder();
 
         return;
     }
 
 
     const story =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     story.className =
         "lead-placeholder is-clickable";
 
+
     story.tabIndex = 0;
+
 
     story.setAttribute(
         "role",
@@ -856,33 +1067,97 @@ function renderLeadStory(article) {
     );
 
 
+    if (article.imageUrl) {
+
+        story.classList.add(
+            "has-image"
+        );
+
+
+        const image =
+            document.createElement(
+                "img"
+            );
+
+
+        image.className =
+            "lead-story-image";
+
+
+        image.src =
+            article.imageUrl;
+
+
+        image.alt =
+            article.title;
+
+
+        image.addEventListener(
+            "error",
+            function () {
+
+                image.remove();
+
+                story.classList.remove(
+                    "has-image"
+                );
+            }
+        );
+
+
+        story.append(
+            image
+        );
+    }
+
+
+    const copy =
+        document.createElement(
+            "div"
+        );
+
+
+    if (article.imageUrl) {
+
+        copy.className =
+            "lead-story-copy";
+    }
+
+
     const number =
-        document.createElement("span");
+        document.createElement(
+            "span"
+        );
 
 
     number.className =
         "placeholder-number";
 
-    number.textContent = "01";
 
-
-    const content =
-        document.createElement("div");
+    number.textContent =
+        "01";
 
 
     const category =
-        document.createElement("p");
+        document.createElement(
+            "p"
+        );
 
 
     category.className =
         "story-category";
 
+
     category.textContent =
-        formatSport(article.sport);
+        formatSport(
+            article.sport
+        );
 
 
     const title =
-        document.createElement("h2");
+        document.createElement(
+            "h2"
+        );
 
 
     title.textContent =
@@ -890,14 +1165,17 @@ function renderLeadStory(article) {
 
 
     const summary =
-        document.createElement("p");
+        document.createElement(
+            "p"
+        );
 
 
     summary.textContent =
         article.summary;
 
 
-    content.append(
+    copy.append(
+        number,
         category,
         title,
         summary
@@ -905,8 +1183,7 @@ function renderLeadStory(article) {
 
 
     story.append(
-        number,
-        content
+        copy
     );
 
 
@@ -929,7 +1206,9 @@ function renderLeadStory(article) {
                 event.key === "Enter" ||
                 event.key === " "
             ) {
+
                 event.preventDefault();
+
 
                 openArticle(
                     article.id
@@ -941,6 +1220,91 @@ function renderLeadStory(article) {
 
     leadStory.append(
         story
+    );
+}
+
+
+function renderLeadPlaceholder() {
+
+    const placeholder =
+        document.createElement(
+            "div"
+        );
+
+
+    placeholder.className =
+        "lead-placeholder";
+
+
+    const number =
+        document.createElement(
+            "span"
+        );
+
+
+    number.className =
+        "placeholder-number";
+
+
+    number.textContent =
+        "01";
+
+
+    const content =
+        document.createElement(
+            "div"
+        );
+
+
+    const category =
+        document.createElement(
+            "p"
+        );
+
+
+    category.className =
+        "story-category";
+
+
+    category.textContent =
+        "YOUR FRONT PAGE";
+
+
+    const title =
+        document.createElement(
+            "h2"
+        );
+
+
+    title.textContent =
+        "Your biggest story will lead the edition.";
+
+
+    const description =
+        document.createElement(
+            "p"
+        );
+
+
+    description.textContent =
+        "Publish your first article and Sports Journal will begin building the front page automatically.";
+
+
+    content.append(
+        category,
+        title,
+        description
+    );
+
+
+    placeholder.append(
+        number,
+        content
+    );
+
+
+    leadStory.append(
+        placeholder
     );
 }
 
@@ -966,131 +1330,280 @@ function renderSideStories(
             featuredArticles[index];
 
 
-        const story =
-            document.createElement(
-                "article"
-            );
-
-
-        story.className =
-            "side-story-placeholder";
-
-
-        const number =
-            document.createElement("span");
-
-
-        number.textContent =
-            String(index + 2)
-                .padStart(2, "0");
-
-
-        const content =
-            document.createElement("div");
-
-
-        const category =
-            document.createElement("p");
-
-
-        category.className =
-            "story-category";
-
-
-        const title =
-            document.createElement("h3");
-
-
         if (article) {
 
-            story.classList.add(
-                "is-clickable"
-            );
-
-
-            category.textContent =
-                formatSport(
-                    article.sport
-                );
-
-
-            title.textContent =
-                article.title;
-
-
-            story.tabIndex = 0;
-
-            story.setAttribute(
-                "role",
-                "button"
-            );
-
-
-            story.addEventListener(
-                "click",
-                function () {
-
-                    openArticle(
-                        article.id
-                    );
-                }
-            );
-
-
-            story.addEventListener(
-                "keydown",
-                function (event) {
-
-                    if (
-                        event.key === "Enter" ||
-                        event.key === " "
-                    ) {
-
-                        event.preventDefault();
-
-                        openArticle(
-                            article.id
-                        );
-                    }
-                }
+            renderRealSideStory(
+                article,
+                index
             );
 
         } else {
 
-            category.textContent =
-                index === 0
-                    ? "NEXT STORY"
-                    : "FROM THE DESK";
-
-
-            title.textContent =
-                index === 0
-                    ? "Another headline will live here."
-                    : "Your newsroom grows as you publish.";
+            renderSidePlaceholder(
+                index
+            );
         }
-
-
-        content.append(
-            category,
-            title
-        );
-
-
-        story.append(
-            number,
-            content
-        );
-
-
-        sideStories.append(
-            story
-        );
     }
 }
 
 
+function renderRealSideStory(
+    article,
+    index
+) {
+
+    const story =
+        document.createElement(
+            "article"
+        );
+
+
+    story.className =
+        "side-story-placeholder is-clickable";
+
+
+    story.tabIndex =
+        0;
+
+
+    story.setAttribute(
+        "role",
+        "button"
+    );
+
+
+    if (article.imageUrl) {
+
+        story.classList.add(
+            "has-image"
+        );
+
+
+        const image =
+            document.createElement(
+                "img"
+            );
+
+
+        image.className =
+            "side-story-image";
+
+
+        image.src =
+            article.imageUrl;
+
+
+        image.alt =
+            article.title;
+
+
+        image.addEventListener(
+            "error",
+            function () {
+
+                image.remove();
+
+                story.classList.remove(
+                    "has-image"
+                );
+            }
+        );
+
+
+        story.append(
+            image
+        );
+    }
+
+
+    const copy =
+        document.createElement(
+            "div"
+        );
+
+
+    if (article.imageUrl) {
+
+        copy.className =
+            "side-story-copy";
+    }
+
+
+    const number =
+        document.createElement(
+            "span"
+        );
+
+
+    number.className =
+        "side-story-number";
+
+
+    number.textContent =
+        String(index + 2)
+            .padStart(
+                2,
+                "0"
+            );
+
+
+    const category =
+        document.createElement(
+            "p"
+        );
+
+
+    category.className =
+        "story-category";
+
+
+    category.textContent =
+        formatSport(
+            article.sport
+        );
+
+
+    const title =
+        document.createElement(
+            "h3"
+        );
+
+
+    title.textContent =
+        article.title;
+
+
+    copy.append(
+        number,
+        category,
+        title
+    );
+
+
+    story.append(
+        copy
+    );
+
+
+    story.addEventListener(
+        "click",
+        function () {
+
+            openArticle(
+                article.id
+            );
+        }
+    );
+
+
+    story.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Enter" ||
+                event.key === " "
+            ) {
+
+                event.preventDefault();
+
+
+                openArticle(
+                    article.id
+                );
+            }
+        }
+    );
+
+
+    sideStories.append(
+        story
+    );
+}
+
+
+function renderSidePlaceholder(
+    index
+) {
+
+    const story =
+        document.createElement(
+            "article"
+        );
+
+
+    story.className =
+        "side-story-placeholder";
+
+
+    const number =
+        document.createElement(
+            "span"
+        );
+
+
+    number.textContent =
+        String(index + 2)
+            .padStart(
+                2,
+                "0"
+            );
+
+
+    const content =
+        document.createElement(
+            "div"
+        );
+
+
+    const category =
+        document.createElement(
+            "p"
+        );
+
+
+    category.className =
+        "story-category";
+
+
+    category.textContent =
+        index === 0
+            ? "NEXT STORY"
+            : "FROM THE DESK";
+
+
+    const title =
+        document.createElement(
+            "h3"
+        );
+
+
+    title.textContent =
+        index === 0
+            ? "Another headline will live here."
+            : "Your newsroom grows as you publish.";
+
+
+    content.append(
+        category,
+        title
+    );
+
+
+    story.append(
+        number,
+        content
+    );
+
+
+    sideStories.append(
+        story
+    );
+}
+
+
 // ==========================
-// LATEST ARTICLE LIST
+// ARTICLE LIST
 // ==========================
 
 function renderArticleList() {
@@ -1107,7 +1620,10 @@ function renderArticleList() {
 
 
     filteredArticles.forEach(
-        function (article, index) {
+        function (
+            article,
+            index
+        ) {
 
             const row =
                 createArticleRow(
@@ -1134,17 +1650,19 @@ function createArticleRow(
 ) {
 
     const row =
-        document.createElement("article");
+        document.createElement(
+            "article"
+        );
 
 
     row.className =
         "article-row";
 
 
-    // NUMBER
-
     const number =
-        document.createElement("span");
+        document.createElement(
+            "span"
+        );
 
 
     number.className =
@@ -1153,13 +1671,16 @@ function createArticleRow(
 
     number.textContent =
         String(index + 1)
-            .padStart(2, "0");
+            .padStart(
+                2,
+                "0"
+            );
 
-
-    // SPORT
 
     const sport =
-        document.createElement("span");
+        document.createElement(
+            "span"
+        );
 
 
     sport.className =
@@ -1172,20 +1693,20 @@ function createArticleRow(
         );
 
 
-    // TITLE
-
     const title =
-        document.createElement("h3");
+        document.createElement(
+            "h3"
+        );
 
 
     title.textContent =
         article.title;
 
 
-    // DATE
-
     const date =
-        document.createElement("span");
+        document.createElement(
+            "span"
+        );
 
 
     date.className =
@@ -1198,20 +1719,22 @@ function createArticleRow(
         );
 
 
-    // ACTIONS
-
     const actions =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     actions.className =
         "article-row-actions";
 
 
-    // READ BUTTON
+    // READ
 
     const readButton =
-        document.createElement("button");
+        document.createElement(
+            "button"
+        );
 
 
     readButton.type =
@@ -1233,10 +1756,12 @@ function createArticleRow(
     );
 
 
-    // EDIT BUTTON
+    // EDIT
 
     const editButton =
-        document.createElement("button");
+        document.createElement(
+            "button"
+        );
 
 
     editButton.type =
@@ -1258,14 +1783,17 @@ function createArticleRow(
     );
 
 
-    // DELETE BUTTON
+    // DELETE
 
     const deleteButton =
-        document.createElement("button");
+        document.createElement(
+            "button"
+        );
 
 
     deleteButton.type =
         "button";
+
 
     deleteButton.className =
         "delete-button";
@@ -1310,14 +1838,17 @@ function createArticleRow(
 // OPEN ARTICLE
 // ==========================
 
-function openArticle(articleId) {
+function openArticle(
+    articleId
+) {
 
     const article =
         articles.find(
             function (item) {
 
                 return (
-                    item.id === articleId
+                    item.id ===
+                    articleId
                 );
             }
         );
@@ -1356,6 +1887,27 @@ function openArticle(articleId) {
         article.content;
 
 
+    // IMAGE
+
+    if (article.imageUrl) {
+
+        readerImage.src =
+            article.imageUrl;
+
+
+        readerImage.alt =
+            article.title;
+
+
+        readerImage.hidden =
+            false;
+
+    } else {
+
+        hideReaderImage();
+    }
+
+
     articleReader.hidden =
         false;
 
@@ -1365,6 +1917,28 @@ function openArticle(articleId) {
 
 
     readerClose.focus();
+}
+
+
+readerImage.addEventListener(
+    "error",
+    hideReaderImage
+);
+
+
+function hideReaderImage() {
+
+    readerImage.hidden =
+        true;
+
+
+    readerImage.removeAttribute(
+        "src"
+    );
+
+
+    readerImage.alt =
+        "";
 }
 
 
@@ -1380,6 +1954,9 @@ function closeArticle() {
 
     document.body.style.overflow =
         "";
+
+
+    hideReaderImage();
 }
 
 
@@ -1397,6 +1974,7 @@ articleReader.addEventListener(
             event.target ===
             articleReader
         ) {
+
             closeArticle();
         }
     }
@@ -1411,6 +1989,7 @@ document.addEventListener(
             event.key === "Escape" &&
             !articleReader.hidden
         ) {
+
             closeArticle();
         }
     }
@@ -1432,7 +2011,7 @@ function renderApp() {
 
 
 // ==========================
-// START APPLICATION
+// START APP
 // ==========================
 
 renderCurrentDate();

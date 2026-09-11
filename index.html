@@ -115,7 +115,7 @@
 
 
     <!-- =========================
-         TRENDING BAR
+         COVERAGE BAR
     ========================== -->
 
     <div class="trending-bar">
@@ -197,91 +197,17 @@
 
                 <div class="lead-layout">
 
-                    <!-- MAIN STORY -->
-
                     <article
                         id="lead-story"
                         class="lead-story"
-                    >
+                    ></article>
 
-                        <div class="lead-placeholder">
-
-                            <span class="placeholder-number">
-                                01
-                            </span>
-
-                            <div>
-
-                                <p class="story-category">
-                                    YOUR FRONT PAGE
-                                </p>
-
-                                <h2>
-                                    Your biggest story will lead the edition.
-                                </h2>
-
-                                <p>
-                                    Publish your first article and Sports Journal
-                                    will begin building the front page automatically.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </article>
-
-
-                    <!-- SECONDARY STORIES -->
 
                     <aside
                         id="side-stories"
                         class="side-stories"
                         aria-label="More featured stories"
-                    >
-
-                        <article class="side-story-placeholder">
-
-                            <span>
-                                02
-                            </span>
-
-                            <div>
-
-                                <p class="story-category">
-                                    NEXT STORY
-                                </p>
-
-                                <h3>
-                                    Another headline will live here.
-                                </h3>
-
-                            </div>
-
-                        </article>
-
-
-                        <article class="side-story-placeholder">
-
-                            <span>
-                                03
-                            </span>
-
-                            <div>
-
-                                <p class="story-category">
-                                    FROM THE DESK
-                                </p>
-
-                                <h3>
-                                    Your newsroom grows as you publish.
-                                </h3>
-
-                            </div>
-
-                        </article>
-
-                    </aside>
+                    ></aside>
 
                 </div>
 
@@ -291,7 +217,7 @@
 
 
         <!-- =========================
-             LATEST STORIES
+             LATEST
         ========================== -->
 
         <section
@@ -378,8 +304,6 @@
                 </div>
 
 
-                <!-- JAVASCRIPT GENERATES STORIES -->
-
                 <div
                     id="articles-list"
                     class="articles-list"
@@ -434,7 +358,7 @@
 
             <div class="container newsroom-layout">
 
-                <!-- EDITOR INFO -->
+                <!-- INTRO -->
 
                 <div class="newsroom-intro">
 
@@ -467,7 +391,7 @@
                         </span>
 
                         <p>
-                            Write the headline and story.
+                            Add a strong cover image.
                         </p>
 
                     </div>
@@ -480,7 +404,7 @@
                         </span>
 
                         <p>
-                            Publish it to your journal.
+                            Write and publish your story.
                         </p>
 
                     </div>
@@ -488,7 +412,7 @@
                 </div>
 
 
-                <!-- ARTICLE EDITOR -->
+                <!-- FORM -->
 
                 <form
                     id="article-form"
@@ -577,6 +501,51 @@
                     </div>
 
 
+                    <!-- COVER IMAGE -->
+
+                    <div class="form-group">
+
+                        <label for="article-image">
+                            COVER IMAGE URL
+                        </label>
+
+                        <input
+                            type="url"
+                            id="article-image"
+                            name="image"
+                            placeholder="https://example.com/photo.jpg"
+                        >
+
+                        <p class="field-note">
+                            Optional for now. Use a public direct image URL.
+                        </p>
+
+
+                        <div
+                            id="image-preview"
+                            class="image-preview"
+                            hidden
+                        >
+
+                            <img
+                                id="image-preview-img"
+                                src=""
+                                alt="Cover preview"
+                            >
+
+                            <p
+                                id="image-preview-error"
+                                class="image-preview-error"
+                                hidden
+                            >
+                                Image could not be loaded.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
                     <!-- SUMMARY -->
 
                     <div class="form-group">
@@ -596,7 +565,7 @@
                     </div>
 
 
-                    <!-- ARTICLE -->
+                    <!-- STORY -->
 
                     <div class="form-group">
 
@@ -660,6 +629,15 @@
             >
                 CLOSE ×
             </button>
+
+
+            <img
+                id="reader-image"
+                class="reader-image"
+                src=""
+                alt=""
+                hidden
+            >
 
 
             <p
