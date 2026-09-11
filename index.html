@@ -1,711 +1,1176 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+  <title>Sports Journal</title>
 
-    <meta
-        name="description"
-        content="Sports Journal is an independent sports publishing platform covering football, tennis, baseball and basketball."
-    >
-
-    <meta
-        name="theme-color"
-        content="#111111"
-    >
-
-    <title>Sports Journal</title>
-
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 
 <body>
 
-    <!-- =========================
-         MASTHEAD
-    ========================== -->
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
 
-    <header class="masthead">
+  <header class="site-header">
 
-        <div class="container masthead-top">
+    <div class="header-top">
 
-            <a
-                href="#home"
-                class="brand"
-            >
-                SPORTS
-                <span>JOURNAL</span>
-            </a>
+      <button
+        class="menu-button"
+        id="menuButton"
+        type="button"
+        aria-label="Open journal menu"
+        aria-controls="sideMenu"
+      >
+        ☰
+      </button>
 
+      <a href="#" class="brand" id="brandButton">
+        SPORTS<br />
+        JOURNAL
+      </a>
 
-            <div class="edition-info">
-
-                <span id="current-date">
-                    SEPTEMBER 2026
-                </span>
-
-                <span>
-                    INDEPENDENT SPORTS DESK
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <div class="masthead-nav">
-
-            <div class="container nav-content">
-
-                <nav aria-label="Sports categories">
-
-                    <a
-                        href="#articles"
-                        data-sport-nav="football"
-                    >
-                        Football
-                    </a>
-
-                    <a
-                        href="#articles"
-                        data-sport-nav="tennis"
-                    >
-                        Tennis
-                    </a>
-
-                    <a
-                        href="#articles"
-                        data-sport-nav="baseball"
-                    >
-                        Baseball
-                    </a>
-
-                    <a
-                        href="#articles"
-                        data-sport-nav="basketball"
-                    >
-                        Basketball
-                    </a>
-
-                </nav>
-
-
-                <a
-                    href="#publish"
-                    class="write-link"
-                >
-                    Write a story →
-                </a>
-
-            </div>
-
-        </div>
-
-    </header>
-
-
-    <!-- =========================
-         COVERAGE BAR
-    ========================== -->
-
-    <div class="trending-bar">
-
-        <div class="container trending-content">
-
-            <strong>
-                COVERAGE
-            </strong>
-
-            <div class="trending-text">
-
-                Football
-
-                <span>•</span>
-
-                Tennis
-
-                <span>•</span>
-
-                Baseball
-
-                <span>•</span>
-
-                Basketball
-
-                <span>•</span>
-
-                Analysis
-
-                <span>•</span>
-
-                Opinion
-
-            </div>
-
-        </div>
+      <button
+        class="write-button"
+        id="openEditorButton"
+        type="button"
+      >
+        + WRITE STORY
+      </button>
 
     </div>
 
 
-    <main>
-
-        <!-- =========================
-             FRONT PAGE
-        ========================== -->
-
-        <section
-            id="home"
-            class="front-page"
-        >
-
-            <div class="container">
-
-                <div class="edition-heading">
-
-                    <div>
-
-                        <p class="section-kicker">
-                            TODAY'S LEAD
-                        </p>
-
-                        <h1>
-                            The stories shaping the game.
-                        </h1>
-
-                    </div>
-
-
-                    <p
-                        id="article-count"
-                        class="article-count"
-                    >
-                        0 STORIES
-                    </p>
-
-                </div>
-
-
-                <div class="lead-layout">
-
-                    <article
-                        id="lead-story"
-                        class="lead-story"
-                    ></article>
-
-
-                    <aside
-                        id="side-stories"
-                        class="side-stories"
-                        aria-label="More featured stories"
-                    ></aside>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =========================
-             LATEST
-        ========================== -->
-
-        <section
-            id="articles"
-            class="latest-section"
-        >
-
-            <div class="container">
-
-                <div class="latest-heading">
-
-                    <h2>
-                        LATEST
-                    </h2>
-
-
-                    <div class="search-wrapper">
-
-                        <label
-                            for="search-input"
-                            class="visually-hidden"
-                        >
-                            Search articles
-                        </label>
-
-                        <input
-                            type="search"
-                            id="search-input"
-                            placeholder="SEARCH THE JOURNAL"
-                        >
-
-                    </div>
-
-                </div>
-
-
-                <!-- FILTERS -->
-
-                <div
-                    class="filters"
-                    aria-label="Filter articles by sport"
-                >
-
-                    <button
-                        type="button"
-                        class="filter-button active"
-                        data-sport="all"
-                    >
-                        All
-                    </button>
-
-                    <button
-                        type="button"
-                        class="filter-button"
-                        data-sport="football"
-                    >
-                        Football
-                    </button>
-
-                    <button
-                        type="button"
-                        class="filter-button"
-                        data-sport="tennis"
-                    >
-                        Tennis
-                    </button>
-
-                    <button
-                        type="button"
-                        class="filter-button"
-                        data-sport="baseball"
-                    >
-                        Baseball
-                    </button>
-
-                    <button
-                        type="button"
-                        class="filter-button"
-                        data-sport="basketball"
-                    >
-                        Basketball
-                    </button>
-
-                </div>
-
-
-                <div
-                    id="articles-list"
-                    class="articles-list"
-                ></div>
-
-
-                <div
-                    id="empty-state"
-                    class="empty-state"
-                >
-
-                    <span>
-                        00
-                    </span>
-
-                    <p>
-                        No stories published yet.
-                    </p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =========================
-             NEWSROOM
-        ========================== -->
-
-        <section
-            id="publish"
-            class="newsroom"
-        >
-
-            <div class="newsroom-title">
-
-                <div class="container">
-
-                    <span>
-                        NEWSROOM
-                    </span>
-
-                    <span>
-                        WRITE / EDIT / PUBLISH
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <div class="container newsroom-layout">
-
-                <!-- INTRO -->
-
-                <div class="newsroom-intro">
-
-                    <p>
-                        FROM THE EDITOR
-                    </p>
-
-                    <h2>
-                        Write the next story.
-                    </h2>
-
-
-                    <div class="editor-note">
-
-                        <span>
-                            01
-                        </span>
-
-                        <p>
-                            Choose your sport.
-                        </p>
-
-                    </div>
-
-
-                    <div class="editor-note">
-
-                        <span>
-                            02
-                        </span>
-
-                        <p>
-                            Add a strong cover image.
-                        </p>
-
-                    </div>
-
-
-                    <div class="editor-note">
-
-                        <span>
-                            03
-                        </span>
-
-                        <p>
-                            Write and publish your story.
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <!-- FORM -->
-
-                <form
-                    id="article-form"
-                    class="article-form"
-                >
-
-                    <div class="editor-top-row">
-
-                        <!-- SPORT -->
-
-                        <div class="form-group">
-
-                            <label for="article-sport">
-                                SPORT
-                            </label>
-
-                            <select
-                                id="article-sport"
-                                name="sport"
-                                required
-                            >
-
-                                <option value="">
-                                    Select
-                                </option>
-
-                                <option value="football">
-                                    Football
-                                </option>
-
-                                <option value="tennis">
-                                    Tennis
-                                </option>
-
-                                <option value="baseball">
-                                    Baseball
-                                </option>
-
-                                <option value="basketball">
-                                    Basketball
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-                        <!-- AUTHOR -->
-
-                        <div class="form-group">
-
-                            <label for="article-author">
-                                AUTHOR
-                            </label>
-
-                            <input
-                                type="text"
-                                id="article-author"
-                                name="author"
-                                value="Jose Teran"
-                                required
-                            >
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- HEADLINE -->
-
-                    <div class="form-group headline-group">
-
-                        <label for="article-title">
-                            HEADLINE
-                        </label>
-
-                        <input
-                            type="text"
-                            id="article-title"
-                            name="title"
-                            maxlength="100"
-                            placeholder="Your headline goes here"
-                            required
-                        >
-
-                    </div>
-
-
-                    <!-- COVER IMAGE -->
-
-                    <div class="form-group">
-
-                        <label for="article-image">
-                            COVER IMAGE URL
-                        </label>
-
-                        <input
-                            type="url"
-                            id="article-image"
-                            name="image"
-                            placeholder="https://example.com/photo.jpg"
-                        >
-
-                        <p class="field-note">
-                            Optional for now. Use a public direct image URL.
-                        </p>
-
-
-                        <div
-                            id="image-preview"
-                            class="image-preview"
-                            hidden
-                        >
-
-                            <img
-                                id="image-preview-img"
-                                src=""
-                                alt="Cover preview"
-                            >
-
-                            <p
-                                id="image-preview-error"
-                                class="image-preview-error"
-                                hidden
-                            >
-                                Image could not be loaded.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- SUMMARY -->
-
-                    <div class="form-group">
-
-                        <label for="article-summary">
-                            DECK / SUMMARY
-                        </label>
-
-                        <textarea
-                            id="article-summary"
-                            name="summary"
-                            maxlength="220"
-                            placeholder="Give readers the short version..."
-                            required
-                        ></textarea>
-
-                    </div>
-
-
-                    <!-- STORY -->
-
-                    <div class="form-group">
-
-                        <label for="article-content">
-                            STORY
-                        </label>
-
-                        <textarea
-                            id="article-content"
-                            name="content"
-                            placeholder="Start writing..."
-                            required
-                        ></textarea>
-
-                    </div>
-
-
-                    <div class="publish-row">
-
-                        <p
-                            id="form-status"
-                            aria-live="polite"
-                        ></p>
-
-
-                        <button
-                            type="submit"
-                            class="publish-button"
-                        >
-                            PUBLISH STORY →
-                        </button>
-
-                    </div>
-
-                </form>
-
-            </div>
-
-        </section>
-
-    </main>
-
-
-    <!-- =========================
-         ARTICLE READER
-    ========================== -->
+    <div class="header-bottom">
+
+      <div class="edition-label">
+        INDEPENDENT SPORTS DESK
+      </div>
+
+      <div
+        class="edition-date"
+        id="editionDate"
+      ></div>
+
+    </div>
+
+  </header>
+
+
+  <!-- =====================================================
+       SPORTS NAVIGATION
+  ====================================================== -->
+
+  <nav
+    class="sport-nav"
+    id="sportNav"
+  >
+
+    <button
+      class="sport-filter active"
+      data-sport="all"
+      type="button"
+    >
+      ALL
+    </button>
+
+    <button
+      class="sport-filter"
+      data-sport="football"
+      type="button"
+    >
+      FOOTBALL
+    </button>
+
+    <button
+      class="sport-filter"
+      data-sport="tennis"
+      type="button"
+    >
+      TENNIS
+    </button>
+
+    <button
+      class="sport-filter"
+      data-sport="baseball"
+      type="button"
+    >
+      BASEBALL
+    </button>
+
+    <button
+      class="sport-filter"
+      data-sport="basketball"
+      type="button"
+    >
+      BASKETBALL
+    </button>
+
+  </nav>
+
+
+  <!-- =====================================================
+       SEARCH
+  ====================================================== -->
+
+  <section class="search-strip">
+
+    <label class="search-box">
+
+      <span>SEARCH</span>
+
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="PLAYER, TEAM, STORY..."
+        autocomplete="off"
+      />
+
+    </label>
 
     <div
-        id="article-reader"
-        class="article-reader"
-        hidden
+      class="story-count"
+      id="storyCount"
     >
+      0 STORIES
+    </div>
 
-        <article class="article-reader-content">
-
-            <button
-                type="button"
-                id="reader-close"
-                class="reader-close"
-                aria-label="Close article"
-            >
-                CLOSE ×
-            </button>
+  </section>
 
 
-            <img
-                id="reader-image"
-                class="reader-image"
-                src=""
-                alt=""
-                hidden
-            >
+  <!-- =====================================================
+       MAIN
+  ====================================================== -->
+
+  <main>
+
+    <!-- TODAY'S LEAD -->
+
+    <section class="lead-section">
+
+      <div class="section-heading">
+
+        <span class="section-number">
+          01
+        </span>
+
+        <h1>
+          TODAY'S LEAD
+        </h1>
+
+        <span class="section-line"></span>
+
+      </div>
+
+      <div id="leadStories"></div>
+
+    </section>
 
 
-            <p
-                id="reader-sport"
-                class="reader-sport"
-            ></p>
+    <!-- LATEST -->
+
+    <section class="latest-section">
+
+      <div class="section-heading">
+
+        <span class="section-number">
+          02
+        </span>
+
+        <h2>
+          LATEST
+        </h2>
+
+        <span class="section-line"></span>
+
+      </div>
+
+      <div
+        class="latest-list"
+        id="latestStories"
+      ></div>
+
+    </section>
+
+  </main>
 
 
-            <h2 id="reader-title"></h2>
+  <!-- =====================================================
+       EMPTY STATE TEMPLATE
+  ====================================================== -->
+
+  <template id="emptyStateTemplate">
+
+    <div class="empty-state">
+
+      <span>
+        NO STORIES FOUND
+      </span>
+
+      <p>
+        Change the filter, search for something else,
+        or publish a new story.
+      </p>
+
+    </div>
+
+  </template>
 
 
-            <div class="reader-meta">
+  <!-- =====================================================
+       JOURNAL SIDE MENU
+  ====================================================== -->
 
-                <span id="reader-author"></span>
+  <div
+    class="side-menu"
+    id="sideMenu"
+    aria-hidden="true"
+  >
 
-                <span id="reader-date"></span>
+    <div
+      class="side-menu-backdrop"
+      data-close-menu
+    ></div>
+
+
+    <aside class="side-menu-panel">
+
+      <div class="side-menu-header">
+
+        <div>
+
+          <span class="menu-eyebrow">
+            SPORTS JOURNAL
+          </span>
+
+          <h2>
+            JOURNAL MENU
+          </h2>
+
+        </div>
+
+        <button
+          class="menu-close-button"
+          type="button"
+          data-close-menu
+          aria-label="Close menu"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div class="menu-block">
+
+        <span class="menu-section-label">
+          JOURNAL
+        </span>
+
+        <button
+          class="journal-menu-button"
+          id="frontPageMenuButton"
+          type="button"
+        >
+
+          <span>
+            FRONT PAGE
+          </span>
+
+          <span>
+            →
+          </span>
+
+        </button>
+
+        <button
+          class="journal-menu-button"
+          id="menuWriteStoryButton"
+          type="button"
+        >
+
+          <span>
+            WRITE STORY
+          </span>
+
+          <span>
+            +
+          </span>
+
+        </button>
+
+      </div>
+
+
+      <div class="menu-block data-block">
+
+        <span class="menu-section-label">
+          DATA PROTECTION
+        </span>
+
+        <div class="backup-status-card">
+
+          <span class="backup-status-label">
+            AUTOMATIC BACKUPS
+          </span>
+
+          <strong id="internalBackupStatus">
+            NO BACKUP YET
+          </strong>
+
+          <p>
+            Sports Journal keeps local snapshots when
+            stories are created, edited, deleted or restored.
+          </p>
+
+        </div>
+
+
+        <button
+          class="journal-menu-button backup-action"
+          id="exportBackupButton"
+          type="button"
+        >
+
+          <span>
+            EXPORT BACKUP
+          </span>
+
+          <span>
+            ↓
+          </span>
+
+        </button>
+
+
+        <button
+          class="journal-menu-button backup-action"
+          id="restoreBackupButton"
+          type="button"
+        >
+
+          <span>
+            RESTORE BACKUP
+          </span>
+
+          <span>
+            ↑
+          </span>
+
+        </button>
+
+
+        <input
+          id="backupFileInput"
+          type="file"
+          accept=".json,application/json"
+          hidden
+        />
+
+
+        <p class="backup-warning">
+
+          Exported JSON backups are the safest copy because
+          they survive browser resets, Live Server changes
+          and localStorage loss.
+
+        </p>
+
+      </div>
+
+
+      <div class="menu-footer">
+
+        <span>
+          LOCAL EDITION
+        </span>
+
+        <span>
+          V1
+        </span>
+
+      </div>
+
+    </aside>
+
+  </div>
+
+
+  <!-- =====================================================
+       ARTICLE EDITOR
+  ====================================================== -->
+
+  <div
+    class="modal"
+    id="editorModal"
+    aria-hidden="true"
+  >
+
+    <div
+      class="modal-backdrop"
+      data-close-editor
+    ></div>
+
+
+    <div class="editor-panel">
+
+      <div class="modal-header">
+
+        <div>
+
+          <span class="eyebrow">
+            SPORTS JOURNAL DESK
+          </span>
+
+          <h2 id="editorHeading">
+            NEW STORY
+          </h2>
+
+        </div>
+
+
+        <button
+          class="close-button"
+          type="button"
+          data-close-editor
+          aria-label="Close editor"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <form id="articleForm">
+
+        <input
+          type="hidden"
+          id="articleId"
+        />
+
+        <input
+          type="hidden"
+          id="imageMode"
+          value="crop"
+        />
+
+
+        <!-- STORY -->
+
+        <div class="editor-section">
+
+          <div class="editor-section-number">
+            01
+          </div>
+
+
+          <div class="editor-section-content">
+
+            <h3>
+              STORY
+            </h3>
+
+
+            <div class="form-grid two-columns">
+
+              <label class="field">
+
+                <span>
+                  SPORT
+                </span>
+
+                <select
+                  id="sportInput"
+                  required
+                >
+
+                  <option value="football">
+                    Football
+                  </option>
+
+                  <option value="tennis">
+                    Tennis
+                  </option>
+
+                  <option value="baseball">
+                    Baseball
+                  </option>
+
+                  <option value="basketball">
+                    Basketball
+                  </option>
+
+                </select>
+
+              </label>
+
+
+              <label class="field">
+
+                <span>
+                  AUTHOR
+                </span>
+
+                <input
+                  id="authorInput"
+                  type="text"
+                  maxlength="80"
+                  placeholder="Your name"
+                  required
+                />
+
+              </label>
 
             </div>
 
 
-            <p
-                id="reader-summary"
-                class="reader-summary"
-            ></p>
+            <label class="field">
+
+              <span>
+                HEADLINE
+              </span>
+
+              <input
+                id="titleInput"
+                type="text"
+                maxlength="160"
+                placeholder="WRITE THE HEADLINE"
+                required
+              />
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                SUMMARY
+              </span>
+
+              <textarea
+                id="summaryInput"
+                rows="3"
+                maxlength="350"
+                placeholder="Short front-page summary..."
+                required
+              ></textarea>
+
+            </label>
+
+
+            <label class="field">
+
+              <span>
+                STORY
+              </span>
+
+              <textarea
+                id="contentInput"
+                rows="12"
+                placeholder="Write the full story..."
+                required
+              ></textarea>
+
+            </label>
+
+          </div>
+
+        </div>
+
+
+        <!-- IMAGE -->
+
+        <div class="editor-section">
+
+          <div class="editor-section-number">
+            02
+          </div>
+
+
+          <div class="editor-section-content">
+
+            <h3>
+              COVER IMAGE
+            </h3>
+
+            <p class="editor-note">
+              The cover image appears only when this story
+              becomes the #01 lead story.
+            </p>
+
+
+            <label class="field">
+
+              <span>
+                IMAGE URL
+              </span>
+
+              <input
+                id="imageUrlInput"
+                type="url"
+                placeholder="https://..."
+              />
+
+            </label>
+
+
+            <div class="image-mode-area">
+
+              <span class="field-label">
+                DISPLAY MODE
+              </span>
+
+
+              <div class="image-mode-buttons">
+
+                <button
+                  class="image-mode-button active"
+                  type="button"
+                  data-image-mode="crop"
+                >
+
+                  <strong>
+                    CROP / FILL
+                  </strong>
+
+                  <small>
+                    Fill the entire frame
+                  </small>
+
+                </button>
+
+
+                <button
+                  class="image-mode-button"
+                  type="button"
+                  data-image-mode="full"
+                >
+
+                  <strong>
+                    SHOW FULL IMAGE
+                  </strong>
+
+                  <small>
+                    Never crop the photograph
+                  </small>
+
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <div class="image-preview-block">
+
+              <div class="preview-label">
+                FRONT PAGE PREVIEW
+              </div>
+
+              <div
+                class="editor-image-preview crop-mode"
+                id="imagePreview"
+              >
+
+                <div
+                  class="image-preview-empty"
+                  id="imagePreviewEmpty"
+                >
+                  IMAGE PREVIEW
+                </div>
+
+                <img
+                  id="imagePreviewElement"
+                  src=""
+                  alt=""
+                />
+
+              </div>
+
+            </div>
 
 
             <div
-                id="reader-body"
-                class="reader-body"
-            ></div>
+              class="crop-controls"
+              id="cropControls"
+            >
 
-        </article>
+              <div class="crop-controls-header">
 
-    </div>
+                <div>
+
+                  <strong>
+                    FOCUS POINT
+                  </strong>
+
+                  <p>
+                    Move the important area of the photograph
+                    inside the front-page frame.
+                  </p>
+
+                </div>
 
 
-    <!-- =========================
-         FOOTER
-    ========================== -->
+                <button
+                  class="reset-image-button"
+                  id="resetImageButton"
+                  type="button"
+                >
+                  RESET
+                </button>
 
-    <footer>
+              </div>
 
-        <div class="container footer-content">
 
-            <div class="footer-brand">
+              <label class="range-field">
 
-                SPORTS
-                <span>JOURNAL</span>
+                <div>
+
+                  <span>
+                    HORIZONTAL
+                  </span>
+
+                  <output id="focusXOutput">
+                    50%
+                  </output>
+
+                </div>
+
+                <input
+                  id="focusXInput"
+                  type="range"
+                  min="0"
+                  max="100"
+                  value="50"
+                />
+
+              </label>
+
+
+              <label class="range-field">
+
+                <div>
+
+                  <span>
+                    VERTICAL
+                  </span>
+
+                  <output id="focusYOutput">
+                    50%
+                  </output>
+
+                </div>
+
+                <input
+                  id="focusYInput"
+                  type="range"
+                  min="0"
+                  max="100"
+                  value="50"
+                />
+
+              </label>
+
+
+              <label class="range-field">
+
+                <div>
+
+                  <span>
+                    ZOOM
+                  </span>
+
+                  <output id="zoomOutput">
+                    100%
+                  </output>
+
+                </div>
+
+                <input
+                  id="imageZoomInput"
+                  type="range"
+                  min="100"
+                  max="180"
+                  value="100"
+                />
+
+              </label>
 
             </div>
 
 
-            <p>
-                Football · Tennis · Baseball · Basketball
-            </p>
+            <div
+              class="full-image-info"
+              id="fullImageInfo"
+              hidden
+            >
 
+              <strong>
+                FULL IMAGE MODE
+              </strong>
 
-            <p>
-                2026
-            </p>
+              <p>
+                Focus point and zoom are disabled because
+                the entire photograph remains visible.
+              </p>
+
+            </div>
+
+          </div>
 
         </div>
 
-    </footer>
+
+        <div class="editor-actions">
+
+          <button
+            type="button"
+            class="secondary-button"
+            data-close-editor
+          >
+            CANCEL
+          </button>
+
+          <button
+            type="submit"
+            class="publish-button"
+          >
+
+            <span id="publishButtonText">
+              PUBLISH STORY
+            </span>
+
+            <span>
+              →
+            </span>
+
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
 
 
-    <script src="script.js"></script>
+  <!-- =====================================================
+       ARTICLE READER
+  ====================================================== -->
+
+  <div
+    class="modal reader-modal"
+    id="readerModal"
+    aria-hidden="true"
+  >
+
+    <div
+      class="modal-backdrop"
+      data-close-reader
+    ></div>
+
+
+    <article class="reader-panel">
+
+      <div class="reader-topbar">
+
+        <button
+          class="reader-back"
+          type="button"
+          data-close-reader
+        >
+          ← BACK TO FRONT PAGE
+        </button>
+
+
+        <button
+          class="close-button reader-close"
+          type="button"
+          data-close-reader
+          aria-label="Close story"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <header class="reader-header">
+
+        <div class="reader-kicker">
+
+          <span id="readerSport"></span>
+
+          <span>/</span>
+
+          <span id="readerDate"></span>
+
+        </div>
+
+
+        <h1 id="readerTitle"></h1>
+
+
+        <p
+          class="reader-summary"
+          id="readerSummary"
+        ></p>
+
+
+        <div class="reader-byline">
+
+          BY
+
+          <strong id="readerAuthor"></strong>
+
+        </div>
+
+      </header>
+
+
+      <div
+        class="reader-image"
+        id="readerImageContainer"
+      >
+
+        <img
+          id="readerImage"
+          src=""
+          alt=""
+        />
+
+      </div>
+
+
+      <div
+        class="reader-body"
+        id="readerBody"
+      ></div>
+
+
+      <footer class="reader-footer">
+
+        <div>
+          SPORTS JOURNAL
+        </div>
+
+
+        <div class="reader-story-actions">
+
+          <button
+            class="text-action-button"
+            id="readerEditButton"
+            type="button"
+          >
+            EDIT STORY
+          </button>
+
+
+          <button
+            class="text-action-button danger"
+            id="readerDeleteButton"
+            type="button"
+          >
+            DELETE
+          </button>
+
+        </div>
+
+      </footer>
+
+    </article>
+
+  </div>
+
+
+  <!-- =====================================================
+       DELETE CONFIRMATION
+  ====================================================== -->
+
+  <div
+    class="modal confirm-modal"
+    id="confirmModal"
+    aria-hidden="true"
+  >
+
+    <div
+      class="modal-backdrop"
+      data-close-confirm
+    ></div>
+
+
+    <div class="confirm-panel">
+
+      <span class="eyebrow">
+        PERMANENT ACTION
+      </span>
+
+      <h2>
+        DELETE STORY?
+      </h2>
+
+      <p>
+        This story will be removed from the journal.
+        An automatic local snapshot will be created first.
+      </p>
+
+
+      <div class="confirm-actions">
+
+        <button
+          class="secondary-button"
+          type="button"
+          data-close-confirm
+        >
+          KEEP STORY
+        </button>
+
+
+        <button
+          class="delete-button"
+          id="confirmDeleteButton"
+          type="button"
+        >
+          DELETE
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       RESTORE BACKUP CONFIRMATION
+  ====================================================== -->
+
+  <div
+    class="modal restore-modal"
+    id="restoreModal"
+    aria-hidden="true"
+  >
+
+    <div
+      class="modal-backdrop"
+      data-close-restore
+    ></div>
+
+
+    <div class="restore-panel">
+
+      <span class="eyebrow">
+        BACKUP DETECTED
+      </span>
+
+      <h2>
+        RESTORE JOURNAL?
+      </h2>
+
+
+      <div class="restore-file-card">
+
+        <span>
+          FILE
+        </span>
+
+        <strong id="restoreFileName">
+          BACKUP.JSON
+        </strong>
+
+      </div>
+
+
+      <div class="restore-stats">
+
+        <div>
+
+          <span>
+            BACKUP
+          </span>
+
+          <strong id="restoreStoryCount">
+            0 STORIES
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            CURRENT JOURNAL
+          </span>
+
+          <strong id="currentStoryCount">
+            0 STORIES
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <p class="restore-description">
+        MERGE keeps your current stories and adds the
+        backup stories. REPLACE restores the backup exactly.
+        A local safety snapshot is created before either action.
+      </p>
+
+
+      <div class="restore-actions">
+
+        <button
+          class="secondary-button"
+          type="button"
+          data-close-restore
+        >
+          CANCEL
+        </button>
+
+
+        <button
+          class="merge-button"
+          id="mergeBackupButton"
+          type="button"
+        >
+          MERGE
+        </button>
+
+
+        <button
+          class="replace-button"
+          id="replaceBackupButton"
+          type="button"
+        >
+          REPLACE
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       TOAST
+  ====================================================== -->
+
+  <div
+    class="toast"
+    id="toast"
+    role="status"
+    aria-live="polite"
+  ></div>
+
+
+  <script src="script.js"></script>
 
 </body>
-
 </html>
