@@ -60,7 +60,7 @@
 
 
   <!-- =====================================================
-       DEPORTES
+       NAVEGACIÓN DEPORTIVA
   ====================================================== -->
 
   <nav class="sport-nav">
@@ -116,7 +116,9 @@
 
     <label class="search-box">
 
-      <span>BUSCAR</span>
+      <span>
+        BUSCAR
+      </span>
 
       <input
         id="searchInput"
@@ -138,54 +140,189 @@
 
 
   <!-- =====================================================
-       PORTADA
+       CONTEXTO DE BÚSQUEDA
+  ====================================================== -->
+
+  <section
+    class="search-context"
+    id="searchContextBar"
+    aria-live="polite"
+    hidden
+  >
+
+    <div class="search-context-copy">
+
+      <span>
+        BÚSQUEDA ACTIVA
+      </span>
+
+      <strong id="searchContextText"></strong>
+
+    </div>
+
+    <button
+      class="clear-search-button"
+      id="clearSearchButton"
+      type="button"
+    >
+      LIMPIAR BÚSQUEDA
+    </button>
+
+  </section>
+
+
+  <!-- =====================================================
+       MAIN
   ====================================================== -->
 
   <main>
 
-    <section class="lead-section">
+    <!-- ===================================================
+         PORTADA GENERAL
+    ==================================================== -->
 
-      <div class="section-heading">
+    <div id="homeView">
 
-        <span class="section-number">
-          01
-        </span>
+      <section class="lead-section">
 
-        <h1>
-          NOTICIA PRINCIPAL
-        </h1>
+        <div class="section-heading">
 
-        <span class="section-line"></span>
+          <span class="section-number">
+            01
+          </span>
 
-      </div>
+          <h1>
+            NOTICIA PRINCIPAL
+          </h1>
 
-      <div id="leadStories"></div>
+          <span class="section-line"></span>
 
-    </section>
+        </div>
+
+        <div id="leadStories"></div>
+
+      </section>
 
 
-    <section class="latest-section">
+      <section class="latest-section">
 
-      <div class="section-heading">
+        <div class="section-heading">
 
-        <span class="section-number">
-          02
-        </span>
+          <span class="section-number">
+            02
+          </span>
 
-        <h2>
-          ÚLTIMAS
-        </h2>
+          <h2>
+            ÚLTIMAS
+          </h2>
 
-        <span class="section-line"></span>
+          <span class="section-line"></span>
 
-      </div>
+        </div>
 
-      <div
-        class="latest-list"
-        id="latestStories"
-      ></div>
+        <div
+          class="latest-list"
+          id="latestStories"
+        ></div>
 
-    </section>
+      </section>
+
+    </div>
+
+
+    <!-- ===================================================
+         SECCIÓN DEPORTIVA
+    ==================================================== -->
+
+    <div
+      class="sport-page"
+      id="sportPage"
+      hidden
+    >
+
+      <header class="sport-page-header">
+
+        <div class="sport-page-header-inner">
+
+          <span
+            class="sport-page-eyebrow"
+            id="sportPageEyebrow"
+          >
+            SECCIÓN SPORTS JOURNAL
+          </span>
+
+          <h1 id="sportPageTitle">
+            FÚTBOL
+          </h1>
+
+          <p id="sportPageDescription"></p>
+
+        </div>
+
+      </header>
+
+
+      <section class="sport-featured-section">
+
+        <div class="section-heading">
+
+          <span class="section-number">
+            01
+          </span>
+
+          <h2 id="sportFeaturedHeading">
+            DESTACADA
+          </h2>
+
+          <span class="section-line"></span>
+
+        </div>
+
+        <div id="sportFeatured"></div>
+
+      </section>
+
+
+      <section
+        class="sport-secondary-section"
+        id="sportSecondarySection"
+      >
+
+        <div
+          class="sport-secondary-grid"
+          id="sportSecondary"
+        ></div>
+
+      </section>
+
+
+      <section
+        class="sport-more-section"
+        id="sportMoreSection"
+      >
+
+        <div class="section-heading">
+
+          <span class="section-number">
+            02
+          </span>
+
+          <h2 id="sportMoreHeading">
+            MÁS DE FÚTBOL
+          </h2>
+
+          <span class="section-line"></span>
+
+        </div>
+
+        <div
+          class="sport-more-list"
+          id="sportMoreList"
+        ></div>
+
+      </section>
+
+    </div>
 
   </main>
 
@@ -203,7 +340,7 @@
       </span>
 
       <p>
-        Cambia el filtro, realiza otra búsqueda
+        Cambia la sección, realiza otra búsqueda
         o publica una nueva noticia.
       </p>
 
@@ -723,6 +860,23 @@
 
             </label>
 
+
+            <div class="editor-format-guide">
+
+              <strong>
+                FORMATO EDITORIAL RÁPIDO
+              </strong>
+
+              <p>
+                <code>##</code> subtítulo ·
+                <code>###</code> sección ·
+                <code>&gt;</code> cita ·
+                <code>-</code> lista ·
+                <code>---</code> separador
+              </p>
+
+            </div>
+
           </div>
 
         </div>
@@ -744,8 +898,8 @@
             </h3>
 
             <p class="editor-note">
-              La imagen aparecerá en portada solamente
-              cuando esta noticia ocupe la posición #01.
+              La imagen aparecerá en las posiciones
+              editoriales donde corresponda.
             </p>
 
 
@@ -810,7 +964,7 @@
             <div class="image-preview-block">
 
               <div class="preview-label">
-                VISTA PREVIA EN PORTADA
+                VISTA PREVIA
               </div>
 
               <div
@@ -851,7 +1005,7 @@
 
                   <p>
                     Mueve la zona importante de la fotografía
-                    dentro del marco de portada.
+                    dentro del marco.
                   </p>
 
                 </div>
@@ -1126,8 +1280,6 @@
 
     <article class="reader-panel">
 
-      <!-- READER TOP BAR -->
-
       <div class="reader-topbar">
 
         <button
@@ -1135,7 +1287,7 @@
           type="button"
           data-close-reader
         >
-          ← VOLVER A PORTADA
+          ← VOLVER
         </button>
 
         <div class="reader-topbar-brand">
@@ -1151,10 +1303,19 @@
           ×
         </button>
 
+
+        <div
+          class="reader-progress-track"
+          aria-hidden="true"
+        >
+          <div
+            class="reader-progress-bar"
+            id="readerProgressBar"
+          ></div>
+        </div>
+
       </div>
 
-
-      <!-- ARTICLE HEADER -->
 
       <header class="reader-header">
 
@@ -1223,8 +1384,6 @@
       </header>
 
 
-      <!-- IMAGE -->
-
       <div
         class="reader-image"
         id="readerImageContainer"
@@ -1239,15 +1398,11 @@
       </div>
 
 
-      <!-- BODY -->
-
       <div
         class="reader-body"
         id="readerBody"
       ></div>
 
-
-      <!-- RELATED -->
 
       <section
         class="reader-related"
@@ -1283,8 +1438,6 @@
 
       </section>
 
-
-      <!-- PREVIOUS / NEXT -->
 
       <nav
         class="reader-navigation"
@@ -1325,8 +1478,6 @@
       </nav>
 
 
-      <!-- ADMIN FOOTER -->
-
       <footer class="reader-footer">
 
         <div class="reader-footer-brand">
@@ -1354,6 +1505,16 @@
         </div>
 
       </footer>
+
+
+      <button
+        class="reader-back-to-top"
+        id="readerBackToTopButton"
+        type="button"
+        aria-label="Volver al inicio del artículo"
+      >
+        ↑ ARRIBA
+      </button>
 
     </article>
 
@@ -1536,4 +1697,4 @@
   <script src="script.js"></script>
 
 </body>
-</html> 
+</html>
