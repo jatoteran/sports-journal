@@ -3,22 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Sports Journal</title>
-
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
-  <!-- =====================================================
-       HEADER
-  ====================================================== -->
-
   <header class="site-header">
-
     <div class="header-top">
-
       <button
         class="menu-button"
         id="menuButton"
@@ -40,11 +32,9 @@
       >
         + ESCRIBIR NOTICIA
       </button>
-
     </div>
 
     <div class="header-bottom">
-
       <div class="edition-label">
         REDACCIÓN DEPORTIVA INDEPENDIENTE
       </div>
@@ -53,18 +43,14 @@
         class="edition-date"
         id="editionDate"
       ></div>
-
     </div>
-
   </header>
 
 
-  <!-- =====================================================
-       NAVEGACIÓN DEPORTIVA
-  ====================================================== -->
-
-  <nav class="sport-nav">
-
+  <nav
+    class="sport-nav"
+    aria-label="Secciones deportivas"
+  >
     <button
       class="sport-filter active"
       data-sport="all"
@@ -104,13 +90,8 @@
     >
       BALONCESTO
     </button>
-
   </nav>
 
-
-  <!-- =====================================================
-       BÚSQUEDA
-  ====================================================== -->
 
   <section class="search-strip">
 
@@ -138,10 +119,6 @@
 
   </section>
 
-
-  <!-- =====================================================
-       CONTEXTO DE BÚSQUEDA
-  ====================================================== -->
 
   <section
     class="search-context"
@@ -171,15 +148,7 @@
   </section>
 
 
-  <!-- =====================================================
-       MAIN
-  ====================================================== -->
-
   <main>
-
-    <!-- ===================================================
-         PORTADA GENERAL
-    ==================================================== -->
 
     <div id="homeView">
 
@@ -229,10 +198,6 @@
 
     </div>
 
-
-    <!-- ===================================================
-         SECCIÓN DEPORTIVA
-    ==================================================== -->
 
     <div
       class="sport-page"
@@ -328,29 +293,7 @@
 
 
   <!-- =====================================================
-       EMPTY STATE
-  ====================================================== -->
-
-  <template id="emptyStateTemplate">
-
-    <div class="empty-state">
-
-      <span>
-        NO HAY NOTICIAS
-      </span>
-
-      <p>
-        Cambia la sección, realiza otra búsqueda
-        o publica una nueva noticia.
-      </p>
-
-    </div>
-
-  </template>
-
-
-  <!-- =====================================================
-       MENÚ LATERAL
+       SIDE MENU
   ====================================================== -->
 
   <div
@@ -363,7 +306,6 @@
       class="side-menu-backdrop"
       data-close-menu
     ></div>
-
 
     <aside class="side-menu-panel">
 
@@ -538,7 +480,7 @@
 
 
   <!-- =====================================================
-       BORRADORES
+       DRAFTS
   ====================================================== -->
 
   <div
@@ -551,7 +493,6 @@
       class="modal-backdrop"
       data-close-drafts
     ></div>
-
 
     <div class="drafts-panel">
 
@@ -580,7 +521,6 @@
 
       </div>
 
-
       <div
         class="drafts-list"
         id="draftsList"
@@ -605,7 +545,6 @@
       class="modal-backdrop"
       data-close-editor
     ></div>
-
 
     <div class="editor-panel">
 
@@ -701,14 +640,15 @@
         </div>
 
 
-        <!-- INFORMACIÓN -->
+        <!-- =================================================
+             INFORMATION
+        ================================================== -->
 
         <div class="editor-section">
 
           <div class="editor-section-number">
             01
           </div>
-
 
           <div class="editor-section-content">
 
@@ -825,19 +765,64 @@
 
             </label>
 
+
+            <!-- =============================================
+                 NEW — TAGS
+            ============================================== -->
+
+            <label class="field">
+
+              <div class="field-heading">
+
+                <span>
+                  TEMAS / TAGS
+                </span>
+
+                <span
+                  class="field-character-count"
+                  id="tagsCount"
+                >
+                  0 / 8
+                </span>
+
+              </div>
+
+              <input
+                id="tagsInput"
+                type="text"
+                maxlength="320"
+                placeholder="NBA, Lakers, LeBron James, Playoffs"
+                autocomplete="off"
+              />
+
+              <small class="tags-help">
+                Separa cada tema con una coma.
+                Máximo 8 temas y 32 caracteres por tema.
+              </small>
+
+            </label>
+
+
+            <div
+              class="tag-preview"
+              id="tagsPreview"
+              aria-live="polite"
+            ></div>
+
           </div>
 
         </div>
 
 
-        <!-- ARTÍCULO -->
+        <!-- =================================================
+             ARTICLE
+        ================================================== -->
 
         <div class="editor-section">
 
           <div class="editor-section-number">
             02
           </div>
-
 
           <div class="editor-section-content">
 
@@ -882,14 +867,15 @@
         </div>
 
 
-        <!-- IMAGEN -->
+        <!-- =================================================
+             IMAGE
+        ================================================== -->
 
         <div class="editor-section">
 
           <div class="editor-section-number">
             03
           </div>
-
 
           <div class="editor-section-content">
 
@@ -924,7 +910,6 @@
                 MODO DE VISUALIZACIÓN
               </span>
 
-
               <div class="image-mode-buttons">
 
                 <button
@@ -932,6 +917,7 @@
                   type="button"
                   data-image-mode="crop"
                 >
+
                   <strong>
                     RECORTAR / LLENAR
                   </strong>
@@ -939,6 +925,7 @@
                   <small>
                     Llena completamente el marco
                   </small>
+
                 </button>
 
 
@@ -947,6 +934,7 @@
                   type="button"
                   data-image-mode="full"
                 >
+
                   <strong>
                     MOSTRAR COMPLETA
                   </strong>
@@ -954,6 +942,7 @@
                   <small>
                     Nunca recorta la fotografía
                   </small>
+
                 </button>
 
               </div>
@@ -1088,8 +1077,9 @@
               </strong>
 
               <p>
-                El punto de enfoque y el zoom están desactivados
-                porque toda la fotografía permanecerá visible.
+                El punto de enfoque y el zoom están
+                desactivados porque toda la fotografía
+                permanecerá visible.
               </p>
 
             </div>
@@ -1098,8 +1088,6 @@
 
         </div>
 
-
-        <!-- ACCIONES -->
 
         <div class="editor-actions">
 
@@ -1148,7 +1136,7 @@
 
 
   <!-- =====================================================
-       CAMBIOS SIN GUARDAR
+       UNSAVED
   ====================================================== -->
 
   <div
@@ -1161,7 +1149,6 @@
       class="modal-backdrop"
       data-keep-editing
     ></div>
-
 
     <div class="unsaved-panel">
 
@@ -1177,7 +1164,6 @@
         Hay cambios en esta noticia que todavía no se han
         guardado. Si sales ahora, esos cambios se perderán.
       </p>
-
 
       <div class="unsaved-actions">
 
@@ -1205,7 +1191,7 @@
 
 
   <!-- =====================================================
-       MOVER A BORRADOR
+       MOVE TO DRAFT
   ====================================================== -->
 
   <div
@@ -1218,7 +1204,6 @@
       class="modal-backdrop"
       data-close-move-draft
     ></div>
-
 
     <div class="move-draft-panel">
 
@@ -1235,7 +1220,6 @@
         y en las secciones públicas. Podrás volver a
         publicarla cuando quieras.
       </p>
-
 
       <div class="move-draft-actions">
 
@@ -1277,7 +1261,6 @@
       data-close-reader
     ></div>
 
-
     <article class="reader-panel">
 
       <div class="reader-topbar">
@@ -1308,10 +1291,12 @@
           class="reader-progress-track"
           aria-hidden="true"
         >
+
           <div
             class="reader-progress-bar"
             id="readerProgressBar"
           ></div>
+
         </div>
 
       </div>
@@ -1381,6 +1366,28 @@
 
         </div>
 
+
+        <!-- =============================================
+             NEW — READER TAGS
+        ============================================== -->
+
+        <div
+          class="reader-topics"
+          id="readerTopics"
+          hidden
+        >
+
+          <span class="reader-topics-label">
+            TEMAS
+          </span>
+
+          <div
+            class="reader-topics-list"
+            id="readerTopicsList"
+          ></div>
+
+        </div>
+
       </header>
 
 
@@ -1429,7 +1436,6 @@
           </div>
 
         </div>
-
 
         <div
           class="reader-related-grid"
@@ -1536,7 +1542,6 @@
       data-close-confirm
     ></div>
 
-
     <div class="confirm-panel">
 
       <span class="eyebrow">
@@ -1551,7 +1556,6 @@
         La noticia será eliminada del diario.
         Primero se creará una copia local automática.
       </p>
-
 
       <div class="confirm-actions">
 
@@ -1593,7 +1597,6 @@
       data-close-restore
     ></div>
 
-
     <div class="restore-panel">
 
       <span class="eyebrow">
@@ -1627,7 +1630,6 @@
           <strong id="restoreStoryCount"></strong>
 
         </div>
-
 
         <div>
 
@@ -1681,10 +1683,6 @@
 
   </div>
 
-
-  <!-- =====================================================
-       TOAST
-  ====================================================== -->
 
   <div
     class="toast"

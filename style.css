@@ -6,14 +6,8 @@
   --gray: #a5a194;
   --dark-gray: #232320;
   --red: #d62d20;
-
   --border: 3px solid var(--black);
 }
-
-
-/* =========================================================
-   RESET
-========================================================= */
 
 * {
   box-sizing: border-box;
@@ -306,9 +300,6 @@ body.modal-open {
   padding: 0 28px;
 }
 
-
-/* SEARCH CONTEXT */
-
 .search-context {
   min-height: 68px;
 
@@ -320,9 +311,7 @@ body.modal-open {
 
   border-bottom: var(--border);
 
-  padding:
-    12px
-    clamp(20px, 4vw, 64px);
+  padding: 12px clamp(20px, 4vw, 64px);
 
   background: var(--yellow);
 }
@@ -377,7 +366,7 @@ body.modal-open {
 
 
 /* =========================================================
-   SHARED SECTIONS
+   SHARED
 ========================================================= */
 
 main {
@@ -445,7 +434,7 @@ main {
 
 
 /* =========================================================
-   PRIMARY LEAD
+   PRIMARY
 ========================================================= */
 
 .lead-primary {
@@ -621,7 +610,7 @@ main {
 
 
 /* =========================================================
-   SECONDARY LEADS
+   SECONDARY
 ========================================================= */
 
 .secondary-leads {
@@ -680,7 +669,7 @@ main {
 
 
 /* =========================================================
-   LATEST / SPORT MORE
+   LATEST
 ========================================================= */
 
 .latest-list,
@@ -766,24 +755,40 @@ main {
 
 
 /* =========================================================
-   SPORT PAGE HEADER
+   SPORT PAGE
 ========================================================= */
 
 .sport-page-header {
+  position: relative;
+
   overflow: visible;
 
   border-bottom: var(--border);
 
-  background: var(--black);
-  color: var(--cream);
+  background: var(--cream);
+  color: var(--black);
+}
+
+.sport-page-header::before {
+  content: "";
+
+  display: block;
+
+  width: 100%;
+  height: 7px;
+
+  background: var(--yellow);
 }
 
 .sport-page-header-inner {
+  position: relative;
+
   overflow: visible;
 
   padding:
-    clamp(48px, 7vw, 90px)
-    clamp(20px, 5vw, 70px);
+    clamp(48px, 7vw, 85px)
+    clamp(20px, 5vw, 70px)
+    clamp(45px, 6vw, 72px);
 }
 
 .sport-page-eyebrow {
@@ -792,10 +797,12 @@ main {
 
   display: table;
 
-  margin-bottom: 26px;
+  margin-bottom: 28px;
 
-  background: var(--yellow);
-  color: var(--black);
+  border: 2px solid var(--black);
+
+  background: var(--black);
+  color: var(--yellow);
 
   padding: 7px 10px;
 
@@ -810,9 +817,9 @@ main {
 
   margin: 0;
 
-  padding-top: 6px;
+  padding-top: 7px;
 
-  color: var(--cream);
+  color: var(--black);
 
   font-family: Impact, "Arial Black", sans-serif;
   font-size: clamp(72px, 15vw, 180px);
@@ -821,24 +828,35 @@ main {
 }
 
 .sport-page-header p {
-  max-width: 700px;
+  max-width: 720px;
 
-  margin: 30px 0 0;
+  margin: 32px 0 0;
 
-  border-top: 2px solid #45453f;
+  border-top: 3px solid var(--black);
 
-  padding-top: 22px;
+  padding-top: 20px;
 
-  color: #cbc7b9;
+  color: var(--dark-gray);
 
   font-size: clamp(14px, 1.6vw, 18px);
   line-height: 1.55;
 }
 
+.sport-page-header-inner::after {
+  content: "";
 
-/* =========================================================
-   SPORT FEATURED
-========================================================= */
+  position: absolute;
+
+  right: clamp(20px, 5vw, 70px);
+  bottom: 38px;
+
+  width: 72px;
+  height: 12px;
+
+  background: var(--yellow);
+
+  border: 2px solid var(--black);
+}
 
 .sport-featured-story {
   display: grid;
@@ -918,11 +936,6 @@ main {
   line-height: 1.55;
 }
 
-
-/* =========================================================
-   SPORT SECONDARY
-========================================================= */
-
 .sport-secondary-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -989,7 +1002,7 @@ main {
 
 
 /* =========================================================
-   EMPTY STATE
+   EMPTY
 ========================================================= */
 
 .empty-state {
@@ -1492,7 +1505,7 @@ main {
 
 
 /* =========================================================
-   EDITOR STATUS
+   EDITOR
 ========================================================= */
 
 .editor-status-strip {
@@ -1553,11 +1566,6 @@ main {
   font-size: 9px;
   font-weight: 900;
 }
-
-
-/* =========================================================
-   EDITOR
-========================================================= */
 
 .editor-section {
   display: grid;
@@ -1691,9 +1699,6 @@ main {
   box-shadow: 5px 5px 0 var(--yellow);
 }
 
-
-/* FORMAT GUIDE */
-
 .editor-format-guide {
   margin: -7px 0 23px;
 
@@ -1726,6 +1731,97 @@ main {
   color: var(--yellow);
 
   padding: 2px 5px;
+}
+
+
+/* =========================================================
+   TAGS
+========================================================= */
+
+.tags-help {
+  display: block;
+
+  margin-top: 8px;
+
+  color: #625f56;
+
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.tag-preview {
+  min-height: 42px;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: -6px;
+  margin-bottom: 8px;
+}
+
+.tag-preview-empty {
+  color: #767268;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.topic-chip {
+  min-height: 30px;
+
+  display: inline-flex;
+  align-items: center;
+
+  border: 2px solid var(--black);
+
+  background: var(--yellow);
+  color: var(--black);
+
+  padding: 5px 9px;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+
+  text-transform: uppercase;
+}
+
+.reader-topics {
+  max-width: 820px;
+
+  margin-top: 26px;
+
+  padding-top: 18px;
+
+  border-top: 2px solid var(--black);
+}
+
+.reader-topics-label {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: #68645a;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.11em;
+}
+
+.reader-topics-list {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 8px;
+}
+
+.reader-topics .topic-chip {
+  background: transparent;
 }
 
 
@@ -1932,7 +2028,7 @@ main {
 
 
 /* =========================================================
-   EDITOR ACTIONS
+   ACTIONS
 ========================================================= */
 
 .editor-actions {
@@ -2009,7 +2105,7 @@ main {
 
 
 /* =========================================================
-   CONFIRMATION MODALS
+   CONFIRM
 ========================================================= */
 
 .unsaved-modal,
@@ -2126,9 +2222,6 @@ main {
   background: var(--cream);
 }
 
-
-/* TOP BAR */
-
 .reader-topbar {
   position: sticky;
   z-index: 20;
@@ -2170,9 +2263,6 @@ main {
   justify-self: end;
 }
 
-
-/* READING PROGRESS */
-
 .reader-progress-track {
   position: absolute;
 
@@ -2196,9 +2286,6 @@ main {
   transform: scaleX(0);
   transform-origin: left center;
 }
-
-
-/* ARTICLE HEADER */
 
 .reader-header {
   border-bottom: var(--border);
@@ -2289,9 +2376,6 @@ main {
   font-size: 10px;
 }
 
-
-/* IMAGE */
-
 .reader-image {
   padding:
     clamp(35px, 5vw, 60px)
@@ -2313,9 +2397,6 @@ main {
 
   object-fit: contain;
 }
-
-
-/* ARTICLE BODY */
 
 .reader-body {
   max-width: 790px;
@@ -2406,9 +2487,6 @@ main {
 
   background: var(--black);
 }
-
-
-/* RELATED */
 
 .reader-related {
   border-top: var(--border);
@@ -2501,14 +2579,12 @@ main {
 
 .reader-related-meta {
   margin-top: auto;
+
   padding-top: 22px;
 
   font-size: 9px;
   font-weight: 900;
 }
-
-
-/* PREVIOUS / NEXT */
 
 .reader-navigation {
   display: grid;
@@ -2571,9 +2647,6 @@ main {
   color: var(--black);
 }
 
-
-/* BACK TO TOP */
-
 .reader-back-to-top {
   position: fixed;
   z-index: 40;
@@ -2615,9 +2688,6 @@ main {
   background: var(--black);
   color: var(--yellow);
 }
-
-
-/* FOOTER */
 
 .reader-footer {
   min-height: 92px;
@@ -2882,9 +2952,7 @@ main {
 
     gap: 12px;
 
-    padding:
-      14px
-      16px;
+    padding: 14px 16px;
   }
 
 
@@ -2917,18 +2985,23 @@ main {
   }
 
 
+  .sport-page-header::before {
+    height: 5px;
+  }
+
+
   .sport-page-header-inner {
     padding:
-      38px
+      35px
       17px
-      42px;
+      38px;
   }
 
 
   .sport-page-eyebrow {
-    margin-bottom: 24px;
+    margin-bottom: 23px;
 
-    padding: 6px 9px;
+    padding: 6px 8px;
 
     font-size: 8px;
   }
@@ -2939,23 +3012,32 @@ main {
 
     font-size:
       clamp(
-        66px,
+        64px,
         22vw,
         100px
       );
 
-    line-height: 0.9;
+    line-height: 0.91;
 
     letter-spacing: -0.035em;
   }
 
 
   .sport-page-header p {
-    margin-top: 24px;
+    margin-top: 25px;
 
-    padding-top: 18px;
+    padding-top: 17px;
 
     font-size: 13px;
+  }
+
+
+  .sport-page-header-inner::after {
+    width: 45px;
+    height: 8px;
+
+    right: 17px;
+    bottom: 25px;
   }
 
 
@@ -2979,7 +3061,8 @@ main {
   }
 
 
-  .secondary-story:only-child {
+  .secondary-story:only-child,
+  .sport-section-card:only-child {
     grid-column: 1;
   }
 
@@ -2987,11 +3070,6 @@ main {
   .sport-section-card + .sport-section-card {
     border-left: 0;
     border-top: var(--border);
-  }
-
-
-  .sport-section-card:only-child {
-    grid-column: 1;
   }
 
 
@@ -3082,8 +3160,6 @@ main {
   }
 
 
-  /* EDITOR */
-
   .editor-panel {
     width: 100vw;
   }
@@ -3167,8 +3243,6 @@ main {
   }
 
 
-  /* READER */
-
   .reader-panel {
     width: 100vw;
 
@@ -3200,6 +3274,18 @@ main {
 
   .reader-summary {
     font-size: 18px;
+  }
+
+
+  .reader-topics {
+    margin-top: 22px;
+  }
+
+
+  .topic-chip {
+    min-height: 28px;
+
+    font-size: 8px;
   }
 
 
@@ -3341,252 +3427,6 @@ main {
 
   .sport-page-header-inner {
     padding:
-      34px
-      15px
-      38px;
-  }
-
-
-  .sport-page-eyebrow {
-    margin-bottom: 22px;
-  }
-
-
-  .sport-page-header h1 {
-    padding-top: 8px;
-
-    font-size:
-      clamp(
-        61px,
-        21vw,
-        88px
-      );
-
-    line-height: 0.91;
-  }
-
-
-  .sport-filter {
-    min-width: 110px;
-
-    font-size: 10px;
-  }
-
-}
-
-/* =========================================================
-   PASO 6 — SPORT PAGE HEADER REBALANCE
-   Más aire, menos saturación de negro
-========================================================= */
-
-.sport-page-header {
-  position: relative;
-
-  overflow: visible;
-
-  border-bottom: var(--border);
-
-  background: var(--cream);
-  color: var(--black);
-}
-
-
-/* línea amarilla editorial que separa la navegación */
-
-.sport-page-header::before {
-  content: "";
-
-  display: block;
-
-  width: 100%;
-  height: 7px;
-
-  background: var(--yellow);
-}
-
-
-/* cabecera */
-
-.sport-page-header-inner {
-  position: relative;
-
-  overflow: visible;
-
-  padding:
-    clamp(48px, 7vw, 85px)
-    clamp(20px, 5vw, 70px)
-    clamp(45px, 6vw, 72px);
-}
-
-
-/* pequeña etiqueta superior */
-
-.sport-page-eyebrow {
-  position: relative;
-  z-index: 2;
-
-  display: table;
-
-  margin-bottom: 28px;
-
-  border: 2px solid var(--black);
-
-  background: var(--black);
-  color: var(--yellow);
-
-  padding: 7px 10px;
-
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: 0.11em;
-}
-
-
-/* título gigante */
-
-.sport-page-header h1 {
-  position: relative;
-  z-index: 1;
-
-  margin: 0;
-
-  padding-top: 7px;
-
-  color: var(--black);
-
-  font-family: Impact, "Arial Black", sans-serif;
-
-  font-size:
-    clamp(
-      72px,
-      15vw,
-      180px
-    );
-
-  line-height: 0.86;
-
-  letter-spacing: -0.045em;
-}
-
-
-/* descripción */
-
-.sport-page-header p {
-  max-width: 720px;
-
-  margin:
-    32px
-    0
-    0;
-
-  border-top: 3px solid var(--black);
-
-  padding-top: 20px;
-
-  color: var(--dark-gray);
-
-  font-size:
-    clamp(
-      14px,
-      1.6vw,
-      18px
-    );
-
-  line-height: 1.55;
-}
-
-
-/* pequeño detalle editorial a la derecha */
-
-.sport-page-header-inner::after {
-  content: "";
-
-  position: absolute;
-
-  right: clamp(20px, 5vw, 70px);
-  bottom: 38px;
-
-  width: 72px;
-  height: 12px;
-
-  background: var(--yellow);
-
-  border: 2px solid var(--black);
-}
-
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-@media (max-width: 650px) {
-
-  .sport-page-header::before {
-    height: 5px;
-  }
-
-
-  .sport-page-header-inner {
-    padding:
-      35px
-      17px
-      38px;
-  }
-
-
-  .sport-page-eyebrow {
-    margin-bottom: 23px;
-
-    padding:
-      6px
-      8px;
-
-    font-size: 8px;
-  }
-
-
-  .sport-page-header h1 {
-    padding-top: 7px;
-
-    font-size:
-      clamp(
-        64px,
-        22vw,
-        100px
-      );
-
-    line-height: 0.91;
-  }
-
-
-  .sport-page-header p {
-    margin-top: 25px;
-
-    padding-top: 17px;
-
-    font-size: 13px;
-  }
-
-
-  .sport-page-header-inner::after {
-    width: 45px;
-    height: 8px;
-
-    right: 17px;
-    bottom: 25px;
-  }
-
-}
-
-
-/* =========================================================
-   VERY SMALL PHONES
-========================================================= */
-
-@media (max-width: 420px) {
-
-  .sport-page-header-inner {
-    padding:
       32px
       15px
       36px;
@@ -3605,6 +3445,195 @@ main {
 
   .sport-page-header-inner::after {
     right: 15px;
+  }
+
+
+  .sport-filter {
+    min-width: 110px;
+
+    font-size: 10px;
+  }
+
+}
+
+/* =========================================================
+   PASO 8.3 — PÁGINAS POR TEMA
+========================================================= */
+
+
+/* ---------------------------------------------------------
+   Temas clicables dentro del Reader
+--------------------------------------------------------- */
+
+button.topic-chip {
+  appearance: none;
+
+  font-family: Arial, Helvetica, sans-serif;
+
+  cursor: pointer;
+
+  transition:
+    background 0.16s ease,
+    color 0.16s ease,
+    transform 0.16s ease;
+}
+
+
+button.topic-chip:hover,
+button.topic-chip:focus-visible {
+  background: var(--black);
+  color: var(--yellow);
+
+  transform: translateY(-2px);
+
+  outline: none;
+}
+
+
+/* ---------------------------------------------------------
+   Página editorial de un tema
+--------------------------------------------------------- */
+
+.sport-page.topic-mode .sport-page-header::before {
+  background: var(--black);
+}
+
+
+.sport-page.topic-mode .sport-page-eyebrow {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+
+.sport-page.topic-mode .sport-page-header h1 {
+  max-width: 1200px;
+
+  font-size:
+    clamp(
+      58px,
+      11vw,
+      145px
+    );
+
+  line-height: 0.88;
+
+  overflow-wrap: anywhere;
+}
+
+
+.sport-page.topic-mode .sport-page-header p {
+  max-width: 760px;
+}
+
+
+/* ---------------------------------------------------------
+   Badge del deporte dentro de una página temática
+--------------------------------------------------------- */
+
+.topic-story-sport {
+  width: fit-content;
+
+  margin-bottom: 14px;
+
+  border: 2px solid var(--black);
+
+  background: var(--yellow);
+  color: var(--black);
+
+  padding: 6px 9px;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
+}
+
+
+/* ---------------------------------------------------------
+   Indicador de tema
+--------------------------------------------------------- */
+
+.topic-context-label {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin-top: 25px;
+
+  border-top: 2px solid var(--black);
+
+  padding-top: 14px;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+
+.topic-context-label::before {
+  content: "#";
+
+  display: grid;
+  place-items: center;
+
+  width: 25px;
+  height: 25px;
+
+  background: var(--black);
+  color: var(--yellow);
+
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: 15px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+  button.topic-chip:hover {
+    transform: none;
+  }
+
+
+  .sport-page.topic-mode .sport-page-header h1 {
+    font-size:
+      clamp(
+        48px,
+        16vw,
+        76px
+      );
+
+    line-height: 0.92;
+  }
+
+
+  .topic-story-sport {
+    margin-bottom: 12px;
+
+    font-size: 8px;
+  }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width: 420px) {
+
+  .sport-page.topic-mode .sport-page-header h1 {
+    font-size:
+      clamp(
+        43px,
+        15vw,
+        65px
+      );
   }
 
 }

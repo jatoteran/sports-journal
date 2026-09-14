@@ -1,12 +1,3 @@
-/* =========================================================
-   SPORTS JOURNAL
-========================================================= */
-
-
-/* =========================================================
-   STORAGE
-========================================================= */
-
 const STORAGE_KEY =
   "sportsJournalArticles";
 
@@ -15,6 +6,13 @@ const BACKUPS_KEY =
 
 const MAX_AUTOMATIC_BACKUPS =
   16;
+
+const MAX_TAGS =
+  8;
+
+const MAX_TAG_LENGTH =
+  32;
+
 
 const LEGACY_STORAGE_KEYS = [
   "sportsArticles",
@@ -33,6 +31,7 @@ const SPORT_LABELS = {
 
 
 const SPORT_DESCRIPTIONS = {
+
   football:
     "Partidos, ligas, mercado, selecciones y las historias que marcan el mundo del fútbol.",
 
@@ -44,6 +43,7 @@ const SPORT_DESCRIPTIONS = {
 
   basketball:
     "NBA, baloncesto internacional, estrellas, equipos y todo lo que sucede dentro y fuera de la cancha."
+
 };
 
 
@@ -83,68 +83,55 @@ let editorHasUnsavedChanges =
    DOM
 ========================================================= */
 
+const byId =
+  (id) =>
+    document.getElementById(id);
+
+
 const editionDate =
-  document.getElementById("editionDate");
+  byId("editionDate");
 
 const menuButton =
-  document.getElementById("menuButton");
+  byId("menuButton");
 
 const sideMenu =
-  document.getElementById("sideMenu");
+  byId("sideMenu");
 
 const frontPageMenuButton =
-  document.getElementById(
-    "frontPageMenuButton"
-  );
+  byId("frontPageMenuButton");
 
 const menuWriteStoryButton =
-  document.getElementById(
-    "menuWriteStoryButton"
-  );
+  byId("menuWriteStoryButton");
 
 const draftsMenuButton =
-  document.getElementById(
-    "draftsMenuButton"
-  );
+  byId("draftsMenuButton");
 
 const publishedMenuButton =
-  document.getElementById(
-    "publishedMenuButton"
-  );
+  byId("publishedMenuButton");
 
 const draftCount =
-  document.getElementById("draftCount");
+  byId("draftCount");
 
 const publishedCount =
-  document.getElementById(
-    "publishedCount"
-  );
+  byId("publishedCount");
 
 const draftsModal =
-  document.getElementById("draftsModal");
+  byId("draftsModal");
 
 const draftsList =
-  document.getElementById("draftsList");
+  byId("draftsList");
 
 const exportBackupButton =
-  document.getElementById(
-    "exportBackupButton"
-  );
+  byId("exportBackupButton");
 
 const restoreBackupButton =
-  document.getElementById(
-    "restoreBackupButton"
-  );
+  byId("restoreBackupButton");
 
 const backupFileInput =
-  document.getElementById(
-    "backupFileInput"
-  );
+  byId("backupFileInput");
 
 const internalBackupStatus =
-  document.getElementById(
-    "internalBackupStatus"
-  );
+  byId("internalBackupStatus");
 
 const sportFilters =
   document.querySelectorAll(
@@ -152,207 +139,139 @@ const sportFilters =
   );
 
 const searchInput =
-  document.getElementById("searchInput");
+  byId("searchInput");
 
 const storyCount =
-  document.getElementById("storyCount");
+  byId("storyCount");
 
 const searchContextBar =
-  document.getElementById(
-    "searchContextBar"
-  );
+  byId("searchContextBar");
 
 const searchContextText =
-  document.getElementById(
-    "searchContextText"
-  );
+  byId("searchContextText");
 
 const clearSearchButton =
-  document.getElementById(
-    "clearSearchButton"
-  );
+  byId("clearSearchButton");
 
 const homeView =
-  document.getElementById("homeView");
+  byId("homeView");
 
 const sportPage =
-  document.getElementById("sportPage");
+  byId("sportPage");
 
 const leadStories =
-  document.getElementById("leadStories");
+  byId("leadStories");
 
 const latestStories =
-  document.getElementById(
-    "latestStories"
-  );
+  byId("latestStories");
 
 const sportPageEyebrow =
-  document.getElementById(
-    "sportPageEyebrow"
-  );
+  byId("sportPageEyebrow");
 
 const sportPageTitle =
-  document.getElementById(
-    "sportPageTitle"
-  );
+  byId("sportPageTitle");
 
 const sportPageDescription =
-  document.getElementById(
-    "sportPageDescription"
-  );
+  byId("sportPageDescription");
 
 const sportFeaturedHeading =
-  document.getElementById(
-    "sportFeaturedHeading"
-  );
+  byId("sportFeaturedHeading");
 
 const sportFeatured =
-  document.getElementById(
-    "sportFeatured"
-  );
+  byId("sportFeatured");
 
 const sportSecondarySection =
-  document.getElementById(
-    "sportSecondarySection"
-  );
+  byId("sportSecondarySection");
 
 const sportSecondary =
-  document.getElementById(
-    "sportSecondary"
-  );
+  byId("sportSecondary");
 
 const sportMoreSection =
-  document.getElementById(
-    "sportMoreSection"
-  );
+  byId("sportMoreSection");
 
 const sportMoreHeading =
-  document.getElementById(
-    "sportMoreHeading"
-  );
+  byId("sportMoreHeading");
 
 const sportMoreList =
-  document.getElementById(
-    "sportMoreList"
-  );
-
-const emptyStateTemplate =
-  document.getElementById(
-    "emptyStateTemplate"
-  );
+  byId("sportMoreList");
 
 const openEditorButton =
-  document.getElementById(
-    "openEditorButton"
-  );
+  byId("openEditorButton");
 
 const brandButton =
-  document.getElementById(
-    "brandButton"
-  );
+  byId("brandButton");
 
 
-/* =========================================================
-   EDITOR DOM
-========================================================= */
+/* EDITOR */
 
 const editorModal =
-  document.getElementById("editorModal");
+  byId("editorModal");
 
 const editorHeading =
-  document.getElementById(
-    "editorHeading"
-  );
+  byId("editorHeading");
 
 const editorStatusValue =
-  document.getElementById(
-    "editorStatusValue"
-  );
+  byId("editorStatusValue");
 
 const editorSaveState =
-  document.getElementById(
-    "editorSaveState"
-  );
+  byId("editorSaveState");
 
 const editorDateInfo =
-  document.getElementById(
-    "editorDateInfo"
-  );
+  byId("editorDateInfo");
 
 const articleForm =
-  document.getElementById(
-    "articleForm"
-  );
+  byId("articleForm");
 
 const articleIdInput =
-  document.getElementById(
-    "articleId"
-  );
+  byId("articleId");
 
 const sportInput =
-  document.getElementById(
-    "sportInput"
-  );
+  byId("sportInput");
 
 const authorInput =
-  document.getElementById(
-    "authorInput"
-  );
+  byId("authorInput");
 
 const titleInput =
-  document.getElementById(
-    "titleInput"
-  );
+  byId("titleInput");
 
 const summaryInput =
-  document.getElementById(
-    "summaryInput"
-  );
+  byId("summaryInput");
+
+const tagsInput =
+  byId("tagsInput");
+
+const tagsCount =
+  byId("tagsCount");
+
+const tagsPreview =
+  byId("tagsPreview");
 
 const contentInput =
-  document.getElementById(
-    "contentInput"
-  );
+  byId("contentInput");
 
 const titleCharacterCount =
-  document.getElementById(
-    "titleCharacterCount"
-  );
+  byId("titleCharacterCount");
 
 const summaryCharacterCount =
-  document.getElementById(
-    "summaryCharacterCount"
-  );
+  byId("summaryCharacterCount");
 
 const saveDraftButton =
-  document.getElementById(
-    "saveDraftButton"
-  );
+  byId("saveDraftButton");
 
 const saveDraftButtonText =
-  document.getElementById(
-    "saveDraftButtonText"
-  );
+  byId("saveDraftButtonText");
 
 const publishButtonText =
-  document.getElementById(
-    "publishButtonText"
-  );
+  byId("publishButtonText");
 
 
-/* =========================================================
-   IMAGE DOM
-========================================================= */
+/* IMAGE */
 
 const imageUrlInput =
-  document.getElementById(
-    "imageUrlInput"
-  );
+  byId("imageUrlInput");
 
 const imageModeInput =
-  document.getElementById(
-    "imageMode"
-  );
+  byId("imageMode");
 
 const imageModeButtons =
   document.querySelectorAll(
@@ -360,104 +279,64 @@ const imageModeButtons =
   );
 
 const imagePreview =
-  document.getElementById(
-    "imagePreview"
-  );
+  byId("imagePreview");
 
 const imagePreviewElement =
-  document.getElementById(
-    "imagePreviewElement"
-  );
+  byId("imagePreviewElement");
 
 const focusXInput =
-  document.getElementById(
-    "focusXInput"
-  );
+  byId("focusXInput");
 
 const focusYInput =
-  document.getElementById(
-    "focusYInput"
-  );
+  byId("focusYInput");
 
 const imageZoomInput =
-  document.getElementById(
-    "imageZoomInput"
-  );
+  byId("imageZoomInput");
 
 const focusXOutput =
-  document.getElementById(
-    "focusXOutput"
-  );
+  byId("focusXOutput");
 
 const focusYOutput =
-  document.getElementById(
-    "focusYOutput"
-  );
+  byId("focusYOutput");
 
 const zoomOutput =
-  document.getElementById(
-    "zoomOutput"
-  );
+  byId("zoomOutput");
 
 const cropControls =
-  document.getElementById(
-    "cropControls"
-  );
+  byId("cropControls");
 
 const fullImageInfo =
-  document.getElementById(
-    "fullImageInfo"
-  );
+  byId("fullImageInfo");
 
 const resetImageButton =
-  document.getElementById(
-    "resetImageButton"
-  );
+  byId("resetImageButton");
 
 
-/* =========================================================
-   UNSAVED / DRAFT DOM
-========================================================= */
+/* UNSAVED */
 
 const unsavedModal =
-  document.getElementById(
-    "unsavedModal"
-  );
+  byId("unsavedModal");
 
 const keepEditingButton =
-  document.getElementById(
-    "keepEditingButton"
-  );
+  byId("keepEditingButton");
 
 const discardChangesButton =
-  document.getElementById(
-    "discardChangesButton"
-  );
+  byId("discardChangesButton");
 
 const moveDraftModal =
-  document.getElementById(
-    "moveDraftModal"
-  );
+  byId("moveDraftModal");
 
 const keepPublishedButton =
-  document.getElementById(
-    "keepPublishedButton"
-  );
+  byId("keepPublishedButton");
 
 const confirmMoveDraftButton =
-  document.getElementById(
-    "confirmMoveDraftButton"
-  );
+  byId("confirmMoveDraftButton");
 
 
-/* =========================================================
-   READER DOM
-========================================================= */
+/* READER */
 
 const readerModal =
-  document.getElementById(
-    "readerModal"
-  );
+  byId("readerModal");
 
 const readerPanel =
   readerModal.querySelector(
@@ -465,162 +344,106 @@ const readerPanel =
   );
 
 const readerSport =
-  document.getElementById(
-    "readerSport"
-  );
+  byId("readerSport");
 
 const readerPublishedDate =
-  document.getElementById(
-    "readerPublishedDate"
-  );
+  byId("readerPublishedDate");
 
 const readerTitle =
-  document.getElementById(
-    "readerTitle"
-  );
+  byId("readerTitle");
 
 const readerSummary =
-  document.getElementById(
-    "readerSummary"
-  );
+  byId("readerSummary");
 
 const readerAuthor =
-  document.getElementById(
-    "readerAuthor"
-  );
+  byId("readerAuthor");
 
 const readerReadTime =
-  document.getElementById(
-    "readerReadTime"
-  );
+  byId("readerReadTime");
 
 const readerUpdatedBlock =
-  document.getElementById(
-    "readerUpdatedBlock"
-  );
+  byId("readerUpdatedBlock");
 
 const readerUpdatedDate =
-  document.getElementById(
-    "readerUpdatedDate"
-  );
+  byId("readerUpdatedDate");
+
+const readerTopics =
+  byId("readerTopics");
+
+const readerTopicsList =
+  byId("readerTopicsList");
 
 const readerImageContainer =
-  document.getElementById(
-    "readerImageContainer"
-  );
+  byId("readerImageContainer");
 
 const readerImage =
-  document.getElementById(
-    "readerImage"
-  );
+  byId("readerImage");
 
 const readerBody =
-  document.getElementById(
-    "readerBody"
-  );
+  byId("readerBody");
 
 const readerRelatedSection =
-  document.getElementById(
-    "readerRelatedSection"
-  );
+  byId("readerRelatedSection");
 
 const readerRelatedTitle =
-  document.getElementById(
-    "readerRelatedTitle"
-  );
+  byId("readerRelatedTitle");
 
 const readerRelatedStories =
-  document.getElementById(
-    "readerRelatedStories"
-  );
+  byId("readerRelatedStories");
 
 const readerPreviousButton =
-  document.getElementById(
-    "readerPreviousButton"
-  );
+  byId("readerPreviousButton");
 
 const readerPreviousTitle =
-  document.getElementById(
-    "readerPreviousTitle"
-  );
+  byId("readerPreviousTitle");
 
 const readerNextButton =
-  document.getElementById(
-    "readerNextButton"
-  );
+  byId("readerNextButton");
 
 const readerNextTitle =
-  document.getElementById(
-    "readerNextTitle"
-  );
+  byId("readerNextTitle");
 
 const readerEditButton =
-  document.getElementById(
-    "readerEditButton"
-  );
+  byId("readerEditButton");
 
 const readerDeleteButton =
-  document.getElementById(
-    "readerDeleteButton"
-  );
+  byId("readerDeleteButton");
 
 const readerProgressBar =
-  document.getElementById(
-    "readerProgressBar"
-  );
+  byId("readerProgressBar");
 
 const readerBackToTopButton =
-  document.getElementById(
-    "readerBackToTopButton"
-  );
+  byId("readerBackToTopButton");
 
 
-/* =========================================================
-   DELETE / RESTORE DOM
-========================================================= */
+/* DELETE / RESTORE */
 
 const confirmModal =
-  document.getElementById(
-    "confirmModal"
-  );
+  byId("confirmModal");
 
 const confirmDeleteButton =
-  document.getElementById(
-    "confirmDeleteButton"
-  );
+  byId("confirmDeleteButton");
 
 const restoreModal =
-  document.getElementById(
-    "restoreModal"
-  );
+  byId("restoreModal");
 
 const restoreFileName =
-  document.getElementById(
-    "restoreFileName"
-  );
+  byId("restoreFileName");
 
 const restoreStoryCount =
-  document.getElementById(
-    "restoreStoryCount"
-  );
+  byId("restoreStoryCount");
 
 const currentStoryCount =
-  document.getElementById(
-    "currentStoryCount"
-  );
+  byId("currentStoryCount");
 
 const mergeBackupButton =
-  document.getElementById(
-    "mergeBackupButton"
-  );
+  byId("mergeBackupButton");
 
 const replaceBackupButton =
-  document.getElementById(
-    "replaceBackupButton"
-  );
+  byId("replaceBackupButton");
 
 const toast =
-  document.getElementById("toast");
+  byId("toast");
 
 
 /* =========================================================
@@ -642,6 +465,8 @@ function initialize() {
 
   updateBackupStatus();
 
+  renderTagPreview();
+
   bindEvents();
 
 }
@@ -650,6 +475,34 @@ function initialize() {
 /* =========================================================
    STORAGE
 ========================================================= */
+
+function readJsonFromStorage(key) {
+
+  const raw =
+    localStorage.getItem(key);
+
+
+  if (!raw) {
+
+    return null;
+
+  }
+
+
+  try {
+
+    return JSON.parse(raw);
+
+  } catch (error) {
+
+    console.error(error);
+
+    return null;
+
+  }
+
+}
+
 
 function loadArticles() {
 
@@ -678,28 +531,33 @@ function loadArticles() {
 
 
     if (
-      Array.isArray(legacyData)
+      !Array.isArray(
+        legacyData
+      )
     ) {
 
-      try {
-
-        localStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify(
-            legacyData
-          )
-        );
-
-      } catch (error) {
-
-        console.error(error);
-
-      }
-
-
-      return legacyData;
+      continue;
 
     }
+
+
+    try {
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(
+          legacyData
+        )
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+
+    return legacyData;
 
   }
 
@@ -708,19 +566,14 @@ function loadArticles() {
     loadInternalBackups();
 
 
-  if (
+  return (
     backups.length > 0 &&
     Array.isArray(
       backups[0].articles
     )
-  ) {
-
-    return backups[0].articles;
-
-  }
-
-
-  return [];
+  )
+    ? backups[0].articles
+    : [];
 
 }
 
@@ -754,34 +607,6 @@ function persistArticles() {
 }
 
 
-function readJsonFromStorage(key) {
-
-  const raw =
-    localStorage.getItem(key);
-
-
-  if (!raw) {
-
-    return null;
-
-  }
-
-
-  try {
-
-    return JSON.parse(raw);
-
-  } catch (error) {
-
-    console.error(error);
-
-    return null;
-
-  }
-
-}
-
-
 /* =========================================================
    BACKUPS
 ========================================================= */
@@ -794,7 +619,9 @@ function loadInternalBackups() {
     );
 
 
-  if (!Array.isArray(saved)) {
+  if (
+    !Array.isArray(saved)
+  ) {
 
     return [];
 
@@ -822,12 +649,25 @@ function loadInternalBackups() {
 }
 
 
+function cloneArticles(source) {
+
+  return JSON.parse(
+    JSON.stringify(source)
+  );
+
+}
+
+
 function createInternalBackup(
   reason,
   sourceArticles = articles
 ) {
 
-  const backup = {
+  const backups =
+    loadInternalBackups();
+
+
+  backups.unshift({
 
     id:
       createArticleId(),
@@ -842,14 +682,7 @@ function createInternalBackup(
         sourceArticles
       )
 
-  };
-
-
-  const backups =
-    loadInternalBackups();
-
-
-  backups.unshift(backup);
+  });
 
 
   try {
@@ -881,15 +714,6 @@ function createInternalBackup(
 }
 
 
-function cloneArticles(source) {
-
-  return JSON.parse(
-    JSON.stringify(source)
-  );
-
-}
-
-
 function updateBackupStatus() {
 
   const backups =
@@ -909,20 +733,18 @@ function updateBackupStatus() {
   }
 
 
-  const latest =
-    new Date(
-      backups[0].createdAt
-    );
-
-
   internalBackupStatus.textContent =
-    `${backups.length} COPIAS · ${formatBackupTime(latest)}`;
+    `${backups.length} COPIAS · ${formatBackupTime(
+      new Date(
+        backups[0].createdAt
+      )
+    )}`;
 
 }
 
 
 /* =========================================================
-   NORMALIZE
+   NORMALIZE ARTICLES
 ========================================================= */
 
 function normalizeExistingArticles() {
@@ -942,8 +764,12 @@ function normalizeExistingArticles() {
 
 
         if (
-          JSON.stringify(normalized) !==
-          JSON.stringify(article)
+          JSON.stringify(
+            normalized
+          ) !==
+          JSON.stringify(
+            article
+          )
         ) {
 
           changed =
@@ -984,16 +810,13 @@ function normalizeArticle(article) {
   }
 
 
-  const validSports = [
-    "football",
-    "tennis",
-    "baseball",
-    "basketball"
-  ];
-
-
   if (
-    !validSports.includes(
+    ![
+      "football",
+      "tennis",
+      "baseball",
+      "basketball"
+    ].includes(
       safe.sport
     )
   ) {
@@ -1020,24 +843,39 @@ function normalizeArticle(article) {
       safe.title ?? ""
     );
 
+
   safe.author =
     String(
       safe.author ?? ""
     );
+
 
   safe.summary =
     String(
       safe.summary ?? ""
     );
 
+
   safe.content =
     String(
       safe.content ?? ""
     );
 
+
   safe.imageUrl =
     String(
       safe.imageUrl ?? ""
+    );
+
+
+  /*
+    NEW:
+    old articles automatically receive tags: []
+  */
+
+  safe.tags =
+    normalizeTags(
+      safe.tags
     );
 
 
@@ -1228,11 +1066,8 @@ function bindEvents() {
 
   openEditorButton.addEventListener(
     "click",
-    () => {
-
-      openEditor();
-
-    }
+    () =>
+      openEditor()
   );
 
 
@@ -1282,14 +1117,18 @@ function bindEvents() {
   );
 
 
+  /*
+    Search is now accent-insensitive.
+  */
+
   searchInput.addEventListener(
     "input",
     () => {
 
       searchTerm =
-        searchInput.value
-          .trim()
-          .toLowerCase();
+        normalizeSearchText(
+          searchInput.value.trim()
+        );
 
 
       renderCurrentView();
@@ -1300,13 +1139,10 @@ function bindEvents() {
 
   clearSearchButton.addEventListener(
     "click",
-    () => {
-
+    () =>
       clearSearchState(
         true
-      );
-
-    }
+      )
   );
 
 
@@ -1345,6 +1181,23 @@ function bindEvents() {
       updateEditorDirtyState();
 
       updateCharacterCounters();
+
+    }
+  );
+
+
+  /*
+    NEW:
+    live tag preview.
+  */
+
+  tagsInput.addEventListener(
+    "input",
+    () => {
+
+      renderTagPreview();
+
+      updateEditorDirtyState();
 
     }
   );
@@ -1450,13 +1303,10 @@ function bindEvents() {
 
   confirmMoveDraftButton.addEventListener(
     "click",
-    () => {
-
+    () =>
       saveArticle(
         "draft"
-      );
-
-    }
+      )
   );
 
 
@@ -1676,7 +1526,8 @@ function bindEvents() {
     () => {
 
       if (
-        window.innerWidth <= 650
+        window.innerWidth <=
+        650
       ) {
 
         centerActiveSportNavigation();
@@ -1728,9 +1579,7 @@ function bindEvents() {
         )
       ) {
 
-        closeMoveDraftModal();
-
-        return;
+        return closeMoveDraftModal();
 
       }
 
@@ -1741,9 +1590,7 @@ function bindEvents() {
         )
       ) {
 
-        closeUnsavedModal();
-
-        return;
+        return closeUnsavedModal();
 
       }
 
@@ -1754,9 +1601,7 @@ function bindEvents() {
         )
       ) {
 
-        closeRestoreModal();
-
-        return;
+        return closeRestoreModal();
 
       }
 
@@ -1767,9 +1612,7 @@ function bindEvents() {
         )
       ) {
 
-        closeConfirmModal();
-
-        return;
+        return closeConfirmModal();
 
       }
 
@@ -1780,9 +1623,7 @@ function bindEvents() {
         )
       ) {
 
-        requestCloseEditor();
-
-        return;
+        return requestCloseEditor();
 
       }
 
@@ -1793,9 +1634,7 @@ function bindEvents() {
         )
       ) {
 
-        closeDraftsManager();
-
-        return;
+        return closeDraftsManager();
 
       }
 
@@ -1806,9 +1645,7 @@ function bindEvents() {
         )
       ) {
 
-        closeReader();
-
-        return;
+        return closeReader();
 
       }
 
@@ -1840,17 +1677,9 @@ function renderCurrentView() {
   updateSearchPlaceholder();
 
 
-  if (
-    activeSport === "all"
-  ) {
-
-    renderFrontPage();
-
-  } else {
-
-    renderSportPage();
-
-  }
+  activeSport === "all"
+    ? renderFrontPage()
+    : renderSportPage();
 
 
   renderSearchContext();
@@ -1884,7 +1713,7 @@ function goToFrontPage() {
 
 
 /* =========================================================
-   SEARCH EXPERIENCE
+   SEARCH
 ========================================================= */
 
 function clearSearchState(
@@ -1903,7 +1732,6 @@ function clearSearchState(
 
     renderCurrentView();
 
-
     searchInput.focus();
 
   }
@@ -1913,21 +1741,10 @@ function clearSearchState(
 
 function updateSearchPlaceholder() {
 
-  if (
-    activeSport === "all"
-  ) {
-
-    searchInput.placeholder =
-      "JUGADOR, EQUIPO, NOTICIA...";
-
-
-    return;
-
-  }
-
-
   searchInput.placeholder =
-    `BUSCAR EN ${getSportLabel(activeSport)}...`;
+    activeSport === "all"
+      ? "JUGADOR, EQUIPO, NOTICIA..."
+      : `BUSCAR EN ${getSportLabel(activeSport)}...`;
 
 }
 
@@ -1968,24 +1785,22 @@ function renderSearchContext() {
     clearSearchButton.textContent =
       "LIMPIAR BÚSQUEDA";
 
+  } else {
 
-    return;
+    const sportLabel =
+      getSportLabel(
+        activeSport
+      );
+
+
+    searchContextText.textContent =
+      `EN ${sportLabel} · “${rawSearch}”`;
+
+
+    clearSearchButton.textContent =
+      `VER TODO ${sportLabel}`;
 
   }
-
-
-  const sportLabel =
-    getSportLabel(
-      activeSport
-    );
-
-
-  searchContextText.textContent =
-    `EN ${sportLabel} · “${rawSearch}”`;
-
-
-  clearSearchButton.textContent =
-    `VER TODO ${sportLabel}`;
 
 }
 
@@ -2006,20 +1821,20 @@ function updateStoryCount(count) {
         );
 
 
-  const sportSuffix =
+  const suffix =
     activeSport === "all"
       ? ""
       : ` · ${getSportLabel(activeSport)}`;
 
 
   storyCount.textContent =
-    `${count} ${noun}${sportSuffix}`;
+    `${count} ${noun}${suffix}`;
 
 }
 
 
 /* =========================================================
-   SPORT NAVIGATION
+   MOBILE SPORT NAV
 ========================================================= */
 
 function centerActiveSportNavigation() {
@@ -2046,7 +1861,7 @@ function centerActiveSportNavigation() {
   }
 
 
-  window.setTimeout(
+  setTimeout(
     () => {
 
       activeButton.scrollIntoView({
@@ -2123,7 +1938,9 @@ function getFilteredPublishedArticles() {
 
         return getArticleSearchText(
           article
-        ).includes(searchTerm);
+        ).includes(
+          searchTerm
+        );
 
       }
     );
@@ -2131,20 +1948,52 @@ function getFilteredPublishedArticles() {
 }
 
 
+/*
+  TAGS are included in searchable text.
+*/
+
 function getArticleSearchText(
   article
 ) {
 
-  return [
-    article.title,
-    article.author,
-    article.summary,
-    article.content,
-    getSportLabel(
-      article.sport
+  return normalizeSearchText(
+    [
+      article.title,
+      article.author,
+      article.summary,
+      article.content,
+      getSportLabel(
+        article.sport
+      ),
+      ...(
+        article.tags ||
+        []
+      )
+    ].join(" ")
+  );
+
+}
+
+
+/*
+  Removes accents before searching.
+
+  fútbol  -> futbol
+  béisbol -> beisbol
+*/
+
+function normalizeSearchText(value) {
+
+  return String(
+    value || ""
+  )
+    .normalize(
+      "NFD"
     )
-  ]
-    .join(" ")
+    .replace(
+      /[\u0300-\u036f]/g,
+      ""
+    )
     .toLowerCase();
 
 }
@@ -2155,23 +2004,18 @@ function sortArticlesNewestFirst(
   b
 ) {
 
-  const aTime =
-    new Date(
-      a.publishedAt ||
-      a.createdAt ||
-      0
-    ).getTime();
-
-
-  const bTime =
+  return (
     new Date(
       b.publishedAt ||
       b.createdAt ||
       0
-    ).getTime();
-
-
-  return bTime - aTime;
+    ).getTime() -
+    new Date(
+      a.publishedAt ||
+      a.createdAt ||
+      0
+    ).getTime()
+  );
 
 }
 
@@ -2189,7 +2033,7 @@ function updateManagementCounts() {
 
 
 /* =========================================================
-   HOME PAGE
+   FRONT PAGE
 ========================================================= */
 
 function renderFrontPage() {
@@ -2225,6 +2069,7 @@ function renderFrontPage() {
 
     leadStories.appendChild(
       createCustomEmptyState(
+
         searchTerm
           ? "SIN RESULTADOS"
           : "NO HAY NOTICIAS",
@@ -2232,6 +2077,7 @@ function renderFrontPage() {
         searchTerm
           ? `No encontramos noticias para “${searchInput.value.trim()}”.`
           : "Publica una nueva noticia para comenzar el diario."
+
       )
     );
 
@@ -2384,12 +2230,10 @@ function renderPrimaryLead(article) {
 }
 
 
-function renderSecondaryLeads(
-  secondaryArticles
-) {
+function renderSecondaryLeads(items) {
 
   if (
-    secondaryArticles.length === 0
+    !items.length
   ) {
 
     return;
@@ -2407,7 +2251,7 @@ function renderSecondaryLeads(
     "secondary-leads";
 
 
-  secondaryArticles.forEach(
+  items.forEach(
     (article, index) => {
 
       const card =
@@ -2496,31 +2340,24 @@ function renderSecondaryLeads(
 }
 
 
-function renderLatestStories(
-  latestArticles
-) {
+function renderLatestStories(items) {
 
   if (
-    latestArticles.length === 0
+    !items.length
   ) {
 
-    if (searchTerm) {
+    if (
+      !searchTerm
+    ) {
 
-      return;
-
-    }
-
-
-    const message =
-      createCustomEmptyState(
-        "FIN DE LA PORTADA",
-        "Las nuevas noticias aparecerán aquí cuando las tres posiciones principales estén ocupadas."
+      latestStories.appendChild(
+        createCustomEmptyState(
+          "FIN DE LA PORTADA",
+          "Las nuevas noticias aparecerán aquí cuando las tres posiciones principales estén ocupadas."
+        )
       );
 
-
-    latestStories.appendChild(
-      message
-    );
+    }
 
 
     return;
@@ -2528,7 +2365,7 @@ function renderLatestStories(
   }
 
 
-  latestArticles.forEach(
+  items.forEach(
     (article, index) => {
 
       latestStories.appendChild(
@@ -2638,11 +2475,12 @@ function renderSportPage() {
 
 
   if (
-    filtered.length === 0
+    !filtered.length
   ) {
 
     sportFeatured.appendChild(
       createCustomEmptyState(
+
         searchTerm
           ? "SIN RESULTADOS"
           : `SIN NOTICIAS DE ${sportLabel}`,
@@ -2650,6 +2488,7 @@ function renderSportPage() {
         searchTerm
           ? `No encontramos resultados dentro de ${sportLabel} para “${searchInput.value.trim()}”.`
           : `Cuando publiques una noticia de ${sportLabel}, aparecerá aquí.`
+
       )
     );
 
@@ -2672,7 +2511,7 @@ function renderSportPage() {
 
 
   if (
-    secondary.length > 0
+    secondary.length
   ) {
 
     sportSecondarySection.hidden =
@@ -2691,7 +2530,7 @@ function renderSportPage() {
 
 
   if (
-    more.length > 0
+    more.length
   ) {
 
     sportMoreSection.hidden =
@@ -2707,9 +2546,7 @@ function renderSportPage() {
 }
 
 
-function renderSportFeatured(
-  article
-) {
+function renderSportFeatured(article) {
 
   const wrapper =
     document.createElement(
@@ -2811,11 +2648,9 @@ function renderSportFeatured(
 }
 
 
-function renderSportSecondary(
-  secondaryArticles
-) {
+function renderSportSecondary(items) {
 
-  secondaryArticles.forEach(
+  items.forEach(
     (article, index) => {
 
       const card =
@@ -2897,11 +2732,9 @@ function renderSportSecondary(
 }
 
 
-function renderSportMore(
-  moreArticles
-) {
+function renderSportMore(items) {
 
-  moreArticles.forEach(
+  items.forEach(
     (article, index) => {
 
       const row =
@@ -2922,18 +2755,6 @@ function renderSportMore(
         );
 
 
-      const number =
-        row.querySelector(
-          ".latest-index"
-        );
-
-
-      const info =
-        row.querySelector(
-          ".latest-info"
-        );
-
-
       if (title) {
 
         title.className =
@@ -2942,12 +2763,24 @@ function renderSportMore(
       }
 
 
+      const number =
+        row.querySelector(
+          ".latest-index"
+        );
+
+
       if (number) {
 
         number.className =
           "sport-more-index";
 
       }
+
+
+      const info =
+        row.querySelector(
+          ".latest-info"
+        );
 
 
       if (info) {
@@ -2969,7 +2802,7 @@ function renderSportMore(
 
 
 /* =========================================================
-   SHARED ARTICLE RENDERING
+   ARTICLE RENDER HELPERS
 ========================================================= */
 
 function createEditorialListRow(
@@ -3215,8 +3048,9 @@ function fillArticleImageFrame(
 
 
   if (
-    getArticleImageMode(article) ===
-    "crop"
+    getArticleImageMode(
+      article
+    ) === "crop"
   ) {
 
     const position =
@@ -3406,7 +3240,7 @@ function renderDraftsManager() {
 
 
   if (
-    drafts.length === 0
+    !drafts.length
   ) {
 
     draftsList.appendChild(
@@ -3685,6 +3519,7 @@ function openEditor(
 
   updateCharacterCounters();
 
+  renderTagPreview();
 
   captureEditorInitialState();
 
@@ -3720,18 +3555,9 @@ function requestCloseEditor() {
   updateEditorDirtyState();
 
 
-  if (
-    editorHasUnsavedChanges
-  ) {
-
-    openUnsavedModal();
-
-    return;
-
-  }
-
-
-  closeEditorImmediately();
+  editorHasUnsavedChanges
+    ? openUnsavedModal()
+    : closeEditorImmediately();
 
 }
 
@@ -3774,6 +3600,10 @@ function resetEditor() {
     "";
 
 
+  tagsInput.value =
+    "";
+
+
   focusXInput.value =
     50;
 
@@ -3793,6 +3623,8 @@ function resetEditor() {
 
   updateImagePreview();
 
+  renderTagPreview();
+
 
   editorHasUnsavedChanges =
     false;
@@ -3803,9 +3635,7 @@ function resetEditor() {
 }
 
 
-function populateEditor(
-  article
-) {
+function populateEditor(article) {
 
   articleIdInput.value =
     article.id;
@@ -3825,6 +3655,12 @@ function populateEditor(
 
   summaryInput.value =
     article.summary;
+
+
+  tagsInput.value =
+    normalizeTags(
+      article.tags
+    ).join(", ");
 
 
   contentInput.value =
@@ -3861,6 +3697,8 @@ function populateEditor(
 
 
   updateImagePreview();
+
+  renderTagPreview();
 
 }
 
@@ -3921,18 +3759,16 @@ function updateEditorActionLabels(
     publishButtonText.textContent =
       "GUARDAR CAMBIOS";
 
+  } else {
 
-    return;
+    saveDraftButtonText.textContent =
+      "GUARDAR BORRADOR";
+
+
+    publishButtonText.textContent =
+      "PUBLICAR NOTICIA";
 
   }
-
-
-  saveDraftButtonText.textContent =
-    "GUARDAR BORRADOR";
-
-
-  publishButtonText.textContent =
-    "PUBLICAR NOTICIA";
 
 }
 
@@ -3951,6 +3787,9 @@ function updateCharacterCounters() {
     350,
     summaryCharacterCount
   );
+
+
+  updateTagCountState();
 
 }
 
@@ -4007,34 +3846,13 @@ function updateEditorDateInfo(
     );
 
 
-  if (
-    article.updatedAt
-  ) {
-
-    const updated =
-      formatEditorDateTime(
-        article.updatedAt
-      );
-
-
-    editorDateInfo.textContent =
-      `CREADA ${created} · EDITADA ${updated}`;
-
-
-    return;
-
-  }
-
-
   editorDateInfo.textContent =
-    `CREADA ${created}`;
+    article.updatedAt
+      ? `CREADA ${created} · EDITADA ${formatEditorDateTime(article.updatedAt)}`
+      : `CREADA ${created}`;
 
 }
 
-
-/* =========================================================
-   UNSAVED CHANGES
-========================================================= */
 
 function getEditorState() {
 
@@ -4054,6 +3872,9 @@ function getEditorState() {
 
     summary:
       summaryInput.value,
+
+    tags:
+      tagsInput.value,
 
     content:
       contentInput.value,
@@ -4095,7 +3916,9 @@ function captureEditorInitialState() {
 
 function updateEditorDirtyState() {
 
-  if (!editorInitialState) {
+  if (
+    !editorInitialState
+  ) {
 
     return;
 
@@ -4120,29 +3943,17 @@ function updateEditorSaveStateDisplay() {
   );
 
 
-  if (
+  editorSaveState.classList.add(
     editorHasUnsavedChanges
-  ) {
-
-    editorSaveState.classList.add(
-      "dirty"
-    );
+      ? "dirty"
+      : "clean"
+  );
 
 
-    editorSaveState.textContent =
-      "CAMBIOS SIN GUARDAR";
-
-  } else {
-
-    editorSaveState.classList.add(
-      "clean"
-    );
-
-
-    editorSaveState.textContent =
-      "SIN CAMBIOS";
-
-  }
+  editorSaveState.textContent =
+    editorHasUnsavedChanges
+      ? "CAMBIOS SIN GUARDAR"
+      : "SIN CAMBIOS";
 
 }
 
@@ -4191,7 +4002,6 @@ function discardEditorChanges() {
 
   closeUnsavedModal();
 
-
   closeEditorImmediately();
 
 
@@ -4202,13 +4012,9 @@ function discardEditorChanges() {
 }
 
 
-/* =========================================================
-   MOVE TO DRAFT
-========================================================= */
-
 function requestDraftSave() {
 
-  const existingArticle =
+  const existing =
     articleIdInput.value
       ? findArticle(
           articleIdInput.value
@@ -4216,21 +4022,12 @@ function requestDraftSave() {
       : null;
 
 
-  if (
-    existingArticle?.status ===
-    "published"
-  ) {
-
-    openMoveDraftModal();
-
-    return;
-
-  }
-
-
-  saveArticle(
-    "draft"
-  );
+  existing?.status ===
+  "published"
+    ? openMoveDraftModal()
+    : saveArticle(
+        "draft"
+      );
 
 }
 
@@ -4294,6 +4091,15 @@ function saveArticle(
   }
 
 
+  if (
+    !validateTagsInput()
+  ) {
+
+    return;
+
+  }
+
+
   const existingId =
     articleIdInput.value.trim();
 
@@ -4331,6 +4137,11 @@ function saveArticle(
     summary:
       summaryInput.value.trim(),
 
+    tags:
+      parseTagsInput(
+        tagsInput.value
+      ),
+
     content:
       contentInput.value.trim(),
 
@@ -4357,22 +4168,17 @@ function saveArticle(
   };
 
 
-  if (
+  articleData.publishedAt =
     targetStatus === "published"
-  ) {
+      ? (
+          existingArticle?.status ===
+            "published" &&
+          existingArticle?.publishedAt
 
-    articleData.publishedAt =
-      existingArticle?.status === "published" &&
-      existingArticle?.publishedAt
-        ? existingArticle.publishedAt
-        : now;
-
-  } else {
-
-    articleData.publishedAt =
-      null;
-
-  }
+            ? existingArticle.publishedAt
+            : now
+        )
+      : null;
 
 
   if (existingArticle) {
@@ -4450,34 +4256,304 @@ function saveArticle(
 
   renderCurrentView();
 
-
   updateManagementCounts();
-
 
   updateBackupStatus();
 
 
-  if (
+  showToast(
+
     targetStatus === "draft"
+
+      ? (
+          existingArticle?.status ===
+            "published"
+
+            ? "NOTICIA MOVIDA A BORRADORES."
+            : "BORRADOR GUARDADO."
+        )
+
+      : (
+          existingArticle?.status ===
+            "published"
+
+            ? "NOTICIA ACTUALIZADA."
+            : "NOTICIA PUBLICADA."
+        )
+
+  );
+
+}
+
+
+/* =========================================================
+   TAG SYSTEM
+========================================================= */
+
+function rawTagParts(value) {
+
+  return String(
+    value || ""
+  )
+    .split(",")
+    .map(
+      (tag) =>
+        tag.trim()
+    )
+    .filter(Boolean);
+
+}
+
+
+function parseTagsInput(value) {
+
+  const seen =
+    new Set();
+
+
+  const tags =
+    [];
+
+
+  rawTagParts(
+    value
+  ).forEach(
+    (tag) => {
+
+      const clean =
+        tag.replace(
+          /\s+/g,
+          " "
+        );
+
+
+      const key =
+        normalizeSearchText(
+          clean
+        );
+
+
+      if (
+        !key ||
+        seen.has(key)
+      ) {
+
+        return;
+
+      }
+
+
+      seen.add(key);
+
+      tags.push(clean);
+
+    }
+  );
+
+
+  return tags;
+
+}
+
+
+function normalizeTags(value) {
+
+  const raw =
+    Array.isArray(value)
+      ? value.join(",")
+      : String(
+          value || ""
+        );
+
+
+  return parseTagsInput(raw)
+    .filter(
+      (tag) =>
+        tag.length <=
+        MAX_TAG_LENGTH
+    )
+    .slice(
+      0,
+      MAX_TAGS
+    );
+
+}
+
+
+function validateTagsInput() {
+
+  const uniqueTags =
+    parseTagsInput(
+      tagsInput.value
+    );
+
+
+  const tooLong =
+    uniqueTags.find(
+      (tag) =>
+        tag.length >
+        MAX_TAG_LENGTH
+    );
+
+
+  if (tooLong) {
+
+    showToast(
+      `EL TEMA “${tooLong}” SUPERA ${MAX_TAG_LENGTH} CARACTERES.`
+    );
+
+
+    tagsInput.focus();
+
+
+    return false;
+
+  }
+
+
+  if (
+    uniqueTags.length >
+    MAX_TAGS
   ) {
 
     showToast(
-      existingArticle?.status ===
-        "published"
-        ? "NOTICIA MOVIDA A BORRADORES."
-        : "BORRADOR GUARDADO."
+      `USA COMO MÁXIMO ${MAX_TAGS} TEMAS POR NOTICIA.`
     );
 
-  } else {
 
-    showToast(
-      existingArticle?.status ===
-        "published"
-        ? "NOTICIA ACTUALIZADA."
-        : "NOTICIA PUBLICADA."
-    );
+    tagsInput.focus();
+
+
+    return false;
 
   }
+
+
+  return true;
+
+}
+
+
+function updateTagCountState() {
+
+  const tags =
+    parseTagsInput(
+      tagsInput.value
+    );
+
+
+  tagsCount.textContent =
+    `${tags.length} / ${MAX_TAGS}`;
+
+
+  tagsCount.classList.toggle(
+    "warning",
+    tags.length >=
+      MAX_TAGS - 1 &&
+    tags.length <=
+      MAX_TAGS
+  );
+
+
+  tagsCount.classList.toggle(
+    "limit",
+    tags.length >
+      MAX_TAGS
+  );
+
+}
+
+
+function renderTagPreview() {
+
+  if (
+    !tagsPreview ||
+    !tagsCount
+  ) {
+
+    return;
+
+  }
+
+
+  const tags =
+    parseTagsInput(
+      tagsInput.value
+    );
+
+
+  tagsPreview.innerHTML =
+    "";
+
+
+  updateTagCountState();
+
+
+  if (
+    !tags.length
+  ) {
+
+    const empty =
+      document.createElement(
+        "span"
+      );
+
+
+    empty.className =
+      "tag-preview-empty";
+
+
+    empty.textContent =
+      "SIN TEMAS TODAVÍA";
+
+
+    tagsPreview.appendChild(
+      empty
+    );
+
+
+    return;
+
+  }
+
+
+  tags
+    .slice(
+      0,
+      MAX_TAGS
+    )
+    .forEach(
+      (tag) => {
+
+        tagsPreview.appendChild(
+          createTopicChip(
+            tag
+          )
+        );
+
+      }
+    );
+
+}
+
+
+function createTopicChip(tag) {
+
+  const chip =
+    document.createElement(
+      "span"
+    );
+
+
+  chip.className =
+    "topic-chip";
+
+
+  chip.textContent =
+    tag;
+
+
+  return chip;
 
 }
 
@@ -4718,6 +4794,11 @@ function openReader(
   );
 
 
+  renderReaderTopics(
+    article
+  );
+
+
   renderReaderImage(
     article
   );
@@ -4792,9 +4873,46 @@ function closeReader() {
 }
 
 
-function renderReaderImage(
-  article
-) {
+/* =========================================================
+   READER TAGS
+========================================================= */
+
+function renderReaderTopics(article) {
+
+  const tags =
+    normalizeTags(
+      article.tags
+    );
+
+
+  readerTopicsList.innerHTML =
+    "";
+
+
+  readerTopics.hidden =
+    !tags.length;
+
+
+  tags.forEach(
+    (tag) => {
+
+      readerTopicsList.appendChild(
+        createTopicChip(
+          tag
+        )
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   READER IMAGE
+========================================================= */
+
+function renderReaderImage(article) {
 
   readerImage.onerror =
     null;
@@ -4845,12 +4963,10 @@ function renderReaderImage(
 
 
 /* =========================================================
-   ARTICLE BODY FORMATTER
+   ARTICLE BODY
 ========================================================= */
 
-function renderReaderContent(
-  content
-) {
+function renderReaderContent(content) {
 
   readerBody.innerHTML =
     "";
@@ -4870,91 +4986,94 @@ function renderReaderContent(
   let paragraphBuffer =
     [];
 
+
   let listBuffer =
     [];
 
 
-  function flushParagraph() {
+  const flushParagraph =
+    () => {
 
-    if (
-      paragraphBuffer.length === 0
-    ) {
+      if (
+        !paragraphBuffer.length
+      ) {
 
-      return;
-
-    }
-
-
-    const paragraph =
-      document.createElement(
-        "p"
-      );
-
-
-    paragraph.textContent =
-      paragraphBuffer.join(
-        " "
-      );
-
-
-    readerBody.appendChild(
-      paragraph
-    );
-
-
-    paragraphBuffer =
-      [];
-
-  }
-
-
-  function flushList() {
-
-    if (
-      listBuffer.length === 0
-    ) {
-
-      return;
-
-    }
-
-
-    const list =
-      document.createElement(
-        "ul"
-      );
-
-
-    listBuffer.forEach(
-      (itemText) => {
-
-        const item =
-          document.createElement(
-            "li"
-          );
-
-
-        item.textContent =
-          itemText;
-
-
-        list.appendChild(
-          item
-        );
+        return;
 
       }
-    );
 
 
-    readerBody.appendChild(
-      list
-    );
+      const paragraph =
+        document.createElement(
+          "p"
+        );
 
 
-    listBuffer =
-      [];
+      paragraph.textContent =
+        paragraphBuffer.join(
+          " "
+        );
 
-  }
+
+      readerBody.appendChild(
+        paragraph
+      );
+
+
+      paragraphBuffer =
+        [];
+
+    };
+
+
+  const flushList =
+    () => {
+
+      if (
+        !listBuffer.length
+      ) {
+
+        return;
+
+      }
+
+
+      const list =
+        document.createElement(
+          "ul"
+        );
+
+
+      listBuffer.forEach(
+        (text) => {
+
+          const item =
+            document.createElement(
+              "li"
+            );
+
+
+          item.textContent =
+            text;
+
+
+          list.appendChild(
+            item
+          );
+
+        }
+      );
+
+
+      readerBody.appendChild(
+        list
+      );
+
+
+      listBuffer =
+        [];
+
+    };
 
 
   lines.forEach(
@@ -5171,23 +5290,19 @@ function calculateReadingTime(
       .length;
 
 
-  const minutes =
+  return `${
     Math.max(
       1,
       Math.ceil(
         words / 220
       )
-    );
-
-
-  return `${minutes} MIN`;
+    )
+  } MIN`;
 
 }
 
 
-function hasMeaningfulUpdate(
-  article
-) {
+function hasMeaningfulUpdate(article) {
 
   if (
     !article.updatedAt
@@ -5198,37 +5313,27 @@ function hasMeaningfulUpdate(
   }
 
 
-  const updatedTime =
+  const updated =
     new Date(
       article.updatedAt
     ).getTime();
 
 
-  const publicationTime =
+  const published =
     new Date(
       article.publishedAt ||
       article.createdAt
     ).getTime();
 
 
-  if (
-    !Number.isFinite(
-      updatedTime
-    ) ||
-    !Number.isFinite(
-      publicationTime
-    )
-  ) {
-
-    return false;
-
-  }
-
-
-  return Math.abs(
-    updatedTime -
-    publicationTime
-  ) > 60000;
+  return (
+    Number.isFinite(updated) &&
+    Number.isFinite(published) &&
+    Math.abs(
+      updated -
+      published
+    ) > 60000
+  );
 
 }
 
@@ -5237,18 +5342,18 @@ function renderReaderUpdatedDate(
   article
 ) {
 
-  const showUpdated =
+  const show =
     hasMeaningfulUpdate(
       article
     );
 
 
   readerUpdatedBlock.hidden =
-    !showUpdated;
+    !show;
 
 
   readerUpdatedDate.textContent =
-    showUpdated
+    show
       ? formatEditorDateTime(
           article.updatedAt
         )
@@ -5260,6 +5365,76 @@ function renderReaderUpdatedDate(
 /* =========================================================
    RELATED STORIES
 ========================================================= */
+
+/*
+  Shared tags now improve related story ranking.
+*/
+
+function relatedStoryScore(
+  candidate,
+  currentArticle
+) {
+
+  const currentTags =
+    new Set(
+      normalizeTags(
+        currentArticle.tags
+      ).map(
+        normalizeSearchText
+      )
+    );
+
+
+  const candidateTags =
+    normalizeTags(
+      candidate.tags
+    ).map(
+      normalizeSearchText
+    );
+
+
+  let sharedTags =
+    0;
+
+
+  candidateTags.forEach(
+    (tag) => {
+
+      if (
+        currentTags.has(tag)
+      ) {
+
+        sharedTags +=
+          1;
+
+      }
+
+    }
+  );
+
+
+  const publicationTime =
+    new Date(
+      candidate.publishedAt ||
+      candidate.createdAt ||
+      0
+    ).getTime();
+
+
+  return (
+    sharedTags * 100 +
+    (
+      Number.isFinite(
+        publicationTime
+      )
+        ? publicationTime /
+          1e13
+        : 0
+    )
+  );
+
+}
+
 
 function renderReaderRelatedStories(
   currentArticle
@@ -5278,6 +5453,17 @@ function renderReaderRelatedStories(
           String(article.id) !==
             String(currentArticle.id)
       )
+      .sort(
+        (a, b) =>
+          relatedStoryScore(
+            b,
+            currentArticle
+          ) -
+          relatedStoryScore(
+            a,
+            currentArticle
+          )
+      )
       .slice(
         0,
         3
@@ -5285,11 +5471,11 @@ function renderReaderRelatedStories(
 
 
   readerRelatedSection.hidden =
-    related.length === 0;
+    !related.length;
 
 
   if (
-    related.length === 0
+    !related.length
   ) {
 
     return;
@@ -5417,9 +5603,11 @@ function renderReaderNavigation(
     currentIndex >= 0 &&
     currentIndex <
       published.length - 1
+
       ? published[
           currentIndex + 1
         ]
+
       : null;
 
 
@@ -5478,10 +5666,6 @@ function configureReaderNavigationButton(
 }
 
 
-/* =========================================================
-   READER SCROLL UI
-========================================================= */
-
 function updateReaderScrollUI() {
 
   const scrollable =
@@ -5507,7 +5691,8 @@ function updateReaderScrollUI() {
 
   readerBackToTopButton.classList.toggle(
     "visible",
-    readerPanel.scrollTop > 550
+    readerPanel.scrollTop >
+      550
   );
 
 }
@@ -5641,9 +5826,7 @@ function permanentlyDeleteArticle() {
 
   renderCurrentView();
 
-
   updateManagementCounts();
-
 
   updateBackupStatus();
 
@@ -5668,13 +5851,12 @@ function permanentlyDeleteArticle() {
 
 
 /* =========================================================
-   SIDE MENU
+   MENU
 ========================================================= */
 
 function openSideMenu() {
 
   updateManagementCounts();
-
 
   updateBackupStatus();
 
@@ -5714,7 +5896,7 @@ function closeSideMenu() {
 
 
 /* =========================================================
-   EXPORT BACKUP
+   EXPORT
 ========================================================= */
 
 function exportJournalBackup() {
@@ -5730,7 +5912,7 @@ function exportJournalBackup() {
       "Sports Journal",
 
     version:
-      2,
+      3,
 
     exportedAt:
       new Date().toISOString(),
@@ -5795,7 +5977,6 @@ function exportJournalBackup() {
 
   link.click();
 
-
   link.remove();
 
 
@@ -5815,7 +5996,7 @@ function exportJournalBackup() {
 
 
 /* =========================================================
-   RESTORE BACKUP
+   RESTORE
 ========================================================= */
 
 async function handleBackupFileSelection(
@@ -5848,7 +6029,9 @@ async function handleBackupFileSelection(
 
 
     if (
-      !Array.isArray(imported)
+      !Array.isArray(
+        imported
+      )
     ) {
 
       throw new Error(
@@ -6065,9 +6248,7 @@ function mergePendingBackup() {
 }
 
 
-function finishRestore(
-  message
-) {
+function finishRestore(message) {
 
   restoreModal.classList.remove(
     "open"
@@ -6086,22 +6267,15 @@ function finishRestore(
 
   normalizeExistingArticles();
 
-
   renderCurrentView();
-
 
   updateManagementCounts();
 
-
   updateBackupStatus();
-
 
   syncBodyScrollState();
 
-
-  showToast(
-    message
-  );
+  showToast(message);
 
 }
 
@@ -6142,9 +6316,7 @@ function createImagePlaceholder() {
 }
 
 
-function getSportLabel(
-  sport
-) {
+function getSportLabel(sport) {
 
   return (
     SPORT_LABELS[sport] ||
@@ -6252,9 +6424,7 @@ function parseImagePosition(
 }
 
 
-function normalizeZoom(
-  value
-) {
+function normalizeZoom(value) {
 
   return clampNumber(
     value,
@@ -6277,46 +6447,31 @@ function clampNumber(
     Number(value);
 
 
-  if (
-    !Number.isFinite(number)
-  ) {
-
-    return fallback;
-
-  }
-
-
-  return Math.min(
-    Math.max(
-      number,
-      min
-    ),
-    max
-  );
+  return Number.isFinite(
+    number
+  )
+    ? Math.min(
+        Math.max(
+          number,
+          min
+        ),
+        max
+      )
+    : fallback;
 
 }
 
 
 function createArticleId() {
 
-  if (
+  return (
     typeof crypto !==
       "undefined" &&
     typeof crypto.randomUUID ===
       "function"
-  ) {
-
-    return crypto.randomUUID();
-
-  }
-
-
-  return (
-    `${Date.now()}-` +
-    Math.random()
-      .toString(16)
-      .slice(2)
-  );
+  )
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
 }
 
@@ -6526,61 +6681,47 @@ function formatDate(
     );
 
 
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
-
-    return "";
-
-  }
-
-
-  return new Intl.DateTimeFormat(
-    "es-ES",
-    options
+  return Number.isNaN(
+    date.getTime()
   )
-    .format(date)
-    .toUpperCase();
+    ? ""
+    : new Intl.DateTimeFormat(
+        "es-ES",
+        options
+      )
+        .format(date)
+        .toUpperCase();
 
 }
 
 
-function formatBackupTime(
-  date
-) {
+function formatBackupTime(date) {
 
-  if (
+  return (
     !date ||
     Number.isNaN(
       date.getTime()
     )
-  ) {
-
-    return "";
-
-  }
-
-
-  return new Intl.DateTimeFormat(
-    "es-ES",
-    {
-      day:
-        "numeric",
-
-      month:
-        "short",
-
-      hour:
-        "2-digit",
-
-      minute:
-        "2-digit"
-    }
   )
-    .format(date)
-    .toUpperCase();
+    ? ""
+    : new Intl.DateTimeFormat(
+        "es-ES",
+        {
+          day:
+            "numeric",
+
+          month:
+            "short",
+
+          hour:
+            "2-digit",
+
+          minute:
+            "2-digit"
+        }
+      )
+        .format(date)
+        .toUpperCase();
 
 }
 
@@ -6612,3 +6753,914 @@ function getBackupFileDate() {
   ].join("-");
 
 }
+
+/* =========================================================
+   PASO 8.3 — TEMAS CLICABLES Y PÁGINAS POR TEMA
+========================================================= */
+
+
+/*
+  Un tema funciona como una sección editorial temporal.
+
+  Ejemplo:
+
+  activeTopic = "NBA"
+
+  mostrará únicamente artículos cuyo array tags
+  contenga exactamente NBA.
+*/
+
+let activeTopic =
+  "";
+
+
+/* =========================================================
+   GUARDAMOS LAS FUNCIONES ORIGINALES
+========================================================= */
+
+const sportsJournalBaseRenderCurrentView =
+  renderCurrentView;
+
+const sportsJournalBaseGetFilteredPublishedArticles =
+  getFilteredPublishedArticles;
+
+const sportsJournalBaseUpdateSearchPlaceholder =
+  updateSearchPlaceholder;
+
+const sportsJournalBaseRenderSearchContext =
+  renderSearchContext;
+
+const sportsJournalBaseUpdateStoryCount =
+  updateStoryCount;
+
+const sportsJournalBaseGoToFrontPage =
+  goToFrontPage;
+
+const sportsJournalBaseRenderSportPage =
+  renderSportPage;
+
+
+/* =========================================================
+   DETECTAR SI UNA NOTICIA PERTENECE A UN TEMA
+========================================================= */
+
+function articleHasTopic(
+  article,
+  topic
+) {
+
+  const normalizedTopic =
+    normalizeSearchText(
+      topic
+    );
+
+
+  return normalizeTags(
+    article.tags
+  ).some(
+    (tag) =>
+      normalizeSearchText(
+        tag
+      ) ===
+      normalizedTopic
+  );
+
+}
+
+
+/* =========================================================
+   ABRIR PÁGINA DE TEMA
+========================================================= */
+
+function openTopicPage(
+  topic
+) {
+
+  const cleanTopic =
+    String(
+      topic || ""
+    ).trim();
+
+
+  if (!cleanTopic) {
+
+    return;
+
+  }
+
+
+  activeTopic =
+    cleanTopic;
+
+
+  /*
+    Los temas son globales.
+
+    Por ejemplo "Playoffs" podría existir
+    en más de un deporte.
+  */
+
+  activeSport =
+    "all";
+
+
+  clearSearchState(
+    false
+  );
+
+
+  if (
+    readerModal.classList.contains(
+      "open"
+    )
+  ) {
+
+    closeReader();
+
+  }
+
+
+  renderCurrentView();
+
+
+  centerActiveSportNavigation();
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+/* =========================================================
+   FILTRADO POR TEMA
+========================================================= */
+
+getFilteredPublishedArticles =
+  function () {
+
+    const filtered =
+      sportsJournalBaseGetFilteredPublishedArticles();
+
+
+    if (!activeTopic) {
+
+      return filtered;
+
+    }
+
+
+    return filtered.filter(
+      (article) =>
+        articleHasTopic(
+          article,
+          activeTopic
+        )
+    );
+
+  };
+
+
+/* =========================================================
+   MOTOR DE VISTAS
+========================================================= */
+
+renderCurrentView =
+  function () {
+
+    updateActiveSportButton();
+
+
+    updateSearchPlaceholder();
+
+
+    if (activeTopic) {
+
+      renderTopicPage();
+
+    } else {
+
+      sportsJournalBaseRenderCurrentView();
+
+    }
+
+
+    renderSearchContext();
+
+  };
+
+
+/* =========================================================
+   PÁGINA DE TEMA
+========================================================= */
+
+function renderTopicPage() {
+
+  homeView.hidden =
+    true;
+
+
+  sportPage.hidden =
+    false;
+
+
+  sportPage.classList.add(
+    "topic-mode"
+  );
+
+
+  sportSecondarySection.hidden =
+    true;
+
+
+  sportMoreSection.hidden =
+    true;
+
+
+  const filtered =
+    getFilteredPublishedArticles();
+
+
+  updateStoryCount(
+    filtered.length
+  );
+
+
+  sportFeatured.innerHTML =
+    "";
+
+
+  sportSecondary.innerHTML =
+    "";
+
+
+  sportMoreList.innerHTML =
+    "";
+
+
+  /* -------------------------------------------------------
+     HEADER
+  ------------------------------------------------------- */
+
+  sportPageEyebrow.textContent =
+    searchTerm
+      ? "RESULTADOS POR TEMA"
+      : "TEMA SPORTS JOURNAL";
+
+
+  sportPageTitle.textContent =
+    activeTopic.toUpperCase();
+
+
+  if (searchTerm) {
+
+    sportPageDescription.textContent =
+      `Resultados dentro del tema “${activeTopic}” para “${searchInput.value.trim()}”.`;
+
+
+    sportFeaturedHeading.textContent =
+      "RESULTADO PRINCIPAL";
+
+
+    sportMoreHeading.textContent =
+      "MÁS RESULTADOS";
+
+  } else {
+
+    sportPageDescription.textContent =
+      `Todas las noticias publicadas en Sports Journal relacionadas con “${activeTopic}”.`;
+
+
+    sportFeaturedHeading.textContent =
+      "DESTACADA";
+
+
+    sportMoreHeading.textContent =
+      `MÁS SOBRE ${activeTopic.toUpperCase()}`;
+
+  }
+
+
+  /* -------------------------------------------------------
+     SIN RESULTADOS
+  ------------------------------------------------------- */
+
+  if (
+    filtered.length === 0
+  ) {
+
+    sportFeatured.appendChild(
+      createCustomEmptyState(
+
+        searchTerm
+          ? "SIN RESULTADOS"
+          : "SIN NOTICIAS",
+
+        searchTerm
+          ? `No encontramos resultados dentro de “${activeTopic}” para “${searchInput.value.trim()}”.`
+          : `Todavía no existen noticias publicadas con el tema “${activeTopic}”.`
+
+      )
+    );
+
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     NOTICIA #01
+  ------------------------------------------------------- */
+
+  renderTopicFeatured(
+    filtered[0]
+  );
+
+
+  /* -------------------------------------------------------
+     #02 Y #03
+  ------------------------------------------------------- */
+
+  const secondary =
+    filtered.slice(
+      1,
+      3
+    );
+
+
+  if (
+    secondary.length > 0
+  ) {
+
+    sportSecondarySection.hidden =
+      false;
+
+
+    renderTopicSecondary(
+      secondary
+    );
+
+  }
+
+
+  /* -------------------------------------------------------
+     #04 EN ADELANTE
+  ------------------------------------------------------- */
+
+  const more =
+    filtered.slice(3);
+
+
+  if (
+    more.length > 0
+  ) {
+
+    sportMoreSection.hidden =
+      false;
+
+
+    renderTopicMore(
+      more
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   FEATURED DE TEMA
+========================================================= */
+
+function renderTopicFeatured(
+  article
+) {
+
+  /*
+    Aprovechamos el diseño de las páginas deportivas.
+  */
+
+  renderSportFeatured(
+    article
+  );
+
+
+  const copy =
+    sportFeatured.querySelector(
+      ".sport-featured-copy"
+    );
+
+
+  const number =
+    copy?.querySelector(
+      ".sport-featured-number"
+    );
+
+
+  if (
+    copy &&
+    number
+  ) {
+
+    const sportBadge =
+      createTopicSportBadge(
+        article.sport
+      );
+
+
+    number.insertAdjacentElement(
+      "afterend",
+      sportBadge
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   #02 / #03 DE TEMA
+========================================================= */
+
+function renderTopicSecondary(
+  items
+) {
+
+  items.forEach(
+    (article, index) => {
+
+      const card =
+        document.createElement(
+          "article"
+        );
+
+
+      card.className =
+        "sport-section-card";
+
+
+      makeStoryInteractive(
+        card,
+        article.id
+      );
+
+
+      const number =
+        document.createElement(
+          "div"
+        );
+
+
+      number.className =
+        "sport-section-card-number";
+
+
+      number.textContent =
+        String(
+          index + 2
+        ).padStart(
+          2,
+          "0"
+        );
+
+
+      const sport =
+        createTopicSportBadge(
+          article.sport
+        );
+
+
+      const title =
+        document.createElement(
+          "h3"
+        );
+
+
+      title.textContent =
+        article.title;
+
+
+      const summary =
+        document.createElement(
+          "p"
+        );
+
+
+      summary.className =
+        "sport-section-card-summary";
+
+
+      summary.textContent =
+        article.summary;
+
+
+      card.append(
+        number,
+        sport,
+        title,
+        summary,
+        createStoryMetadata(
+          article
+        )
+      );
+
+
+      sportSecondary.appendChild(
+        card
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   LISTA #04+
+========================================================= */
+
+function renderTopicMore(
+  items
+) {
+
+  items.forEach(
+    (article, index) => {
+
+      /*
+        true significa que mostramos el deporte
+        en la segunda columna.
+      */
+
+      const row =
+        createEditorialListRow(
+          article,
+          index + 4,
+          true
+        );
+
+
+      row.className =
+        "sport-more-story";
+
+
+      const title =
+        row.querySelector(
+          ".latest-title"
+        );
+
+
+      if (title) {
+
+        title.className =
+          "sport-more-title";
+
+      }
+
+
+      const number =
+        row.querySelector(
+          ".latest-index"
+        );
+
+
+      if (number) {
+
+        number.className =
+          "sport-more-index";
+
+      }
+
+
+      const info =
+        row.querySelector(
+          ".latest-info"
+        );
+
+
+      if (info) {
+
+        info.className =
+          "sport-more-info";
+
+      }
+
+
+      sportMoreList.appendChild(
+        row
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   BADGE DE DEPORTE
+========================================================= */
+
+function createTopicSportBadge(
+  sport
+) {
+
+  const badge =
+    document.createElement(
+      "div"
+    );
+
+
+  badge.className =
+    "topic-story-sport";
+
+
+  badge.textContent =
+    getSportLabel(
+      sport
+    );
+
+
+  return badge;
+
+}
+
+
+/* =========================================================
+   PLACEHOLDER DEL BUSCADOR
+========================================================= */
+
+updateSearchPlaceholder =
+  function () {
+
+    if (activeTopic) {
+
+      searchInput.placeholder =
+        `BUSCAR EN ${activeTopic.toUpperCase()}...`;
+
+
+      return;
+
+    }
+
+
+    sportsJournalBaseUpdateSearchPlaceholder();
+
+  };
+
+
+/* =========================================================
+   BARRA DE CONTEXTO DE BÚSQUEDA
+========================================================= */
+
+renderSearchContext =
+  function () {
+
+    if (!activeTopic) {
+
+      sportsJournalBaseRenderSearchContext();
+
+
+      return;
+
+    }
+
+
+    if (!searchTerm) {
+
+      searchContextBar.hidden =
+        true;
+
+
+      searchContextText.textContent =
+        "";
+
+
+      return;
+
+    }
+
+
+    searchContextBar.hidden =
+      false;
+
+
+    searchContextText.textContent =
+      `EN TEMA ${activeTopic.toUpperCase()} · “${searchInput.value.trim()}”`;
+
+
+    clearSearchButton.textContent =
+      `VER TODO ${activeTopic.toUpperCase()}`;
+
+  };
+
+
+/* =========================================================
+   CONTADOR
+========================================================= */
+
+updateStoryCount =
+  function (
+    count
+  ) {
+
+    if (!activeTopic) {
+
+      sportsJournalBaseUpdateStoryCount(
+        count
+      );
+
+
+      return;
+
+    }
+
+
+    const noun =
+      searchTerm
+        ? (
+            count === 1
+              ? "RESULTADO"
+              : "RESULTADOS"
+          )
+        : (
+            count === 1
+              ? "NOTICIA"
+              : "NOTICIAS"
+          );
+
+
+    storyCount.textContent =
+      `${count} ${noun} · ${activeTopic.toUpperCase()}`;
+
+  };
+
+
+/* =========================================================
+   VOLVER A PORTADA
+========================================================= */
+
+goToFrontPage =
+  function () {
+
+    activeTopic =
+      "";
+
+
+    sportPage.classList.remove(
+      "topic-mode"
+    );
+
+
+    sportsJournalBaseGoToFrontPage();
+
+  };
+
+
+/* =========================================================
+   VOLVER A UNA SECCIÓN DEPORTIVA
+========================================================= */
+
+renderSportPage =
+  function () {
+
+    sportPage.classList.remove(
+      "topic-mode"
+    );
+
+
+    sportsJournalBaseRenderSportPage();
+
+  };
+
+
+/*
+  Esto se ejecuta ANTES del evento que ya tienen
+  los botones deportivos.
+
+  Así, si estamos viendo NBA y pulsamos FÚTBOL,
+  abandonamos primero la página NBA.
+*/
+
+sportFilters.forEach(
+  (button) => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        activeTopic =
+          "";
+
+
+        sportPage.classList.remove(
+          "topic-mode"
+        );
+
+      },
+      true
+    );
+
+  }
+);
+
+
+/* =========================================================
+   CHIPS CLICABLES EN READER
+========================================================= */
+
+function createClickableTopicChip(
+  tag
+) {
+
+  const button =
+    document.createElement(
+      "button"
+    );
+
+
+  button.type =
+    "button";
+
+
+  button.className =
+    "topic-chip";
+
+
+  button.textContent =
+    tag;
+
+
+  button.setAttribute(
+    "aria-label",
+    `Ver noticias sobre ${tag}`
+  );
+
+
+  button.addEventListener(
+    "click",
+    () => {
+
+      openTopicPage(
+        tag
+      );
+
+    }
+  );
+
+
+  return button;
+
+}
+
+
+/*
+  Sustituimos únicamente la forma en que
+  el Reader dibuja sus temas.
+
+  El preview del editor continúa usando
+  los chips normales.
+*/
+
+renderReaderTopics =
+  function (
+    article
+  ) {
+
+    const tags =
+      normalizeTags(
+        article.tags
+      );
+
+
+    readerTopicsList.innerHTML =
+      "";
+
+
+    readerTopics.hidden =
+      tags.length === 0;
+
+
+    if (
+      tags.length === 0
+    ) {
+
+      return;
+
+    }
+
+
+    tags.forEach(
+      (tag) => {
+
+        readerTopicsList.appendChild(
+          createClickableTopicChip(
+            tag
+          )
+        );
+
+      }
+    );
+
+  };
