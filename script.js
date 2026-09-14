@@ -10759,3 +10759,1754 @@ document.addEventListener(
 createAdminDashboardInterface();
 
 updateManagementCounts();
+
+/* =========================================================
+   PASO 10.2 — GESTOR CENTRAL DE NOTICIAS
+========================================================= */
+
+
+const adminArticleManagerFilters = {
+  search: "",
+  status: "all",
+  sport: "all",
+  author: "all"
+};
+
+
+/* =========================================================
+   CREATE MANAGER
+========================================================= */
+
+function createAdminArticleManagerInterface() {
+
+  if (
+    document.getElementById(
+      "adminArticleManagerModal"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     SIDE MENU BUTTON
+  ------------------------------------------------------- */
+
+  const sideButton =
+    document.createElement(
+      "button"
+    );
+
+
+  sideButton.id =
+    "allArticlesMenuButton";
+
+
+  sideButton.type =
+    "button";
+
+
+  sideButton.className =
+    "journal-menu-button";
+
+
+  sideButton.innerHTML = `
+    <span>TODAS LAS NOTICIAS</span>
+    <span>→</span>
+  `;
+
+
+  const dashboardMenuButton =
+    document.getElementById(
+      "adminDashboardMenuButton"
+    );
+
+
+  dashboardMenuButton.insertAdjacentElement(
+    "afterend",
+    sideButton
+  );
+
+
+  sideButton.addEventListener(
+    "click",
+    openAdminArticleManager
+  );
+
+
+  /* -------------------------------------------------------
+     DASHBOARD LAUNCH BUTTON
+  ------------------------------------------------------- */
+
+  const statsGrid =
+    document.querySelector(
+      ".admin-stats-grid"
+    );
+
+
+  const launchButton =
+    document.createElement(
+      "button"
+    );
+
+
+  launchButton.type =
+    "button";
+
+
+  launchButton.className =
+    "admin-manager-launch";
+
+
+  launchButton.innerHTML = `
+    <div
+      class="admin-manager-launch-copy"
+    >
+
+      <span>
+        CENTRO DE CONTROL
+      </span>
+
+      <strong>
+        GESTIONAR TODAS LAS NOTICIAS
+      </strong>
+
+    </div>
+
+    <span
+      class="admin-manager-launch-arrow"
+    >
+      →
+    </span>
+  `;
+
+
+  statsGrid.insertAdjacentElement(
+    "afterend",
+    launchButton
+  );
+
+
+  launchButton.addEventListener(
+    "click",
+    () => {
+
+      closeAdminDashboard();
+
+      openAdminArticleManager();
+
+    }
+  );
+
+
+  /* -------------------------------------------------------
+     MODAL
+  ------------------------------------------------------- */
+
+  const modal =
+    document.createElement(
+      "div"
+    );
+
+
+  modal.id =
+    "adminArticleManagerModal";
+
+
+  modal.className =
+    "modal article-manager-modal";
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  modal.innerHTML = `
+    <section
+      class="article-manager-panel"
+      aria-label="Gestor de noticias"
+    >
+
+      <header
+        class="article-manager-header"
+      >
+
+        <div>
+
+          <span
+            class="article-manager-eyebrow"
+          >
+            SPORTS JOURNAL · ADMIN
+          </span>
+
+          <h2>
+            TODAS LAS NOTICIAS
+          </h2>
+
+        </div>
+
+        <button
+          class="close-button article-manager-close"
+          id="closeArticleManagerButton"
+          type="button"
+          aria-label="Cerrar gestor"
+        >
+          ×
+        </button>
+
+      </header>
+
+
+      <div
+        class="article-manager-body"
+      >
+
+        <div
+          class="article-manager-intro"
+        >
+
+          <div>
+
+            <span
+              class="article-manager-intro-label"
+            >
+              GESTIÓN EDITORIAL
+            </span>
+
+            <h3>
+              CONTROLA TODO
+              EL CONTENIDO
+            </h3>
+
+          </div>
+
+          <div
+            class="article-manager-total"
+            id="articleManagerTotal"
+          >
+            0 NOTICIAS
+          </div>
+
+        </div>
+
+
+        <div
+          class="article-manager-toolbar"
+        >
+
+          <div
+            class="article-manager-field"
+          >
+
+            <label
+              for="articleManagerSearch"
+            >
+              BUSCAR
+            </label>
+
+            <input
+              id="articleManagerSearch"
+              type="search"
+              placeholder="TÍTULO, AUTOR, TAG..."
+              autocomplete="off"
+            />
+
+          </div>
+
+
+          <div
+            class="article-manager-field"
+          >
+
+            <label
+              for="articleManagerStatus"
+            >
+              ESTADO
+            </label>
+
+            <select
+              id="articleManagerStatus"
+            >
+
+              <option value="all">
+                TODOS
+              </option>
+
+              <option value="published">
+                PUBLICADAS
+              </option>
+
+              <option value="draft">
+                BORRADORES
+              </option>
+
+              <option value="archived">
+                ARCHIVADAS
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div
+            class="article-manager-field"
+          >
+
+            <label
+              for="articleManagerSport"
+            >
+              DEPORTE
+            </label>
+
+            <select
+              id="articleManagerSport"
+            >
+
+              <option value="all">
+                TODOS
+              </option>
+
+              <option value="football">
+                FÚTBOL
+              </option>
+
+              <option value="tennis">
+                TENIS
+              </option>
+
+              <option value="baseball">
+                BÉISBOL
+              </option>
+
+              <option value="basketball">
+                BALONCESTO
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div
+            class="article-manager-field"
+          >
+
+            <label
+              for="articleManagerAuthor"
+            >
+              AUTOR
+            </label>
+
+            <select
+              id="articleManagerAuthor"
+            >
+
+              <option value="all">
+                TODOS
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <button
+            class="article-manager-clear"
+            id="clearArticleManagerFilters"
+            type="button"
+          >
+            LIMPIAR
+          </button>
+
+        </div>
+
+
+        <div
+          class="article-manager-summary"
+        >
+
+          <span>
+            RESULTADOS
+          </span>
+
+          <strong
+            id="articleManagerSummary"
+          >
+            0 NOTICIAS
+          </strong>
+
+        </div>
+
+
+        <div
+          class="article-manager-list"
+          id="articleManagerList"
+        ></div>
+
+      </div>
+
+    </section>
+  `;
+
+
+  document.body.appendChild(
+    modal
+  );
+
+
+  bindAdminArticleManagerEvents();
+
+}
+
+
+/* =========================================================
+   MANAGER EVENTS
+========================================================= */
+
+function bindAdminArticleManagerEvents() {
+
+  document
+    .getElementById(
+      "closeArticleManagerButton"
+    )
+    .addEventListener(
+      "click",
+      closeAdminArticleManager
+    );
+
+
+  document
+    .getElementById(
+      "articleManagerSearch"
+    )
+    .addEventListener(
+      "input",
+      (event) => {
+
+        adminArticleManagerFilters.search =
+          normalizeSearchText(
+            event.target.value
+          );
+
+
+        renderAdminArticleManager();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "articleManagerStatus"
+    )
+    .addEventListener(
+      "change",
+      (event) => {
+
+        adminArticleManagerFilters.status =
+          event.target.value;
+
+
+        renderAdminArticleManager();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "articleManagerSport"
+    )
+    .addEventListener(
+      "change",
+      (event) => {
+
+        adminArticleManagerFilters.sport =
+          event.target.value;
+
+
+        renderAdminArticleManager();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "articleManagerAuthor"
+    )
+    .addEventListener(
+      "change",
+      (event) => {
+
+        adminArticleManagerFilters.author =
+          event.target.value;
+
+
+        renderAdminArticleManager();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "clearArticleManagerFilters"
+    )
+    .addEventListener(
+      "click",
+      clearAdminArticleManagerFilters
+    );
+
+}
+
+
+/* =========================================================
+   OPEN / CLOSE
+========================================================= */
+
+function openAdminArticleManager() {
+
+  closeSideMenu();
+
+
+  if (
+    document
+      .getElementById(
+        "adminDashboardModal"
+      )
+      ?.classList.contains(
+        "open"
+      )
+  ) {
+
+    closeAdminDashboard();
+
+  }
+
+
+  renderAdminArticleManager();
+
+
+  const modal =
+    document.getElementById(
+      "adminArticleManagerModal"
+    );
+
+
+  modal.classList.add(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+function closeAdminArticleManager() {
+
+  const modal =
+    document.getElementById(
+      "adminArticleManagerModal"
+    );
+
+
+  if (!modal) {
+
+    return;
+
+  }
+
+
+  modal.classList.remove(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+/* =========================================================
+   CLEAR FILTERS
+========================================================= */
+
+function clearAdminArticleManagerFilters() {
+
+  adminArticleManagerFilters.search =
+    "";
+
+
+  adminArticleManagerFilters.status =
+    "all";
+
+
+  adminArticleManagerFilters.sport =
+    "all";
+
+
+  adminArticleManagerFilters.author =
+    "all";
+
+
+  document
+    .getElementById(
+      "articleManagerSearch"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "articleManagerStatus"
+    )
+    .value =
+      "all";
+
+
+  document
+    .getElementById(
+      "articleManagerSport"
+    )
+    .value =
+      "all";
+
+
+  document
+    .getElementById(
+      "articleManagerAuthor"
+    )
+    .value =
+      "all";
+
+
+  renderAdminArticleManager();
+
+}
+
+
+/* =========================================================
+   AUTHORS
+========================================================= */
+
+function getAdminManagerAuthors() {
+
+  const authors =
+    new Map();
+
+
+  articles.forEach(
+    (article) => {
+
+      const author =
+        String(
+          article.author || ""
+        ).trim();
+
+
+      if (!author) {
+
+        return;
+
+      }
+
+
+      const key =
+        normalizeSearchText(
+          author
+        );
+
+
+      if (
+        !authors.has(key)
+      ) {
+
+        authors.set(
+          key,
+          author
+        );
+
+      }
+
+    }
+  );
+
+
+  return Array
+    .from(
+      authors.entries()
+    )
+    .sort(
+      (a, b) =>
+        a[1].localeCompare(
+          b[1],
+          "es",
+          {
+            sensitivity:
+              "base"
+          }
+        )
+    );
+
+}
+
+
+function renderAdminManagerAuthorFilter() {
+
+  const select =
+    document.getElementById(
+      "articleManagerAuthor"
+    );
+
+
+  const current =
+    adminArticleManagerFilters.author;
+
+
+  select.innerHTML =
+    "";
+
+
+  const allOption =
+    document.createElement(
+      "option"
+    );
+
+
+  allOption.value =
+    "all";
+
+
+  allOption.textContent =
+    "TODOS";
+
+
+  select.appendChild(
+    allOption
+  );
+
+
+  getAdminManagerAuthors()
+    .forEach(
+      ([key, author]) => {
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+
+        option.value =
+          key;
+
+
+        option.textContent =
+          author.toUpperCase();
+
+
+        select.appendChild(
+          option
+        );
+
+      }
+    );
+
+
+  const availableValues =
+    Array
+      .from(
+        select.options
+      )
+      .map(
+        (option) =>
+          option.value
+      );
+
+
+  if (
+    availableValues.includes(
+      current
+    )
+  ) {
+
+    select.value =
+      current;
+
+  } else {
+
+    adminArticleManagerFilters.author =
+      "all";
+
+
+    select.value =
+      "all";
+
+  }
+
+}
+
+
+/* =========================================================
+   GET FILTERED ARTICLES
+========================================================= */
+
+function getAdminManagerFilteredArticles() {
+
+  return [
+    ...articles
+  ]
+    .sort(
+      (a, b) =>
+        getArticleActivityTime(
+          b
+        ) -
+        getArticleActivityTime(
+          a
+        )
+    )
+    .filter(
+      (article) => {
+
+        const state =
+          getAdminArticleState(
+            article
+          );
+
+
+        if (
+          adminArticleManagerFilters.status !==
+            "all" &&
+          state !==
+            adminArticleManagerFilters.status
+        ) {
+
+          return false;
+
+        }
+
+
+        if (
+          adminArticleManagerFilters.sport !==
+            "all" &&
+          article.sport !==
+            adminArticleManagerFilters.sport
+        ) {
+
+          return false;
+
+        }
+
+
+        if (
+          adminArticleManagerFilters.author !==
+            "all" &&
+          normalizeSearchText(
+            article.author
+          ) !==
+            adminArticleManagerFilters.author
+        ) {
+
+          return false;
+
+        }
+
+
+        if (
+          adminArticleManagerFilters.search
+        ) {
+
+          const searchData =
+            normalizeSearchText(
+              [
+                article.title,
+                article.author,
+                article.summary,
+                article.content,
+                getSportLabel(
+                  article.sport
+                ),
+                ...normalizeTags(
+                  article.tags
+                )
+              ].join(" ")
+            );
+
+
+          if (
+            !searchData.includes(
+              adminArticleManagerFilters.search
+            )
+          ) {
+
+            return false;
+
+          }
+
+        }
+
+
+        return true;
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   RENDER MANAGER
+========================================================= */
+
+function renderAdminArticleManager() {
+
+  renderAdminManagerAuthorFilter();
+
+
+  const items =
+    getAdminManagerFilteredArticles();
+
+
+  const list =
+    document.getElementById(
+      "articleManagerList"
+    );
+
+
+  list.innerHTML =
+    "";
+
+
+  const total =
+    document.getElementById(
+      "articleManagerTotal"
+    );
+
+
+  total.textContent =
+    `${articles.length} ${
+      articles.length === 1
+        ? "NOTICIA"
+        : "NOTICIAS"
+    }`;
+
+
+  const summary =
+    document.getElementById(
+      "articleManagerSummary"
+    );
+
+
+  summary.textContent =
+    `${items.length} ${
+      items.length === 1
+        ? "NOTICIA"
+        : "NOTICIAS"
+    }`;
+
+
+  if (
+    items.length === 0
+  ) {
+
+    list.innerHTML = `
+      <div
+        class="article-manager-empty"
+      >
+
+        <strong>
+          SIN RESULTADOS
+        </strong>
+
+        <p>
+          No encontramos noticias con
+          los filtros seleccionados.
+        </p>
+
+      </div>
+    `;
+
+
+    return;
+
+  }
+
+
+  items.forEach(
+    (article, index) => {
+
+      list.appendChild(
+        createAdminArticleManagerRow(
+          article,
+          index
+        )
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   ARTICLE ROW
+========================================================= */
+
+function createAdminArticleManagerRow(
+  article,
+  index
+) {
+
+  const state =
+    getAdminArticleState(
+      article
+    );
+
+
+  const row =
+    document.createElement(
+      "article"
+    );
+
+
+  row.className =
+    "article-manager-row";
+
+
+  /* NUMBER */
+
+  const number =
+    document.createElement(
+      "div"
+    );
+
+
+  number.className =
+    "article-manager-number";
+
+
+  number.textContent =
+    String(
+      index + 1
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  /* STATUS */
+
+  const status =
+    document.createElement(
+      "div"
+    );
+
+
+  status.className =
+    `article-manager-status ${state}`;
+
+
+  status.textContent =
+    getAdminArticleStateLabel(
+      article
+    );
+
+
+  /* SPORT */
+
+  const sport =
+    document.createElement(
+      "div"
+    );
+
+
+  sport.className =
+    "article-manager-sport";
+
+
+  sport.textContent =
+    getSportLabel(
+      article.sport
+    );
+
+
+  /* COPY */
+
+  const copy =
+    document.createElement(
+      "div"
+    );
+
+
+  copy.className =
+    "article-manager-copy";
+
+
+  const title =
+    document.createElement(
+      "h3"
+    );
+
+
+  title.className =
+    "article-manager-title";
+
+
+  title.textContent =
+    article.title?.trim() ||
+    "NOTICIA SIN TÍTULO";
+
+
+  copy.appendChild(
+    title
+  );
+
+
+  const tags =
+    normalizeTags(
+      article.tags
+    );
+
+
+  if (
+    tags.length > 0
+  ) {
+
+    const tagsContainer =
+      document.createElement(
+        "div"
+      );
+
+
+    tagsContainer.className =
+      "article-manager-tags";
+
+
+    tags
+      .slice(
+        0,
+        4
+      )
+      .forEach(
+        (tag) => {
+
+          const chip =
+            document.createElement(
+              "span"
+            );
+
+
+          chip.className =
+            "article-manager-tag";
+
+
+          chip.textContent =
+            tag;
+
+
+          tagsContainer.appendChild(
+            chip
+          );
+
+        }
+      );
+
+
+    copy.appendChild(
+      tagsContainer
+    );
+
+  }
+
+
+  const date =
+    document.createElement(
+      "div"
+    );
+
+
+  date.className =
+    "article-manager-date";
+
+
+  date.textContent =
+    getAdminRecentDateText(
+      article
+    );
+
+
+  copy.appendChild(
+    date
+  );
+
+
+  /* AUTHOR */
+
+  const author =
+    document.createElement(
+      "div"
+    );
+
+
+  author.className =
+    "article-manager-author";
+
+
+  author.textContent =
+    article.author?.trim() ||
+    "SIN AUTOR";
+
+
+  /* ACTIONS */
+
+  const actions =
+    document.createElement(
+      "div"
+    );
+
+
+  actions.className =
+    "article-manager-actions";
+
+
+  const editButton =
+    createArticleManagerAction(
+      "EDITAR",
+      "primary"
+    );
+
+
+  editButton.addEventListener(
+    "click",
+    () => {
+
+      closeAdminArticleManager();
+
+
+      openEditor(
+        article.id
+      );
+
+    }
+  );
+
+
+  actions.appendChild(
+    editButton
+  );
+
+
+  /* PUBLISHED */
+
+  if (
+    state === "published"
+  ) {
+
+    const readButton =
+      createArticleManagerAction(
+        "LEER",
+        ""
+      );
+
+
+    readButton.addEventListener(
+      "click",
+      () => {
+
+        closeAdminArticleManager();
+
+
+        openReader(
+          article.id
+        );
+
+      }
+    );
+
+
+    const archiveButton =
+      createArticleManagerAction(
+        "ARCHIVAR",
+        "archive"
+      );
+
+
+    archiveButton.addEventListener(
+      "click",
+      () => {
+
+        openArchiveConfirmation(
+          article.id
+        );
+
+      }
+    );
+
+
+    actions.append(
+      readButton,
+      archiveButton
+    );
+
+  }
+
+
+  /* DRAFT */
+
+  if (
+    state === "draft"
+  ) {
+
+    const ready =
+      isArticleReadyForPublication(
+        article
+      );
+
+
+    const publishButton =
+      createArticleManagerAction(
+        ready
+          ? "PUBLICAR"
+          : "COMPLETAR",
+        ready
+          ? "publish"
+          : ""
+      );
+
+
+    publishButton.addEventListener(
+      "click",
+      () => {
+
+        if (ready) {
+
+          publishDraftFromArticleManager(
+            article.id
+          );
+
+        } else {
+
+          closeAdminArticleManager();
+
+
+          openEditor(
+            article.id
+          );
+
+
+          showToast(
+            "COMPLETA LA NOTICIA ANTES DE PUBLICAR."
+          );
+
+        }
+
+      }
+    );
+
+
+    actions.appendChild(
+      publishButton
+    );
+
+  }
+
+
+  /* ARCHIVED */
+
+  if (
+    state === "archived"
+  ) {
+
+    const republishButton =
+      createArticleManagerAction(
+        "REPUBLICAR",
+        "publish"
+      );
+
+
+    republishButton.addEventListener(
+      "click",
+      () => {
+
+        republishArchivedArticle(
+          article.id
+        );
+
+      }
+    );
+
+
+    const draftButton =
+      createArticleManagerAction(
+        "A BORRADOR",
+        ""
+      );
+
+
+    draftButton.addEventListener(
+      "click",
+      () => {
+
+        moveArchivedArticleToDraft(
+          article.id
+        );
+
+      }
+    );
+
+
+    actions.append(
+      republishButton,
+      draftButton
+    );
+
+  }
+
+
+  /* DELETE */
+
+  const deleteButton =
+    createArticleManagerAction(
+      "ELIMINAR",
+      "danger"
+    );
+
+
+  deleteButton.addEventListener(
+    "click",
+    () => {
+
+      openDeleteConfirmation(
+        article.id
+      );
+
+    }
+  );
+
+
+  actions.appendChild(
+    deleteButton
+  );
+
+
+  row.append(
+    number,
+    status,
+    sport,
+    copy,
+    author,
+    actions
+  );
+
+
+  return row;
+
+}
+
+
+/* =========================================================
+   ACTION BUTTON
+========================================================= */
+
+function createArticleManagerAction(
+  text,
+  modifier
+) {
+
+  const button =
+    document.createElement(
+      "button"
+    );
+
+
+  button.type =
+    "button";
+
+
+  button.className =
+    `article-manager-action ${modifier}`.trim();
+
+
+  button.textContent =
+    text;
+
+
+  return button;
+
+}
+
+
+/* =========================================================
+   CAN A DRAFT BE PUBLISHED?
+========================================================= */
+
+function isArticleReadyForPublication(
+  article
+) {
+
+  return Boolean(
+
+    String(
+      article.title || ""
+    ).trim() &&
+
+    String(
+      article.author || ""
+    ).trim() &&
+
+    String(
+      article.summary || ""
+    ).trim() &&
+
+    String(
+      article.content || ""
+    ).trim() &&
+
+    [
+      "football",
+      "tennis",
+      "baseball",
+      "basketball"
+    ].includes(
+      article.sport
+    )
+
+  );
+
+}
+
+
+/* =========================================================
+   PUBLISH DRAFT DIRECTLY FROM ADMIN
+========================================================= */
+
+function publishDraftFromArticleManager(
+  articleId
+) {
+
+  const article =
+    findArticle(
+      articleId
+    );
+
+
+  if (
+    !article ||
+    article.status !==
+      "draft" ||
+    article.archivedAt
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    !isArticleReadyForPublication(
+      article
+    )
+  ) {
+
+    closeAdminArticleManager();
+
+
+    openEditor(
+      article.id
+    );
+
+
+    showToast(
+      "COMPLETA LA NOTICIA ANTES DE PUBLICAR."
+    );
+
+
+    return;
+
+  }
+
+
+  createInternalBackup(
+    "Antes de publicar borrador desde Admin"
+  );
+
+
+  const now =
+    new Date().toISOString();
+
+
+  article.status =
+    "published";
+
+
+  article.archivedAt =
+    null;
+
+
+  article.publishedAt =
+    now;
+
+
+  article.updatedAt =
+    now;
+
+
+  if (
+    !persistArticles()
+  ) {
+
+    return;
+
+  }
+
+
+  createInternalBackup(
+    "Después de publicar borrador desde Admin"
+  );
+
+
+  renderCurrentView();
+
+  updateManagementCounts();
+
+  updateBackupStatus();
+
+
+  showToast(
+    "NOTICIA PUBLICADA."
+  );
+
+}
+
+
+/* =========================================================
+   REFRESH MANAGER WHEN DATA CHANGES
+========================================================= */
+
+const step102BaseUpdateManagementCounts =
+  updateManagementCounts;
+
+
+updateManagementCounts =
+  function () {
+
+    step102BaseUpdateManagementCounts();
+
+
+    const manager =
+      document.getElementById(
+        "adminArticleManagerModal"
+      );
+
+
+    if (
+      manager?.classList.contains(
+        "open"
+      )
+    ) {
+
+      renderAdminArticleManager();
+
+    }
+
+  };
+
+
+/* =========================================================
+   BODY SCROLL
+========================================================= */
+
+const step102BaseSyncBodyScrollState =
+  syncBodyScrollState;
+
+
+syncBodyScrollState =
+  function () {
+
+    step102BaseSyncBodyScrollState();
+
+
+    const manager =
+      document.getElementById(
+        "adminArticleManagerModal"
+      );
+
+
+    if (
+      manager?.classList.contains(
+        "open"
+      )
+    ) {
+
+      document.body.classList.add(
+        "modal-open"
+      );
+
+    }
+
+  };
+
+
+/* =========================================================
+   ESCAPE
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.key !== "Escape"
+    ) {
+
+      return;
+
+    }
+
+
+    const manager =
+      document.getElementById(
+        "adminArticleManagerModal"
+      );
+
+
+    if (
+      manager?.classList.contains(
+        "open"
+      )
+    ) {
+
+      closeAdminArticleManager();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   INSTALL
+========================================================= */
+
+createAdminArticleManagerInterface();
+
+updateManagementCounts(); 

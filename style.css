@@ -5007,3 +5007,914 @@ button.topic-chip:focus-visible {
   }
 
 }
+
+/* =========================================================
+   PASO 10.2 — GESTOR CENTRAL DE NOTICIAS
+========================================================= */
+
+
+/* =========================================================
+   DASHBOARD → OPEN MANAGER
+========================================================= */
+
+.admin-manager-launch {
+  width: 100%;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 25px;
+
+  margin:
+    0
+    0
+    45px;
+
+  border:
+    3px
+    solid
+    var(--black);
+
+  background: var(--yellow);
+  color: var(--black);
+
+  padding:
+    20px
+    22px;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+
+.admin-manager-launch-copy span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+
+.admin-manager-launch-copy strong {
+  display: block;
+
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      28px,
+      4vw,
+      45px
+    );
+
+  line-height: 0.9;
+}
+
+
+.admin-manager-launch-arrow {
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size: 36px;
+}
+
+
+.admin-manager-launch:hover {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+
+/* =========================================================
+   MANAGER MODAL
+========================================================= */
+
+.article-manager-modal {
+  z-index: 1660;
+}
+
+
+.article-manager-panel {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow-y: auto;
+
+  background: var(--cream);
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.article-manager-header {
+  position: sticky;
+
+  z-index: 30;
+
+  top: 0;
+
+  min-height: 105px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  gap: 25px;
+
+  align-items: center;
+
+  border-bottom:
+    4px
+    solid
+    var(--black);
+
+  background: var(--black);
+  color: var(--cream);
+
+  padding:
+    18px
+    clamp(18px, 4vw, 58px);
+}
+
+
+.article-manager-eyebrow {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: var(--yellow);
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+
+.article-manager-header h2 {
+  margin: 0;
+
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      38px,
+      5vw,
+      62px
+    );
+
+  line-height: 0.88;
+}
+
+
+.article-manager-close {
+  border-color: var(--cream);
+
+  color: var(--cream);
+}
+
+
+.article-manager-close:hover {
+  border-color: var(--yellow);
+
+  background: var(--yellow);
+  color: var(--black);
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+.article-manager-body {
+  width:
+    min(
+      1600px,
+      100%
+    );
+
+  margin:
+    0
+    auto;
+
+  padding:
+    clamp(25px, 4vw, 50px)
+    clamp(16px, 4vw, 58px)
+    80px;
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+.article-manager-intro {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  align-items: end;
+
+  gap: 30px;
+
+  margin-bottom: 28px;
+}
+
+
+.article-manager-intro-label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+
+.article-manager-intro h3 {
+  max-width: 950px;
+
+  margin: 0;
+
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      42px,
+      6vw,
+      80px
+    );
+
+  line-height: 0.88;
+
+  text-transform: uppercase;
+}
+
+
+.article-manager-total {
+  border:
+    3px
+    solid
+    var(--black);
+
+  background: var(--yellow);
+
+  padding:
+    13px
+    16px;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   FILTER BAR
+========================================================= */
+
+.article-manager-toolbar {
+  display: grid;
+
+  grid-template-columns:
+    minmax(250px, 1fr)
+    180px
+    180px
+    180px
+    auto;
+
+  border:
+    3px
+    solid
+    var(--black);
+
+  background: var(--paper);
+
+  margin-bottom: 18px;
+}
+
+
+.article-manager-field {
+  min-width: 0;
+
+  border-right:
+    2px
+    solid
+    var(--black);
+
+  padding:
+    12px;
+}
+
+
+.article-manager-field label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+
+.article-manager-field input,
+.article-manager-field select {
+  width: 100%;
+
+  min-height: 42px;
+
+  border:
+    2px
+    solid
+    var(--black);
+
+  border-radius: 0;
+
+  outline: 0;
+
+  background: var(--cream);
+  color: var(--black);
+
+  padding:
+    8px
+    10px;
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+
+.article-manager-field input:focus,
+.article-manager-field select:focus {
+  box-shadow:
+    4px
+    4px
+    0
+    var(--yellow);
+}
+
+
+.article-manager-clear {
+  align-self: stretch;
+
+  min-width: 120px;
+
+  border: 0;
+
+  background: var(--black);
+  color: var(--yellow);
+
+  padding:
+    12px
+    16px;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.article-manager-clear:hover {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+
+/* =========================================================
+   FILTER SUMMARY
+========================================================= */
+
+.article-manager-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 20px;
+
+  min-height: 48px;
+
+  margin-bottom: 15px;
+
+  border-top:
+    2px
+    solid
+    var(--black);
+
+  border-bottom:
+    2px
+    solid
+    var(--black);
+
+  padding:
+    8px
+    0;
+
+  font-size: 9px;
+  font-weight: 900;
+}
+
+
+.article-manager-summary strong {
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size: 19px;
+}
+
+
+/* =========================================================
+   ARTICLE LIST
+========================================================= */
+
+.article-manager-list {
+  border-top:
+    3px
+    solid
+    var(--black);
+}
+
+
+.article-manager-row {
+  display: grid;
+
+  grid-template-columns:
+    52px
+    105px
+    110px
+    minmax(0, 1fr)
+    145px
+    135px;
+
+  gap: 16px;
+
+  align-items: start;
+
+  border-bottom:
+    2px
+    solid
+    var(--black);
+
+  padding:
+    22px
+    0;
+}
+
+
+.article-manager-number {
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size: 28px;
+
+  line-height: 1;
+}
+
+
+/* STATUS */
+
+.article-manager-status {
+  width: fit-content;
+
+  border:
+    2px
+    solid
+    var(--black);
+
+  padding:
+    6px
+    8px;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+
+.article-manager-status.published {
+  background: var(--yellow);
+}
+
+
+.article-manager-status.draft {
+  background: var(--cream);
+}
+
+
+.article-manager-status.archived {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+
+/* SPORT */
+
+.article-manager-sport {
+  padding-top: 6px;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+
+/* ARTICLE COPY */
+
+.article-manager-copy {
+  min-width: 0;
+}
+
+
+.article-manager-title {
+  margin: 0;
+
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      24px,
+      3vw,
+      38px
+    );
+
+  line-height: 0.94;
+
+  text-transform: uppercase;
+}
+
+
+.article-manager-tags {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 5px;
+
+  margin-top: 10px;
+}
+
+
+.article-manager-tag {
+  border:
+    1px
+    solid
+    var(--black);
+
+  padding:
+    4px
+    6px;
+
+  font-size: 7px;
+  font-weight: 900;
+
+  text-transform: uppercase;
+}
+
+
+.article-manager-date {
+  margin-top: 10px;
+
+  color: #656158;
+
+  font-size: 8px;
+  font-weight: 900;
+
+  line-height: 1.5;
+}
+
+
+/* AUTHOR */
+
+.article-manager-author {
+  padding-top: 5px;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  line-height: 1.4;
+
+  word-break: break-word;
+}
+
+
+/* ACTIONS */
+
+.article-manager-actions {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+
+.article-manager-action {
+  min-height: 35px;
+
+  border:
+    2px
+    solid
+    var(--black);
+
+  background: transparent;
+
+  padding:
+    7px
+    9px;
+
+  font-size: 8px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.article-manager-action.primary {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+
+.article-manager-action.publish {
+  background: var(--yellow);
+}
+
+
+.article-manager-action.archive {
+  background: var(--paper);
+}
+
+
+.article-manager-action.danger {
+  border-color: var(--red);
+
+  color: var(--red);
+}
+
+
+.article-manager-action:hover {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+
+.article-manager-action.danger:hover {
+  background: var(--red);
+  color: white;
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.article-manager-empty {
+  min-height: 300px;
+
+  display: grid;
+  place-content: center;
+
+  border:
+    3px
+    solid
+    var(--black);
+
+  padding: 35px;
+
+  text-align: center;
+}
+
+
+.article-manager-empty strong {
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      35px,
+      7vw,
+      70px
+    );
+
+  line-height: 0.9;
+}
+
+
+.article-manager-empty p {
+  max-width: 500px;
+
+  margin:
+    12px
+    auto
+    0;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+  .article-manager-toolbar {
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+
+
+  .article-manager-field {
+    border-bottom:
+      2px
+      solid
+      var(--black);
+  }
+
+
+  .article-manager-field:nth-child(even) {
+    border-right: 0;
+  }
+
+
+  .article-manager-field:nth-child(4) {
+    border-bottom: 0;
+  }
+
+
+  .article-manager-clear {
+    grid-column:
+      1
+      /
+      -1;
+  }
+
+
+  .article-manager-row {
+    grid-template-columns:
+      45px
+      100px
+      minmax(0, 1fr)
+      130px;
+  }
+
+
+  .article-manager-sport {
+    grid-column: 2;
+  }
+
+
+  .article-manager-copy {
+    grid-column: 3;
+
+    grid-row:
+      1
+      /
+      span
+      2;
+  }
+
+
+  .article-manager-author {
+    grid-column: 3;
+  }
+
+
+  .article-manager-actions {
+    grid-column: 4;
+
+    grid-row:
+      1
+      /
+      span
+      3;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+  .admin-manager-launch {
+    padding:
+      17px;
+  }
+
+
+  .admin-manager-launch-arrow {
+    font-size: 28px;
+  }
+
+
+  .article-manager-header {
+    min-height: 90px;
+
+    padding:
+      14px
+      16px;
+  }
+
+
+  .article-manager-header h2 {
+    font-size: 36px;
+  }
+
+
+  .article-manager-body {
+    padding:
+      25px
+      14px
+      60px;
+  }
+
+
+  .article-manager-intro {
+    grid-template-columns: 1fr;
+
+    gap: 15px;
+  }
+
+
+  .article-manager-total {
+    width: fit-content;
+  }
+
+
+  .article-manager-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+
+  .article-manager-field,
+  .article-manager-field:nth-child(even),
+  .article-manager-field:nth-child(4) {
+    border-right: 0;
+
+    border-bottom:
+      2px
+      solid
+      var(--black);
+  }
+
+
+  .article-manager-row {
+    grid-template-columns:
+      38px
+      minmax(0, 1fr);
+
+    gap:
+      11px
+      14px;
+
+    padding:
+      20px
+      0;
+  }
+
+
+  .article-manager-status,
+  .article-manager-sport,
+  .article-manager-copy,
+  .article-manager-author,
+  .article-manager-actions {
+    grid-column: 2;
+
+    grid-row: auto;
+  }
+
+
+  .article-manager-actions {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+
+
+  .article-manager-summary {
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 4px;
+  }
+
+}
