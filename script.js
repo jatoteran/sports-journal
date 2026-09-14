@@ -9241,3 +9241,1521 @@ createArchiveInterface();
 renderCurrentView();
 
 updateManagementCounts();
+
+/* =========================================================
+   PASO 10.1 — ADMIN DASHBOARD
+========================================================= */
+
+
+/* =========================================================
+   CREATE DASHBOARD UI
+========================================================= */
+
+function createAdminDashboardInterface() {
+
+  if (
+    document.getElementById(
+      "adminDashboardModal"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     SIDE MENU BUTTON
+  ------------------------------------------------------- */
+
+  const dashboardButton =
+    document.createElement(
+      "button"
+    );
+
+
+  dashboardButton.id =
+    "adminDashboardMenuButton";
+
+
+  dashboardButton.type =
+    "button";
+
+
+  dashboardButton.className =
+    "journal-menu-button";
+
+
+  dashboardButton.innerHTML = `
+    <span>PANEL / ADMIN</span>
+    <span>→</span>
+  `;
+
+
+  frontPageMenuButton.insertAdjacentElement(
+    "beforebegin",
+    dashboardButton
+  );
+
+
+  dashboardButton.addEventListener(
+    "click",
+    openAdminDashboard
+  );
+
+
+  /* -------------------------------------------------------
+     DASHBOARD MODAL
+  ------------------------------------------------------- */
+
+  const dashboard =
+    document.createElement(
+      "div"
+    );
+
+
+  dashboard.id =
+    "adminDashboardModal";
+
+
+  dashboard.className =
+    "modal admin-dashboard-modal";
+
+
+  dashboard.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  dashboard.innerHTML = `
+    <section
+      class="admin-dashboard-panel"
+      aria-label="Panel de administración"
+    >
+
+      <header
+        class="admin-dashboard-header"
+      >
+
+        <div>
+
+          <span
+            class="admin-dashboard-eyebrow"
+          >
+            SPORTS JOURNAL · REDACCIÓN
+          </span>
+
+          <h2>
+            PANEL EDITORIAL
+          </h2>
+
+        </div>
+
+        <button
+          class="close-button admin-dashboard-close"
+          id="closeAdminDashboardButton"
+          type="button"
+          aria-label="Cerrar panel"
+        >
+          ×
+        </button>
+
+      </header>
+
+
+      <div
+        class="admin-dashboard-body"
+      >
+
+        <div
+          class="admin-dashboard-intro"
+        >
+
+          <div>
+
+            <span
+              class="admin-dashboard-intro-label"
+            >
+              CONTROL DE REDACCIÓN
+            </span>
+
+            <h3>
+              TODO EL DIARIO
+              EN UN SOLO LUGAR
+            </h3>
+
+          </div>
+
+          <div
+            class="admin-dashboard-date"
+            id="adminDashboardDate"
+          ></div>
+
+        </div>
+
+
+        <div
+          class="admin-stats-grid"
+        >
+
+          <button
+            class="admin-stat-card"
+            id="adminTotalCard"
+            type="button"
+          >
+
+            <span
+              class="admin-stat-card-label"
+            >
+              TOTAL
+            </span>
+
+            <strong
+              id="adminTotalCount"
+            >
+              0
+            </strong>
+
+            <small>
+              TODAS LAS NOTICIAS
+            </small>
+
+          </button>
+
+
+          <button
+            class="admin-stat-card"
+            id="adminPublishedCard"
+            type="button"
+          >
+
+            <span
+              class="admin-stat-card-label"
+            >
+              PUBLICADAS
+            </span>
+
+            <strong
+              id="adminPublishedCount"
+            >
+              0
+            </strong>
+
+            <small>
+              VISIBLES EN EL DIARIO
+            </small>
+
+          </button>
+
+
+          <button
+            class="admin-stat-card"
+            id="adminDraftCard"
+            type="button"
+          >
+
+            <span
+              class="admin-stat-card-label"
+            >
+              BORRADORES
+            </span>
+
+            <strong
+              id="adminDraftCount"
+            >
+              0
+            </strong>
+
+            <small>
+              EN PREPARACIÓN
+            </small>
+
+          </button>
+
+
+          <button
+            class="admin-stat-card"
+            id="adminArchivedCard"
+            type="button"
+          >
+
+            <span
+              class="admin-stat-card-label"
+            >
+              ARCHIVADAS
+            </span>
+
+            <strong
+              id="adminArchivedCount"
+            >
+              0
+            </strong>
+
+            <small>
+              RETIRADAS DEL SITIO
+            </small>
+
+          </button>
+
+        </div>
+
+
+        <section
+          class="admin-dashboard-section"
+        >
+
+          <div
+            class="admin-dashboard-section-heading"
+          >
+
+            <span
+              class="admin-dashboard-section-number"
+            >
+              01
+            </span>
+
+            <h4>
+              ACCIONES RÁPIDAS
+            </h4>
+
+          </div>
+
+
+          <div
+            class="admin-quick-actions"
+          >
+
+            <button
+              class="admin-quick-action"
+              id="adminNewStoryButton"
+              type="button"
+            >
+
+              <span>
+                CREAR
+              </span>
+
+              <strong>
+                + NUEVA NOTICIA
+              </strong>
+
+            </button>
+
+
+            <button
+              class="admin-quick-action"
+              id="adminDraftsButton"
+              type="button"
+            >
+
+              <span>
+                GESTIONAR
+              </span>
+
+              <strong>
+                BORRADORES
+              </strong>
+
+            </button>
+
+
+            <button
+              class="admin-quick-action"
+              id="adminArchivesButton"
+              type="button"
+            >
+
+              <span>
+                GESTIONAR
+              </span>
+
+              <strong>
+                ARCHIVADAS
+              </strong>
+
+            </button>
+
+
+            <button
+              class="admin-quick-action"
+              id="adminBackupButton"
+              type="button"
+            >
+
+              <span>
+                SEGURIDAD
+              </span>
+
+              <strong>
+                EXPORTAR RESPALDO
+              </strong>
+
+            </button>
+
+          </div>
+
+        </section>
+
+
+        <section
+          class="admin-dashboard-section"
+        >
+
+          <div
+            class="admin-dashboard-section-heading"
+          >
+
+            <span
+              class="admin-dashboard-section-number"
+            >
+              02
+            </span>
+
+            <h4>
+              POR DEPORTE
+            </h4>
+
+          </div>
+
+
+          <div
+            class="admin-sports-grid"
+            id="adminSportsGrid"
+          ></div>
+
+        </section>
+
+
+        <section
+          class="admin-dashboard-section"
+        >
+
+          <div
+            class="admin-dashboard-section-heading"
+          >
+
+            <span
+              class="admin-dashboard-section-number"
+            >
+              03
+            </span>
+
+            <h4>
+              ACTIVIDAD RECIENTE
+            </h4>
+
+          </div>
+
+
+          <div
+            class="admin-recent-list"
+            id="adminRecentList"
+          ></div>
+
+        </section>
+
+      </div>
+
+    </section>
+  `;
+
+
+  document.body.appendChild(
+    dashboard
+  );
+
+
+  bindAdminDashboardEvents();
+
+}
+
+
+/* =========================================================
+   DASHBOARD EVENTS
+========================================================= */
+
+function bindAdminDashboardEvents() {
+
+  document
+    .getElementById(
+      "closeAdminDashboardButton"
+    )
+    .addEventListener(
+      "click",
+      closeAdminDashboard
+    );
+
+
+  document
+    .getElementById(
+      "adminNewStoryButton"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        closeAdminDashboard();
+
+        openEditor();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "adminDraftsButton"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        closeAdminDashboard();
+
+        openDraftsManager();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "adminArchivesButton"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        closeAdminDashboard();
+
+        openArchivedManager();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "adminBackupButton"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        closeAdminDashboard();
+
+        exportJournalBackup();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "adminTotalCard"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        closeAdminDashboard();
+
+        goToFrontPage();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "adminPublishedCard"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        closeAdminDashboard();
+
+        goToFrontPage();
+
+
+        showToast(
+          `${getPublishedArticles().length} NOTICIAS PUBLICADAS.`
+        );
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "adminDraftCard"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        closeAdminDashboard();
+
+        openDraftsManager();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "adminArchivedCard"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        closeAdminDashboard();
+
+        openArchivedManager();
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   OPEN / CLOSE
+========================================================= */
+
+function openAdminDashboard() {
+
+  closeSideMenu();
+
+
+  renderAdminDashboard();
+
+
+  const modal =
+    document.getElementById(
+      "adminDashboardModal"
+    );
+
+
+  modal.classList.add(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+function closeAdminDashboard() {
+
+  const modal =
+    document.getElementById(
+      "adminDashboardModal"
+    );
+
+
+  if (!modal) {
+
+    return;
+
+  }
+
+
+  modal.classList.remove(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+/* =========================================================
+   RENDER DASHBOARD
+========================================================= */
+
+function renderAdminDashboard() {
+
+  renderAdminDashboardDate();
+
+  renderAdminStats();
+
+  renderAdminSports();
+
+  renderAdminRecentActivity();
+
+}
+
+
+/* =========================================================
+   DATE
+========================================================= */
+
+function renderAdminDashboardDate() {
+
+  const element =
+    document.getElementById(
+      "adminDashboardDate"
+    );
+
+
+  element.textContent =
+    new Intl.DateTimeFormat(
+      "es-ES",
+      {
+        weekday:
+          "long",
+
+        day:
+          "numeric",
+
+        month:
+          "long",
+
+        year:
+          "numeric"
+      }
+    )
+      .format(
+        new Date()
+      )
+      .toUpperCase();
+
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function renderAdminStats() {
+
+  const published =
+    getPublishedArticles();
+
+
+  const drafts =
+    getDraftArticles();
+
+
+  const archived =
+    getArchivedArticles();
+
+
+  document
+    .getElementById(
+      "adminTotalCount"
+    )
+    .textContent =
+      articles.length;
+
+
+  document
+    .getElementById(
+      "adminPublishedCount"
+    )
+    .textContent =
+      published.length;
+
+
+  document
+    .getElementById(
+      "adminDraftCount"
+    )
+    .textContent =
+      drafts.length;
+
+
+  document
+    .getElementById(
+      "adminArchivedCount"
+    )
+    .textContent =
+      archived.length;
+
+}
+
+
+/* =========================================================
+   SPORTS OVERVIEW
+========================================================= */
+
+function renderAdminSports() {
+
+  const grid =
+    document.getElementById(
+      "adminSportsGrid"
+    );
+
+
+  grid.innerHTML =
+    "";
+
+
+  const sports = [
+    "football",
+    "tennis",
+    "baseball",
+    "basketball"
+  ];
+
+
+  sports.forEach(
+    (sport) => {
+
+      const allSportArticles =
+        articles.filter(
+          (article) =>
+            article.sport ===
+              sport
+        );
+
+
+      const published =
+        getPublishedArticles()
+          .filter(
+            (article) =>
+              article.sport ===
+                sport
+          );
+
+
+      const drafts =
+        getDraftArticles()
+          .filter(
+            (article) =>
+              article.sport ===
+                sport
+          );
+
+
+      const archived =
+        getArchivedArticles()
+          .filter(
+            (article) =>
+              article.sport ===
+                sport
+          );
+
+
+      const card =
+        document.createElement(
+          "button"
+        );
+
+
+      card.type =
+        "button";
+
+
+      card.className =
+        "admin-sport-card";
+
+
+      const name =
+        document.createElement(
+          "div"
+        );
+
+
+      name.className =
+        "admin-sport-card-name";
+
+
+      name.textContent =
+        getSportLabel(
+          sport
+        );
+
+
+      const stats =
+        document.createElement(
+          "div"
+        );
+
+
+      stats.className =
+        "admin-sport-card-stats";
+
+
+      stats.innerHTML = `
+        ${published.length} PUBLICADAS<br>
+        ${drafts.length} BORRADORES<br>
+        ${archived.length} ARCHIVADAS<br>
+        ${allSportArticles.length} TOTAL
+      `;
+
+
+      card.append(
+        name,
+        stats
+      );
+
+
+      card.addEventListener(
+        "click",
+        () => {
+
+          openSportFromDashboard(
+            sport
+          );
+
+        }
+      );
+
+
+      grid.appendChild(
+        card
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   OPEN SPORT
+========================================================= */
+
+function openSportFromDashboard(
+  sport
+) {
+
+  closeAdminDashboard();
+
+
+  /*
+    Si veníamos de una página de tema,
+    abandonamos ese contexto.
+  */
+
+  if (
+    typeof activeTopic !==
+    "undefined"
+  ) {
+
+    activeTopic =
+      "";
+
+  }
+
+
+  activeSport =
+    sport;
+
+
+  clearSearchState(
+    false
+  );
+
+
+  sportPage.classList.remove(
+    "topic-mode"
+  );
+
+
+  renderCurrentView();
+
+
+  centerActiveSportNavigation();
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+/* =========================================================
+   RECENT ACTIVITY
+========================================================= */
+
+function getAdminRecentArticles() {
+
+  return [
+    ...articles
+  ]
+    .sort(
+      (a, b) =>
+        getArticleActivityTime(b) -
+        getArticleActivityTime(a)
+    )
+    .slice(
+      0,
+      8
+    );
+
+}
+
+
+function getAdminArticleState(
+  article
+) {
+
+  if (
+    article.archivedAt
+  ) {
+
+    return "archived";
+
+  }
+
+
+  if (
+    article.status ===
+      "draft"
+  ) {
+
+    return "draft";
+
+  }
+
+
+  return "published";
+
+}
+
+
+function getAdminArticleStateLabel(
+  article
+) {
+
+  const state =
+    getAdminArticleState(
+      article
+    );
+
+
+  if (
+    state === "archived"
+  ) {
+
+    return "ARCHIVADA";
+
+  }
+
+
+  if (
+    state === "draft"
+  ) {
+
+    return "BORRADOR";
+
+  }
+
+
+  return "PUBLICADA";
+
+}
+
+
+function renderAdminRecentActivity() {
+
+  const container =
+    document.getElementById(
+      "adminRecentList"
+    );
+
+
+  container.innerHTML =
+    "";
+
+
+  const recent =
+    getAdminRecentArticles();
+
+
+  if (
+    recent.length === 0
+  ) {
+
+    container.innerHTML = `
+      <div
+        class="admin-dashboard-empty"
+      >
+        <strong>
+          TODAVÍA NO HAY NOTICIAS
+        </strong>
+
+        <p>
+          Cuando empieces a trabajar en el diario,
+          la actividad aparecerá aquí.
+        </p>
+      </div>
+    `;
+
+
+    return;
+
+  }
+
+
+  recent.forEach(
+    (article, index) => {
+
+      container.appendChild(
+        createAdminRecentStory(
+          article,
+          index
+        )
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   RECENT STORY ROW
+========================================================= */
+
+function createAdminRecentStory(
+  article,
+  index
+) {
+
+  const state =
+    getAdminArticleState(
+      article
+    );
+
+
+  const row =
+    document.createElement(
+      "article"
+    );
+
+
+  row.className =
+    "admin-recent-story";
+
+
+  /* NUMBER */
+
+  const number =
+    document.createElement(
+      "div"
+    );
+
+
+  number.className =
+    "admin-recent-number";
+
+
+  number.textContent =
+    String(
+      index + 1
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  /* STATUS */
+
+  const status =
+    document.createElement(
+      "span"
+    );
+
+
+  status.className =
+    `admin-status-badge ${state}`;
+
+
+  status.textContent =
+    getAdminArticleStateLabel(
+      article
+    );
+
+
+  /* COPY */
+
+  const copy =
+    document.createElement(
+      "div"
+    );
+
+
+  copy.className =
+    "admin-recent-copy";
+
+
+  const sport =
+    document.createElement(
+      "div"
+    );
+
+
+  sport.className =
+    "admin-recent-sport";
+
+
+  sport.textContent =
+    getSportLabel(
+      article.sport
+    );
+
+
+  const title =
+    document.createElement(
+      "h5"
+    );
+
+
+  title.className =
+    "admin-recent-title";
+
+
+  title.textContent =
+    article.title?.trim() ||
+    "NOTICIA SIN TÍTULO";
+
+
+  const meta =
+    document.createElement(
+      "div"
+    );
+
+
+  meta.className =
+    "admin-recent-meta";
+
+
+  meta.textContent =
+    getAdminRecentDateText(
+      article
+    );
+
+
+  copy.append(
+    sport,
+    title,
+    meta
+  );
+
+
+  /* ACTIONS */
+
+  const actions =
+    document.createElement(
+      "div"
+    );
+
+
+  actions.className =
+    "admin-recent-actions";
+
+
+  const editButton =
+    createAdminRecentButton(
+      "EDITAR",
+      "primary"
+    );
+
+
+  editButton.addEventListener(
+    "click",
+    () => {
+
+      closeAdminDashboard();
+
+
+      openEditor(
+        article.id
+      );
+
+    }
+  );
+
+
+  actions.appendChild(
+    editButton
+  );
+
+
+  if (
+    state === "published"
+  ) {
+
+    const readButton =
+      createAdminRecentButton(
+        "LEER",
+        ""
+      );
+
+
+    readButton.addEventListener(
+      "click",
+      () => {
+
+        closeAdminDashboard();
+
+
+        openReader(
+          article.id
+        );
+
+      }
+    );
+
+
+    actions.appendChild(
+      readButton
+    );
+
+  }
+
+
+  if (
+    state === "archived"
+  ) {
+
+    const archiveButton =
+      createAdminRecentButton(
+        "GESTIONAR",
+        ""
+      );
+
+
+    archiveButton.addEventListener(
+      "click",
+      () => {
+
+        closeAdminDashboard();
+
+
+        openArchivedManager();
+
+      }
+    );
+
+
+    actions.appendChild(
+      archiveButton
+    );
+
+  }
+
+
+  row.append(
+    number,
+    status,
+    copy,
+    actions
+  );
+
+
+  return row;
+
+}
+
+
+/* =========================================================
+   ADMIN BUTTON
+========================================================= */
+
+function createAdminRecentButton(
+  text,
+  modifier
+) {
+
+  const button =
+    document.createElement(
+      "button"
+    );
+
+
+  button.type =
+    "button";
+
+
+  button.className =
+    `admin-recent-action ${modifier}`.trim();
+
+
+  button.textContent =
+    text;
+
+
+  return button;
+
+}
+
+
+/* =========================================================
+   RECENT DATE
+========================================================= */
+
+function getAdminRecentDateText(
+  article
+) {
+
+  if (
+    article.archivedAt
+  ) {
+
+    return (
+      `ARCHIVADA ${formatEditorDateTime(
+        article.archivedAt
+      )}`
+    );
+
+  }
+
+
+  if (
+    article.updatedAt
+  ) {
+
+    return (
+      `ÚLTIMA ACTIVIDAD ${formatEditorDateTime(
+        article.updatedAt
+      )}`
+    );
+
+  }
+
+
+  return (
+    `CREADA ${formatEditorDateTime(
+      article.createdAt
+    )}`
+  );
+
+}
+
+
+/* =========================================================
+   MANAGEMENT COUNT PATCH
+========================================================= */
+
+const step10BaseUpdateManagementCounts =
+  updateManagementCounts;
+
+
+updateManagementCounts =
+  function () {
+
+    step10BaseUpdateManagementCounts();
+
+
+    const dashboard =
+      document.getElementById(
+        "adminDashboardModal"
+      );
+
+
+    if (
+      dashboard?.classList.contains(
+        "open"
+      )
+    ) {
+
+      renderAdminDashboard();
+
+    }
+
+  };
+
+
+/* =========================================================
+   BODY SCROLL PATCH
+========================================================= */
+
+const step10BaseSyncBodyScrollState =
+  syncBodyScrollState;
+
+
+syncBodyScrollState =
+  function () {
+
+    step10BaseSyncBodyScrollState();
+
+
+    const dashboard =
+      document.getElementById(
+        "adminDashboardModal"
+      );
+
+
+    if (
+      dashboard?.classList.contains(
+        "open"
+      )
+    ) {
+
+      document.body.classList.add(
+        "modal-open"
+      );
+
+    }
+
+  };
+
+
+/* =========================================================
+   ESCAPE
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.key !== "Escape"
+    ) {
+
+      return;
+
+    }
+
+
+    const dashboard =
+      document.getElementById(
+        "adminDashboardModal"
+      );
+
+
+    if (
+      dashboard?.classList.contains(
+        "open"
+      )
+    ) {
+
+      closeAdminDashboard();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   INSTALL DASHBOARD
+========================================================= */
+
+createAdminDashboardInterface();
+
+updateManagementCounts();

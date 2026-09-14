@@ -4170,3 +4170,840 @@ button.topic-chip:focus-visible {
   }
 
 }
+
+/* =========================================================
+   PASO 10.1 — ADMIN DASHBOARD
+========================================================= */
+
+
+/* =========================================================
+   DASHBOARD MODAL
+========================================================= */
+
+.admin-dashboard-modal {
+  z-index: 1600;
+}
+
+
+.admin-dashboard-panel {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow-y: auto;
+
+  background: var(--cream);
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.admin-dashboard-header {
+  position: sticky;
+  z-index: 20;
+
+  top: 0;
+
+  min-height: 105px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 25px;
+
+  border-bottom: 4px solid var(--black);
+
+  background: var(--black);
+  color: var(--cream);
+
+  padding:
+    18px
+    clamp(18px, 4vw, 58px);
+}
+
+
+.admin-dashboard-eyebrow {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: var(--yellow);
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+
+.admin-dashboard-header h2 {
+  margin: 0;
+
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      38px,
+      5vw,
+      62px
+    );
+
+  line-height: 0.88;
+}
+
+
+.admin-dashboard-close {
+  border-color: var(--cream);
+
+  color: var(--cream);
+}
+
+
+.admin-dashboard-close:hover {
+  border-color: var(--yellow);
+
+  background: var(--yellow);
+  color: var(--black);
+}
+
+
+/* =========================================================
+   DASHBOARD BODY
+========================================================= */
+
+.admin-dashboard-body {
+  width:
+    min(
+      1500px,
+      100%
+    );
+
+  margin: 0 auto;
+
+  padding:
+    clamp(25px, 4vw, 55px)
+    clamp(16px, 4vw, 58px)
+    80px;
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+.admin-dashboard-intro {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  gap: 30px;
+
+  align-items: end;
+
+  margin-bottom: 28px;
+}
+
+
+.admin-dashboard-intro-label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+
+.admin-dashboard-intro h3 {
+  max-width: 900px;
+
+  margin: 0;
+
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      42px,
+      6vw,
+      82px
+    );
+
+  line-height: 0.88;
+
+  text-transform: uppercase;
+}
+
+
+.admin-dashboard-date {
+  border: 2px solid var(--black);
+
+  padding:
+    10px
+    13px;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.admin-stats-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
+  border:
+    3px
+    solid
+    var(--black);
+
+  margin-bottom: 38px;
+}
+
+
+.admin-stat-card {
+  min-height: 155px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  border: 0;
+
+  background: var(--paper);
+
+  padding:
+    20px;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+
+.admin-stat-card + .admin-stat-card {
+  border-left:
+    3px
+    solid
+    var(--black);
+}
+
+
+.admin-stat-card:hover {
+  background: var(--yellow);
+}
+
+
+.admin-stat-card-label {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+
+.admin-stat-card strong {
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      45px,
+      7vw,
+      76px
+    );
+
+  line-height: 0.8;
+}
+
+
+.admin-stat-card small {
+  font-size: 9px;
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   QUICK ACTIONS
+========================================================= */
+
+.admin-dashboard-section {
+  margin-top: 45px;
+}
+
+
+.admin-dashboard-section-heading {
+  display: grid;
+
+  grid-template-columns:
+    auto
+    minmax(0, 1fr);
+
+  gap: 14px;
+
+  align-items: center;
+
+  margin-bottom: 18px;
+}
+
+
+.admin-dashboard-section-number {
+  width: 34px;
+  height: 34px;
+
+  display: grid;
+  place-items: center;
+
+  background: var(--black);
+  color: var(--yellow);
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+
+.admin-dashboard-section-heading h4 {
+  margin: 0;
+
+  border-bottom:
+    3px
+    solid
+    var(--black);
+
+  padding-bottom: 8px;
+
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      25px,
+      3vw,
+      38px
+    );
+}
+
+
+.admin-quick-actions {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
+  border:
+    3px
+    solid
+    var(--black);
+}
+
+
+.admin-quick-action {
+  min-height: 110px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  border: 0;
+
+  background: transparent;
+
+  padding: 17px;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+
+.admin-quick-action + .admin-quick-action {
+  border-left:
+    3px
+    solid
+    var(--black);
+}
+
+
+.admin-quick-action span {
+  font-size: 9px;
+  font-weight: 900;
+}
+
+
+.admin-quick-action strong {
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      20px,
+      2.5vw,
+      31px
+    );
+
+  line-height: 0.95;
+}
+
+
+.admin-quick-action:hover {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+
+/* =========================================================
+   SPORTS OVERVIEW
+========================================================= */
+
+.admin-sports-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
+  gap: 12px;
+}
+
+
+.admin-sport-card {
+  min-height: 170px;
+
+  display: flex;
+  flex-direction: column;
+
+  border:
+    3px
+    solid
+    var(--black);
+
+  background: var(--paper);
+
+  padding:
+    18px;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+
+.admin-sport-card:hover {
+  background: var(--yellow);
+}
+
+
+.admin-sport-card-name {
+  margin-bottom: 30px;
+
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      25px,
+      3vw,
+      38px
+    );
+
+  line-height: 0.9;
+}
+
+
+.admin-sport-card-stats {
+  margin-top: auto;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  line-height: 1.7;
+}
+
+
+/* =========================================================
+   RECENT ACTIVITY
+========================================================= */
+
+.admin-recent-list {
+  border-top:
+    3px
+    solid
+    var(--black);
+}
+
+
+.admin-recent-story {
+  display: grid;
+
+  grid-template-columns:
+    55px
+    125px
+    minmax(0, 1fr)
+    auto;
+
+  gap: 18px;
+
+  align-items: center;
+
+  border-bottom:
+    2px
+    solid
+    var(--black);
+
+  padding:
+    22px
+    0;
+}
+
+
+.admin-recent-number {
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size: 28px;
+}
+
+
+.admin-status-badge {
+  width: fit-content;
+
+  border:
+    2px
+    solid
+    var(--black);
+
+  padding:
+    6px
+    8px;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+}
+
+
+.admin-status-badge.published {
+  background: var(--yellow);
+}
+
+
+.admin-status-badge.draft {
+  background: var(--cream);
+}
+
+
+.admin-status-badge.archived {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+
+.admin-recent-copy {
+  min-width: 0;
+}
+
+
+.admin-recent-sport {
+  margin-bottom: 5px;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+
+.admin-recent-title {
+  margin: 0;
+
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      23px,
+      3vw,
+      37px
+    );
+
+  line-height: 0.94;
+
+  text-transform: uppercase;
+}
+
+
+.admin-recent-meta {
+  margin-top: 8px;
+
+  color: #625e55;
+
+  font-size: 8px;
+  font-weight: 900;
+}
+
+
+.admin-recent-actions {
+  min-width: 115px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+
+.admin-recent-action {
+  min-height: 36px;
+
+  border:
+    2px
+    solid
+    var(--black);
+
+  background: transparent;
+
+  padding:
+    7px
+    10px;
+
+  font-size: 8px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.admin-recent-action.primary {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+
+.admin-recent-action:hover {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.admin-dashboard-empty {
+  min-height: 220px;
+
+  display: grid;
+  place-content: center;
+
+  border:
+    3px
+    solid
+    var(--black);
+
+  padding: 30px;
+
+  text-align: center;
+}
+
+
+.admin-dashboard-empty strong {
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      32px,
+      5vw,
+      55px
+    );
+}
+
+
+.admin-dashboard-empty p {
+  margin:
+    8px
+    0
+    0;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .admin-stats-grid,
+  .admin-quick-actions,
+  .admin-sports-grid {
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+
+
+  .admin-stat-card:nth-child(3),
+  .admin-quick-action:nth-child(3) {
+    border-left: 0;
+
+    border-top:
+      3px
+      solid
+      var(--black);
+  }
+
+
+  .admin-stat-card:nth-child(4),
+  .admin-quick-action:nth-child(4) {
+    border-top:
+      3px
+      solid
+      var(--black);
+  }
+
+
+  .admin-recent-story {
+    grid-template-columns:
+      42px
+      minmax(0, 1fr)
+      auto;
+  }
+
+
+  .admin-status-badge {
+    grid-column: 2;
+  }
+
+
+  .admin-recent-copy {
+    grid-column: 2;
+  }
+
+
+  .admin-recent-actions {
+    grid-column: 3;
+    grid-row: 1 / span 3;
+  }
+
+}
+
+
+@media (max-width: 650px) {
+
+  .admin-dashboard-header {
+    min-height: 90px;
+
+    padding:
+      14px
+      16px;
+  }
+
+
+  .admin-dashboard-header h2 {
+    font-size: 39px;
+  }
+
+
+  .admin-dashboard-body {
+    padding:
+      25px
+      14px
+      60px;
+  }
+
+
+  .admin-dashboard-intro {
+    grid-template-columns: 1fr;
+
+    gap: 14px;
+  }
+
+
+  .admin-dashboard-date {
+    width: fit-content;
+  }
+
+
+  .admin-stats-grid,
+  .admin-quick-actions,
+  .admin-sports-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .admin-stat-card,
+  .admin-stat-card:nth-child(3),
+  .admin-stat-card:nth-child(4),
+  .admin-quick-action,
+  .admin-quick-action:nth-child(3),
+  .admin-quick-action:nth-child(4) {
+    border-left: 0;
+  }
+
+
+  .admin-stat-card + .admin-stat-card,
+  .admin-quick-action + .admin-quick-action {
+    border-top:
+      3px
+      solid
+      var(--black);
+  }
+
+
+  .admin-sport-card {
+    min-height: 125px;
+  }
+
+
+  .admin-recent-story {
+    grid-template-columns:
+      38px
+      minmax(0, 1fr);
+
+    gap:
+      10px
+      14px;
+
+    align-items: start;
+  }
+
+
+  .admin-status-badge,
+  .admin-recent-copy,
+  .admin-recent-actions {
+    grid-column: 2;
+
+    grid-row: auto;
+  }
+
+
+  .admin-recent-actions {
+    width: 100%;
+    min-width: 0;
+
+    display: grid;
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+
+}
