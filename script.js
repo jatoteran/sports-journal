@@ -7664,3 +7664,1580 @@ renderReaderTopics =
     );
 
   };
+
+  /* =========================================================
+   PASO 9 — ESTADO ARCHIVADA
+========================================================= */
+
+
+/*
+  IMPORTANTE:
+
+  Para no romper la compatibilidad con las noticias
+  que ya tenemos, una noticia archivada conserva:
+
+  status: "published"
+
+  pero recibe:
+
+  archivedAt: "fecha ISO"
+
+  De esa forma:
+  - no se elimina
+  - mantiene su fecha original de publicación
+  - desaparece del sitio público
+  - puede republicarse después
+*/
+
+
+let pendingArchiveArticleId =
+  null;
+
+
+/* =========================================================
+   CREAR INTERFAZ DE ARCHIVO
+========================================================= */
+
+function createArchiveInterface() {
+
+  if (
+    document.getElementById(
+      "archivedMenuButton"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     BOTÓN DEL MENÚ
+  ------------------------------------------------------- */
+
+  const archivedMenuButton =
+    document.createElement(
+      "button"
+    );
+
+
+  archivedMenuButton.id =
+    "archivedMenuButton";
+
+
+  archivedMenuButton.type =
+    "button";
+
+
+  archivedMenuButton.className =
+    "journal-menu-button";
+
+
+  archivedMenuButton.innerHTML = `
+    <span>ARCHIVADAS</span>
+
+    <span
+      class="archive-menu-count"
+      id="archivedCount"
+    >
+      0
+    </span>
+  `;
+
+
+  publishedMenuButton.insertAdjacentElement(
+    "afterend",
+    archivedMenuButton
+  );
+
+
+  archivedMenuButton.addEventListener(
+    "click",
+    openArchivedManager
+  );
+
+
+  /* -------------------------------------------------------
+     MODAL DE ARCHIVADAS
+  ------------------------------------------------------- */
+
+  const manager =
+    document.createElement(
+      "div"
+    );
+
+
+  manager.id =
+    "archiveManagerModal";
+
+
+  manager.className =
+    "modal archive-manager-modal";
+
+
+  manager.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  manager.innerHTML = `
+    <div
+      class="modal-backdrop"
+      data-close-archive-manager
+    ></div>
+
+    <section
+      class="archive-manager-panel"
+      aria-label="Noticias archivadas"
+    >
+
+      <header
+        class="archive-manager-header"
+      >
+
+        <div>
+
+          <span class="eyebrow">
+            GESTIÓN EDITORIAL
+          </span>
+
+          <h2>
+            ARCHIVADAS
+          </h2>
+
+        </div>
+
+        <button
+          class="close-button"
+          type="button"
+          data-close-archive-manager
+          aria-label="Cerrar archivadas"
+        >
+          ×
+        </button>
+
+      </header>
+
+      <div
+        class="archive-manager-list"
+        id="archiveManagerList"
+      ></div>
+
+    </section>
+  `;
+
+
+  document.body.appendChild(
+    manager
+  );
+
+
+  manager
+    .querySelectorAll(
+      "[data-close-archive-manager]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          closeArchivedManager
+        );
+
+      }
+    );
+
+
+  /* -------------------------------------------------------
+     CONFIRMACIÓN DE ARCHIVADO
+  ------------------------------------------------------- */
+
+  const confirmation =
+    document.createElement(
+      "div"
+    );
+
+
+  confirmation.id =
+    "archiveConfirmModal";
+
+
+  confirmation.className =
+    "modal archive-confirm-modal";
+
+
+  confirmation.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  confirmation.innerHTML = `
+    <div
+      class="modal-backdrop"
+      data-close-archive-confirm
+    ></div>
+
+    <section
+      class="archive-confirm-panel"
+    >
+
+      <span class="eyebrow">
+        CAMBIO DE ESTADO
+      </span>
+
+      <h2>
+        ¿ARCHIVAR NOTICIA?
+      </h2>
+
+      <p>
+        La noticia dejará de aparecer en la portada,
+        las secciones, los temas, la búsqueda y las
+        noticias relacionadas.
+      </p>
+
+      <p>
+        <strong>
+          No será eliminada.
+        </strong>
+        Podrás recuperarla desde ARCHIVADAS cuando quieras.
+      </p>
+
+      <div
+        class="archive-confirm-actions"
+      >
+
+        <button
+          class="secondary-button"
+          id="cancelArchiveButton"
+          type="button"
+        >
+          CONSERVAR PUBLICADA
+        </button>
+
+        <button
+          class="confirm-archive-button"
+          id="confirmArchiveButton"
+          type="button"
+        >
+          ARCHIVAR NOTICIA
+        </button>
+
+      </div>
+
+    </section>
+  `;
+
+
+  document.body.appendChild(
+    confirmation
+  );
+
+
+  confirmation
+    .querySelectorAll(
+      "[data-close-archive-confirm]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          closeArchiveConfirmation
+        );
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "cancelArchiveButton"
+    )
+    .addEventListener(
+      "click",
+      closeArchiveConfirmation
+    );
+
+
+  document
+    .getElementById(
+      "confirmArchiveButton"
+    )
+    .addEventListener(
+      "click",
+      confirmArchiveArticle
+    );
+
+
+  /* -------------------------------------------------------
+     BOTÓN ARCHIVAR EN READER
+  ------------------------------------------------------- */
+
+  const readerActions =
+    document.querySelector(
+      ".reader-story-actions"
+    );
+
+
+  const readerArchiveButton =
+    document.createElement(
+      "button"
+    );
+
+
+  readerArchiveButton.id =
+    "readerArchiveButton";
+
+
+  readerArchiveButton.type =
+    "button";
+
+
+  readerArchiveButton.className =
+    "reader-archive-button";
+
+
+  readerArchiveButton.textContent =
+    "ARCHIVAR";
+
+
+  readerArchiveButton.addEventListener(
+    "click",
+    () => {
+
+      if (
+        currentReaderArticleId
+      ) {
+
+        openArchiveConfirmation(
+          currentReaderArticleId
+        );
+
+      }
+
+    }
+  );
+
+
+  readerActions.insertBefore(
+    readerArchiveButton,
+    readerDeleteButton
+  );
+
+
+  /* -------------------------------------------------------
+     BOTÓN ARCHIVAR EN EDITOR
+  ------------------------------------------------------- */
+
+  const editorActions =
+    document.querySelector(
+      ".editor-actions"
+    );
+
+
+  const archiveEditorButton =
+    document.createElement(
+      "button"
+    );
+
+
+  archiveEditorButton.id =
+    "archiveEditorButton";
+
+
+  archiveEditorButton.type =
+    "button";
+
+
+  archiveEditorButton.className =
+    "archive-button";
+
+
+  archiveEditorButton.textContent =
+    "ARCHIVAR";
+
+
+  archiveEditorButton.hidden =
+    true;
+
+
+  archiveEditorButton.addEventListener(
+    "click",
+    () => {
+
+      const id =
+        articleIdInput.value.trim();
+
+
+      if (!id) {
+
+        return;
+
+      }
+
+
+      updateEditorDirtyState();
+
+
+      if (
+        editorHasUnsavedChanges
+      ) {
+
+        showToast(
+          "GUARDA O DESCARTA LOS CAMBIOS ANTES DE ARCHIVAR."
+        );
+
+
+        return;
+
+      }
+
+
+      openArchiveConfirmation(
+        id
+      );
+
+    }
+  );
+
+
+  const publishButton =
+    editorActions.querySelector(
+      ".publish-button"
+    );
+
+
+  editorActions.insertBefore(
+    archiveEditorButton,
+    publishButton
+  );
+
+}
+
+
+/* =========================================================
+   ARCHIVED COLLECTION
+========================================================= */
+
+function getArchivedArticles() {
+
+  return articles
+    .filter(
+      (article) =>
+        Boolean(
+          article.archivedAt
+        )
+    )
+    .sort(
+      (a, b) =>
+        new Date(
+          b.archivedAt ||
+          0
+        ).getTime() -
+        new Date(
+          a.archivedAt ||
+          0
+        ).getTime()
+    );
+
+}
+
+
+/* =========================================================
+   PUBLIC / DRAFT COLLECTION PATCH
+========================================================= */
+
+const step9BaseGetPublishedArticles =
+  getPublishedArticles;
+
+
+getPublishedArticles =
+  function () {
+
+    return step9BaseGetPublishedArticles()
+      .filter(
+        (article) =>
+          !article.archivedAt
+      );
+
+  };
+
+
+const step9BaseGetDraftArticles =
+  getDraftArticles;
+
+
+getDraftArticles =
+  function () {
+
+    return step9BaseGetDraftArticles()
+      .filter(
+        (article) =>
+          !article.archivedAt
+      );
+
+  };
+
+
+/* =========================================================
+   MANAGEMENT COUNTS
+========================================================= */
+
+const step9BaseUpdateManagementCounts =
+  updateManagementCounts;
+
+
+updateManagementCounts =
+  function () {
+
+    step9BaseUpdateManagementCounts();
+
+
+    const archivedCount =
+      document.getElementById(
+        "archivedCount"
+      );
+
+
+    if (
+      archivedCount
+    ) {
+
+      archivedCount.textContent =
+        getArchivedArticles().length;
+
+    }
+
+  };
+
+
+/* =========================================================
+   EDITOR STATUS PATCH
+========================================================= */
+
+const step9BaseUpdateEditorStatus =
+  updateEditorStatus;
+
+
+updateEditorStatus =
+  function (
+    status,
+    isNew = false
+  ) {
+
+    editorStatusValue.classList.remove(
+      "archived"
+    );
+
+
+    step9BaseUpdateEditorStatus(
+      status,
+      isNew
+    );
+
+  };
+
+
+const step9BaseUpdateEditorActionLabels =
+  updateEditorActionLabels;
+
+
+updateEditorActionLabels =
+  function (article) {
+
+    step9BaseUpdateEditorActionLabels(
+      article
+    );
+
+
+    const archiveEditorButton =
+      document.getElementById(
+        "archiveEditorButton"
+      );
+
+
+    if (
+      archiveEditorButton
+    ) {
+
+      archiveEditorButton.hidden =
+        !article ||
+        article.status !==
+          "published" ||
+        Boolean(
+          article.archivedAt
+        );
+
+    }
+
+
+    if (
+      article?.archivedAt
+    ) {
+
+      editorStatusValue.classList.remove(
+        "draft",
+        "published"
+      );
+
+
+      editorStatusValue.classList.add(
+        "archived"
+      );
+
+
+      editorStatusValue.textContent =
+        "ARCHIVADA";
+
+
+      saveDraftButtonText.textContent =
+        "MOVER A BORRADOR";
+
+
+      publishButtonText.textContent =
+        "REPUBLICAR";
+
+    }
+
+  };
+
+
+/* =========================================================
+   SAVE PATCH FOR ARCHIVED STORIES
+========================================================= */
+
+const step9BaseSaveArticle =
+  saveArticle;
+
+
+saveArticle =
+  function (
+    targetStatus
+  ) {
+
+    const id =
+      articleIdInput.value.trim();
+
+
+    const existing =
+      id
+        ? findArticle(id)
+        : null;
+
+
+    /*
+      Una noticia archivada puede salir del archivo
+      de dos formas:
+
+      REPUBLICAR -> published
+      MOVER A BORRADOR -> draft
+    */
+
+    if (
+      existing?.archivedAt
+    ) {
+
+      if (
+        targetStatus ===
+          "published" &&
+        !articleForm.reportValidity()
+      ) {
+
+        showToast(
+          "COMPLETA LOS CAMPOS OBLIGATORIOS PARA REPUBLICAR."
+        );
+
+
+        return;
+
+      }
+
+
+      if (
+        !validateTagsInput()
+      ) {
+
+        return;
+
+      }
+
+
+      existing.archivedAt =
+        null;
+
+    }
+
+
+    step9BaseSaveArticle(
+      targetStatus
+    );
+
+  };
+
+
+/* =========================================================
+   OPEN ARCHIVE CONFIRMATION
+========================================================= */
+
+function openArchiveConfirmation(
+  articleId
+) {
+
+  const article =
+    findArticle(
+      articleId
+    );
+
+
+  if (
+    !article ||
+    article.archivedAt ||
+    article.status !==
+      "published"
+  ) {
+
+    return;
+
+  }
+
+
+  pendingArchiveArticleId =
+    articleId;
+
+
+  const modal =
+    document.getElementById(
+      "archiveConfirmModal"
+    );
+
+
+  modal.classList.add(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+function closeArchiveConfirmation() {
+
+  const modal =
+    document.getElementById(
+      "archiveConfirmModal"
+    );
+
+
+  if (!modal) {
+
+    return;
+
+  }
+
+
+  modal.classList.remove(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  pendingArchiveArticleId =
+    null;
+
+
+  syncBodyScrollState();
+
+}
+
+
+/* =========================================================
+   ARCHIVE ARTICLE
+========================================================= */
+
+function confirmArchiveArticle() {
+
+  if (
+    !pendingArchiveArticleId
+  ) {
+
+    return;
+
+  }
+
+
+  const article =
+    findArticle(
+      pendingArchiveArticleId
+    );
+
+
+  if (!article) {
+
+    closeArchiveConfirmation();
+
+    return;
+
+  }
+
+
+  createInternalBackup(
+    "Antes de archivar noticia"
+  );
+
+
+  const now =
+    new Date().toISOString();
+
+
+  article.archivedAt =
+    now;
+
+
+  article.updatedAt =
+    now;
+
+
+  if (
+    !persistArticles()
+  ) {
+
+    return;
+
+  }
+
+
+  createInternalBackup(
+    "Después de archivar noticia"
+  );
+
+
+  const archivedId =
+    pendingArchiveArticleId;
+
+
+  closeArchiveConfirmation();
+
+
+  if (
+    currentReaderArticleId &&
+    String(
+      currentReaderArticleId
+    ) ===
+    String(
+      archivedId
+    )
+  ) {
+
+    closeReader();
+
+  }
+
+
+  if (
+    editorModal.classList.contains(
+      "open"
+    ) &&
+    String(
+      articleIdInput.value
+    ) ===
+    String(
+      archivedId
+    )
+  ) {
+
+    editorHasUnsavedChanges =
+      false;
+
+
+    closeEditorImmediately();
+
+  }
+
+
+  renderCurrentView();
+
+  updateManagementCounts();
+
+  updateBackupStatus();
+
+
+  showToast(
+    "NOTICIA ARCHIVADA."
+  );
+
+}
+
+
+/* =========================================================
+   ARCHIVED MANAGER
+========================================================= */
+
+function openArchivedManager() {
+
+  closeSideMenu();
+
+
+  renderArchivedManager();
+
+
+  const modal =
+    document.getElementById(
+      "archiveManagerModal"
+    );
+
+
+  modal.classList.add(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+function closeArchivedManager() {
+
+  const modal =
+    document.getElementById(
+      "archiveManagerModal"
+    );
+
+
+  if (!modal) {
+
+    return;
+
+  }
+
+
+  modal.classList.remove(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+function renderArchivedManager() {
+
+  const container =
+    document.getElementById(
+      "archiveManagerList"
+    );
+
+
+  if (!container) {
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    "";
+
+
+  const archived =
+    getArchivedArticles();
+
+
+  if (
+    archived.length === 0
+  ) {
+
+    container.innerHTML = `
+      <div
+        class="archive-empty"
+      >
+
+        <strong>
+          SIN ARCHIVADAS
+        </strong>
+
+        <p>
+          Las noticias que retires del sitio
+          sin eliminarlas aparecerán aquí.
+        </p>
+
+      </div>
+    `;
+
+
+    return;
+
+  }
+
+
+  archived.forEach(
+    (article, index) => {
+
+      const card =
+        document.createElement(
+          "article"
+        );
+
+
+      card.className =
+        "archived-story-card";
+
+
+      const number =
+        document.createElement(
+          "div"
+        );
+
+
+      number.className =
+        "archived-story-number";
+
+
+      number.textContent =
+        String(
+          index + 1
+        ).padStart(
+          2,
+          "0"
+        );
+
+
+      const copy =
+        document.createElement(
+          "div"
+        );
+
+
+      copy.className =
+        "archived-story-copy";
+
+
+      const state =
+        document.createElement(
+          "div"
+        );
+
+
+      state.className =
+        "archived-story-state";
+
+
+      state.textContent =
+        "ARCHIVADA";
+
+
+      const sport =
+        document.createElement(
+          "div"
+        );
+
+
+      sport.className =
+        "archived-story-sport";
+
+
+      sport.textContent =
+        getSportLabel(
+          article.sport
+        );
+
+
+      const title =
+        document.createElement(
+          "h3"
+        );
+
+
+      title.className =
+        "archived-story-title";
+
+
+      title.textContent =
+        article.title ||
+        "NOTICIA SIN TÍTULO";
+
+
+      const meta =
+        document.createElement(
+          "div"
+        );
+
+
+      meta.className =
+        "archived-story-meta";
+
+
+      meta.textContent =
+        `PUBLICADA ${formatShortDate(
+          article.publishedAt ||
+          article.createdAt
+        )} · ARCHIVADA ${formatShortDate(
+          article.archivedAt
+        )}`;
+
+
+      copy.append(
+        state,
+        sport,
+        title,
+        meta
+      );
+
+
+      const actions =
+        document.createElement(
+          "div"
+        );
+
+
+      actions.className =
+        "archived-story-actions";
+
+
+      /* EDIT */
+
+      const editButton =
+        createArchiveActionButton(
+          "EDITAR",
+          "dark"
+        );
+
+
+      editButton.addEventListener(
+        "click",
+        () => {
+
+          closeArchivedManager();
+
+
+          openEditor(
+            article.id
+          );
+
+        }
+      );
+
+
+      /* REPUBLISH */
+
+      const republishButton =
+        createArchiveActionButton(
+          "REPUBLICAR",
+          "primary"
+        );
+
+
+      republishButton.addEventListener(
+        "click",
+        () => {
+
+          republishArchivedArticle(
+            article.id
+          );
+
+        }
+      );
+
+
+      /* MOVE TO DRAFT */
+
+      const draftButton =
+        createArchiveActionButton(
+          "A BORRADOR",
+          ""
+        );
+
+
+      draftButton.addEventListener(
+        "click",
+        () => {
+
+          moveArchivedArticleToDraft(
+            article.id
+          );
+
+        }
+      );
+
+
+      /* DELETE */
+
+      const deleteButton =
+        createArchiveActionButton(
+          "ELIMINAR",
+          "danger"
+        );
+
+
+      deleteButton.addEventListener(
+        "click",
+        () => {
+
+          closeArchivedManager();
+
+
+          openDeleteConfirmation(
+            article.id
+          );
+
+        }
+      );
+
+
+      actions.append(
+        editButton,
+        republishButton,
+        draftButton,
+        deleteButton
+      );
+
+
+      card.append(
+        number,
+        copy,
+        actions
+      );
+
+
+      container.appendChild(
+        card
+      );
+
+    }
+  );
+
+}
+
+
+function createArchiveActionButton(
+  text,
+  modifier
+) {
+
+  const button =
+    document.createElement(
+      "button"
+    );
+
+
+  button.type =
+    "button";
+
+
+  button.className =
+    `archive-action-button ${modifier}`.trim();
+
+
+  button.textContent =
+    text;
+
+
+  return button;
+
+}
+
+
+/* =========================================================
+   REPUBLISH
+========================================================= */
+
+function republishArchivedArticle(
+  articleId
+) {
+
+  const article =
+    findArticle(
+      articleId
+    );
+
+
+  if (
+    !article ||
+    !article.archivedAt
+  ) {
+
+    return;
+
+  }
+
+
+  createInternalBackup(
+    "Antes de republicar noticia archivada"
+  );
+
+
+  article.archivedAt =
+    null;
+
+
+  article.status =
+    "published";
+
+
+  article.updatedAt =
+    new Date().toISOString();
+
+
+  /*
+    Conservamos publishedAt.
+
+    Así republicar desde el archivo
+    NO cambia artificialmente el orden
+    original de publicación.
+  */
+
+
+  if (
+    !persistArticles()
+  ) {
+
+    return;
+
+  }
+
+
+  createInternalBackup(
+    "Después de republicar noticia archivada"
+  );
+
+
+  renderArchivedManager();
+
+  renderCurrentView();
+
+  updateManagementCounts();
+
+  updateBackupStatus();
+
+
+  showToast(
+    "NOTICIA REPUBLICADA."
+  );
+
+}
+
+
+/* =========================================================
+   ARCHIVE -> DRAFT
+========================================================= */
+
+function moveArchivedArticleToDraft(
+  articleId
+) {
+
+  const article =
+    findArticle(
+      articleId
+    );
+
+
+  if (
+    !article ||
+    !article.archivedAt
+  ) {
+
+    return;
+
+  }
+
+
+  createInternalBackup(
+    "Antes de mover archivada a borrador"
+  );
+
+
+  article.archivedAt =
+    null;
+
+
+  article.status =
+    "draft";
+
+
+  article.publishedAt =
+    null;
+
+
+  article.updatedAt =
+    new Date().toISOString();
+
+
+  if (
+    !persistArticles()
+  ) {
+
+    return;
+
+  }
+
+
+  createInternalBackup(
+    "Después de mover archivada a borrador"
+  );
+
+
+  renderArchivedManager();
+
+  renderCurrentView();
+
+  updateManagementCounts();
+
+  updateBackupStatus();
+
+
+  showToast(
+    "NOTICIA MOVIDA A BORRADORES."
+  );
+
+}
+
+
+/* =========================================================
+   BODY SCROLL PATCH
+========================================================= */
+
+const step9BaseSyncBodyScrollState =
+  syncBodyScrollState;
+
+
+syncBodyScrollState =
+  function () {
+
+    step9BaseSyncBodyScrollState();
+
+
+    const archiveManager =
+      document.getElementById(
+        "archiveManagerModal"
+      );
+
+
+    const archiveConfirm =
+      document.getElementById(
+        "archiveConfirmModal"
+      );
+
+
+    const extraOpen =
+      archiveManager?.classList.contains(
+        "open"
+      ) ||
+      archiveConfirm?.classList.contains(
+        "open"
+      );
+
+
+    if (
+      extraOpen
+    ) {
+
+      document.body.classList.add(
+        "modal-open"
+      );
+
+    }
+
+  };
+
+
+/* =========================================================
+   ESCAPE
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.key !== "Escape"
+    ) {
+
+      return;
+
+    }
+
+
+    const archiveConfirm =
+      document.getElementById(
+        "archiveConfirmModal"
+      );
+
+
+    if (
+      archiveConfirm?.classList.contains(
+        "open"
+      )
+    ) {
+
+      closeArchiveConfirmation();
+
+      return;
+
+    }
+
+
+    const archiveManager =
+      document.getElementById(
+        "archiveManagerModal"
+      );
+
+
+    if (
+      archiveManager?.classList.contains(
+        "open"
+      )
+    ) {
+
+      closeArchivedManager();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   START STEP 9
+========================================================= */
+
+createArchiveInterface();
+
+
+/*
+  Es importante volver a renderizar después
+  de instalar el filtro de archivadas.
+
+  Así ninguna noticia archivada puede aparecer
+  públicamente después de recargar la página.
+*/
+
+renderCurrentView();
+
+updateManagementCounts();

@@ -3637,3 +3637,536 @@ button.topic-chip:focus-visible {
   }
 
 }
+
+/* =========================================================
+   PASO 9 — ESTADO ARCHIVADA
+========================================================= */
+
+
+/* =========================================================
+   EDITOR STATUS
+========================================================= */
+
+.editor-status-value.archived {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+
+/* =========================================================
+   ARCHIVE BUTTON — EDITOR
+========================================================= */
+
+.archive-button {
+  min-height: 49px;
+
+  border: 3px solid var(--black);
+
+  background: var(--paper);
+  color: var(--black);
+
+  padding: 0 18px;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.archive-button:hover {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+
+/* =========================================================
+   ARCHIVE BUTTON — READER
+========================================================= */
+
+.reader-archive-button {
+  border: 0;
+  border-bottom: 2px solid var(--black);
+
+  background: transparent;
+
+  padding: 5px 0;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.reader-archive-button:hover {
+  color: #665f00;
+
+  border-color: #665f00;
+}
+
+
+/* =========================================================
+   ARCHIVE MANAGER
+========================================================= */
+
+.archive-manager-modal {
+  z-index: 1650;
+}
+
+
+.archive-manager-panel {
+  position: absolute;
+
+  inset: 0 0 0 auto;
+
+  width: min(850px, 96vw);
+  height: 100%;
+
+  overflow-y: auto;
+
+  border-left: 4px solid var(--black);
+
+  background: var(--cream);
+}
+
+
+.archive-manager-header {
+  position: sticky;
+
+  z-index: 10;
+
+  top: 0;
+
+  min-height: 110px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 25px;
+
+  border-bottom: var(--border);
+
+  background: var(--black);
+  color: var(--cream);
+
+  padding:
+    20px
+    30px;
+}
+
+
+.archive-manager-header .eyebrow {
+  color: var(--yellow);
+}
+
+
+.archive-manager-header h2 {
+  margin: 4px 0 0;
+
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: clamp(38px, 6vw, 54px);
+
+  line-height: 0.9;
+}
+
+
+.archive-manager-header .close-button {
+  border-color: var(--cream);
+
+  color: var(--cream);
+}
+
+
+.archive-manager-header .close-button:hover {
+  border-color: var(--yellow);
+
+  background: var(--yellow);
+  color: var(--black);
+}
+
+
+.archive-manager-list {
+  padding:
+    30px;
+}
+
+
+/* =========================================================
+   ARCHIVED ARTICLE CARD
+========================================================= */
+
+.archived-story-card {
+  display: grid;
+
+  grid-template-columns:
+    70px
+    minmax(0, 1fr)
+    auto;
+
+  gap: 22px;
+
+  align-items: start;
+
+  border-top: 3px solid var(--black);
+
+  padding:
+    25px
+    0;
+}
+
+
+.archived-story-card:last-child {
+  border-bottom: 3px solid var(--black);
+}
+
+
+.archived-story-number {
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: 34px;
+
+  line-height: 1;
+}
+
+
+.archived-story-copy {
+  min-width: 0;
+}
+
+
+.archived-story-state {
+  width: fit-content;
+
+  margin-bottom: 10px;
+
+  border: 2px solid var(--black);
+
+  background: var(--black);
+  color: var(--yellow);
+
+  padding:
+    5px
+    8px;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+}
+
+
+.archived-story-sport {
+  margin-bottom: 8px;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+
+.archived-story-title {
+  margin: 0;
+
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      27px,
+      4vw,
+      42px
+    );
+
+  line-height: 0.94;
+
+  text-transform: uppercase;
+}
+
+
+.archived-story-meta {
+  margin-top: 12px;
+
+  color: #615d55;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  line-height: 1.5;
+}
+
+
+.archived-story-actions {
+  min-width: 135px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+
+.archive-action-button {
+  min-height: 39px;
+
+  border: 2px solid var(--black);
+
+  background: transparent;
+
+  padding:
+    8px
+    11px;
+
+  font-size: 8px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.archive-action-button.primary {
+  background: var(--yellow);
+}
+
+
+.archive-action-button.dark {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+
+.archive-action-button.danger {
+  border-color: var(--red);
+
+  color: var(--red);
+}
+
+
+.archive-action-button:hover {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+
+.archive-action-button.danger:hover {
+  background: var(--red);
+  color: white;
+}
+
+
+/* =========================================================
+   ARCHIVE EMPTY STATE
+========================================================= */
+
+.archive-empty {
+  min-height: 320px;
+
+  display: grid;
+  place-content: center;
+
+  border: var(--border);
+
+  padding: 35px;
+
+  text-align: center;
+}
+
+
+.archive-empty strong {
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      36px,
+      7vw,
+      70px
+    );
+
+  line-height: 0.9;
+}
+
+
+.archive-empty p {
+  max-width: 480px;
+
+  margin:
+    13px
+    auto
+    0;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   ARCHIVE CONFIRMATION
+========================================================= */
+
+.archive-confirm-modal {
+  z-index: 1900;
+}
+
+
+.archive-confirm-panel {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width:
+    min(
+      580px,
+      calc(100vw - 30px)
+    );
+
+  border: 4px solid var(--black);
+
+  background: var(--cream);
+
+  padding: 32px;
+
+  transform:
+    translate(
+      -50%,
+      -50%
+    );
+}
+
+
+.archive-confirm-panel h2 {
+  margin:
+    7px
+    0
+    16px;
+
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      42px,
+      8vw,
+      60px
+    );
+
+  line-height: 0.9;
+}
+
+
+.archive-confirm-panel p {
+  line-height: 1.55;
+}
+
+
+.archive-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  margin-top: 28px;
+}
+
+
+.confirm-archive-button {
+  min-height: 49px;
+
+  border: 3px solid var(--black);
+
+  background: var(--black);
+  color: var(--yellow);
+
+  padding:
+    0
+    18px;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.confirm-archive-button:hover {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+
+/* =========================================================
+   SIDE MENU ARCHIVE COUNT
+========================================================= */
+
+.archive-menu-count {
+  min-width: 32px;
+  height: 32px;
+
+  display: grid;
+  place-items: center;
+
+  background: var(--cream);
+  color: var(--black);
+
+  padding:
+    0
+    8px;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+  .archived-story-card {
+    grid-template-columns:
+      45px
+      minmax(0, 1fr);
+
+    gap: 15px;
+  }
+
+
+  .archived-story-actions {
+    grid-column: 2;
+
+    width: 100%;
+    min-width: 0;
+
+    display: grid;
+    grid-template-columns:
+      1fr
+      1fr;
+
+    margin-top: 7px;
+  }
+
+
+  .archive-manager-list {
+    padding:
+      20px
+      16px;
+  }
+
+
+  .archive-manager-header {
+    padding:
+      18px
+      17px;
+  }
+
+
+  .archive-confirm-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+
+  .archive-button {
+    grid-column: 1 / -1;
+  }
+
+}
