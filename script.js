@@ -12510,3 +12510,70 @@ document.addEventListener(
 createAdminArticleManagerInterface();
 
 updateManagementCounts(); 
+
+/* =========================================================
+   PASO 12.2 — TEST SUPABASE
+========================================================= */
+
+async function testSportsJournalSupabaseConnection() {
+
+  console.log(
+    "SPORTS JOURNAL → Probando conexión con Supabase..."
+  );
+
+
+  if (!window.sportsJournalDb) {
+
+    console.error(
+      "SPORTS JOURNAL → Supabase no fue inicializado."
+    );
+
+    showToast(
+      "ERROR AL INICIAR SUPABASE."
+    );
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await window.sportsJournalDb
+      .from("articles")
+      .select("id")
+      .limit(1);
+
+
+  if (error) {
+
+    console.error(
+      "SPORTS JOURNAL → Error de Supabase:",
+      error
+    );
+
+    showToast(
+      "NO SE PUDO CONECTAR CON SUPABASE."
+    );
+
+    return;
+
+  }
+
+
+  console.log(
+    "SPORTS JOURNAL → Supabase conectado correctamente.",
+    data
+  );
+
+
+  showToast(
+    "SUPABASE CONECTADO ✓"
+  );
+
+}
+
+
+testSportsJournalSupabaseConnection();
