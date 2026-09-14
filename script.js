@@ -12577,3 +12577,1926 @@ async function testSportsJournalSupabaseConnection() {
 
 
 testSportsJournalSupabaseConnection();
+
+/* =========================================================
+   PASO 13.1 — SPORTS JOURNAL AUTH
+========================================================= */
+
+const sportsJournalAuth = {
+
+  session: null,
+
+  profile: null,
+
+  inviteLanding:
+    new URLSearchParams(
+      window.location.hash.replace(
+        /^#/,
+        ""
+      )
+    ).get("type") === "invite"
+
+};
+
+
+/* =========================================================
+   CREATE AUTH UI
+========================================================= */
+
+function createSportsJournalAuthInterface() {
+
+  if (
+    document.getElementById(
+      "sportsJournalAuthModal"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  const modal =
+    document.createElement(
+      "div"
+    );
+
+
+  modal.id =
+    "sportsJournalAuthModal";
+
+
+  modal.className =
+    "modal sj-auth-modal";
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  modal.innerHTML = `
+    <div
+      class="modal-backdrop"
+      data-close-sj-auth
+    ></div>
+
+    <section
+      class="sj-auth-panel"
+      aria-label="Cuenta Sports Journal"
+    >
+
+      <header
+        class="sj-auth-header"
+      >
+
+        <div>
+
+          <span>
+            SPORTS JOURNAL
+          </span>
+
+          <h2
+            id="sjAuthHeading"
+          >
+            INICIAR SESIÓN
+          </h2>
+
+        </div>
+
+        <button
+          class="close-button sj-auth-close"
+          id="sjAuthCloseButton"
+          type="button"
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
+
+      </header>
+
+
+      <div
+        class="sj-auth-content"
+      >
+
+        <!-- LOGIN -->
+
+        <div
+          id="sjAuthLoginView"
+        >
+
+          <p
+            class="sj-auth-intro"
+          >
+            Accede a la redacción de Sports Journal.
+          </p>
+
+          <form
+            class="sj-auth-form"
+            id="sjLoginForm"
+          >
+
+            <label
+              class="sj-auth-field"
+            >
+
+              <span>
+                CORREO
+              </span>
+
+              <input
+                id="sjLoginEmail"
+                type="email"
+                autocomplete="email"
+                required
+              />
+
+            </label>
+
+
+            <label
+              class="sj-auth-field"
+            >
+
+              <span>
+                CONTRASEÑA
+              </span>
+
+              <input
+                id="sjLoginPassword"
+                type="password"
+                autocomplete="current-password"
+                required
+              />
+
+            </label>
+
+
+            <div
+              class="sj-auth-error"
+              id="sjLoginError"
+              hidden
+            ></div>
+
+
+            <button
+              class="sj-auth-submit"
+              type="submit"
+            >
+              ENTRAR A LA REDACCIÓN →
+            </button>
+
+          </form>
+
+        </div>
+
+
+        <!-- FIRST PASSWORD / CHANGE PASSWORD -->
+
+        <div
+          id="sjAuthSetupView"
+          hidden
+        >
+
+          <p
+            class="sj-auth-intro"
+            id="sjSetupIntro"
+          >
+            Tu invitación fue aceptada.
+            Completa tu cuenta creando una contraseña.
+          </p>
+
+
+          <form
+            class="sj-auth-form"
+            id="sjSetupForm"
+          >
+
+            <label
+              class="sj-auth-field"
+            >
+
+              <span>
+                NOMBRE EN SPORTS JOURNAL
+              </span>
+
+              <input
+                id="sjSetupName"
+                type="text"
+                maxlength="80"
+                autocomplete="name"
+                placeholder="Tu nombre"
+              />
+
+            </label>
+
+
+            <label
+              class="sj-auth-field"
+            >
+
+              <span>
+                NUEVA CONTRASEÑA
+              </span>
+
+              <input
+                id="sjSetupPassword"
+                type="password"
+                minlength="8"
+                autocomplete="new-password"
+                required
+              />
+
+            </label>
+
+
+            <label
+              class="sj-auth-field"
+            >
+
+              <span>
+                REPETIR CONTRASEÑA
+              </span>
+
+              <input
+                id="sjSetupPasswordConfirm"
+                type="password"
+                minlength="8"
+                autocomplete="new-password"
+                required
+              />
+
+            </label>
+
+
+            <div
+              class="sj-auth-error"
+              id="sjSetupError"
+              hidden
+            ></div>
+
+
+            <button
+              class="sj-auth-submit"
+              type="submit"
+            >
+              GUARDAR CONTRASEÑA →
+            </button>
+
+          </form>
+
+        </div>
+
+
+        <!-- ACCOUNT -->
+
+        <div
+          id="sjAuthAccountView"
+          hidden
+        >
+
+          <div
+            class="sj-auth-account"
+          >
+
+            <span
+              class="sj-auth-account-label"
+            >
+              SESIÓN ACTIVA
+            </span>
+
+            <div
+              class="sj-auth-account-email"
+              id="sjAuthAccountEmail"
+            ></div>
+
+            <div
+              id="sjAuthAccountName"
+            ></div>
+
+            <span
+              class="sj-auth-role"
+              id="sjAuthRole"
+            >
+              JOURNALIST
+            </span>
+
+
+            <div
+              class="sj-auth-account-actions"
+            >
+
+              <button
+                class="sj-auth-secondary"
+                id="sjChangePasswordButton"
+                type="button"
+              >
+                CAMBIAR CONTRASEÑA
+              </button>
+
+              <button
+                class="sj-auth-logout"
+                id="sjLogoutButton"
+                type="button"
+              >
+                CERRAR SESIÓN
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+  `;
+
+
+  document.body.appendChild(
+    modal
+  );
+
+
+  /* -------------------------------------------------------
+     ACCOUNT BUTTON IN SIDE MENU
+  ------------------------------------------------------- */
+
+  const authMenuButton =
+    document.createElement(
+      "button"
+    );
+
+
+  authMenuButton.id =
+    "authMenuButton";
+
+
+  authMenuButton.type =
+    "button";
+
+
+  authMenuButton.className =
+    "journal-menu-button";
+
+
+  authMenuButton.innerHTML = `
+    <span>
+      CUENTA
+    </span>
+
+    <strong
+      id="authMenuState"
+    >
+      ENTRAR
+    </strong>
+  `;
+
+
+  frontPageMenuButton.insertAdjacentElement(
+    "beforebegin",
+    authMenuButton
+  );
+
+
+  /* -------------------------------------------------------
+     EVENTS
+  ------------------------------------------------------- */
+
+  authMenuButton.addEventListener(
+    "click",
+    () => {
+
+      closeSideMenu();
+
+
+      if (
+        sportsJournalAuth.session
+      ) {
+
+        openSportsJournalAuthModal(
+          "account"
+        );
+
+      } else {
+
+        openSportsJournalAuthModal(
+          "login"
+        );
+
+      }
+
+    }
+  );
+
+
+  document
+    .querySelectorAll(
+      "[data-close-sj-auth]"
+    )
+    .forEach(
+      (element) => {
+
+        element.addEventListener(
+          "click",
+          closeSportsJournalAuthModal
+        );
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "sjAuthCloseButton"
+    )
+    .addEventListener(
+      "click",
+      closeSportsJournalAuthModal
+    );
+
+
+  document
+    .getElementById(
+      "sjLoginForm"
+    )
+    .addEventListener(
+      "submit",
+      handleSportsJournalLogin
+    );
+
+
+  document
+    .getElementById(
+      "sjSetupForm"
+    )
+    .addEventListener(
+      "submit",
+      handleSportsJournalPasswordSetup
+    );
+
+
+  document
+    .getElementById(
+      "sjLogoutButton"
+    )
+    .addEventListener(
+      "click",
+      handleSportsJournalLogout
+    );
+
+
+  document
+    .getElementById(
+      "sjChangePasswordButton"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        openSportsJournalAuthModal(
+          "setup",
+          false
+        );
+
+      }
+    );
+
+
+  /*
+    Existing + ESCRIBIR button.
+
+    A visitor gets Login instead of Editor.
+  */
+
+  openEditorButton.addEventListener(
+    "click",
+    (event) => {
+
+      if (
+        sportsJournalAuth.session
+      ) {
+
+        return;
+
+      }
+
+
+      event.preventDefault();
+
+      event.stopImmediatePropagation();
+
+
+      openSportsJournalAuthModal(
+        "login"
+      );
+
+    },
+    true
+  );
+
+
+  menuWriteStoryButton.addEventListener(
+    "click",
+    (event) => {
+
+      if (
+        sportsJournalAuth.session
+      ) {
+
+        return;
+
+      }
+
+
+      event.preventDefault();
+
+      event.stopImmediatePropagation();
+
+
+      closeSideMenu();
+
+
+      openSportsJournalAuthModal(
+        "login"
+      );
+
+    },
+    true
+  );
+
+}
+
+
+/* =========================================================
+   MODAL MODES
+========================================================= */
+
+function openSportsJournalAuthModal(
+  mode = "login",
+  firstSetup = false
+) {
+
+  const modal =
+    document.getElementById(
+      "sportsJournalAuthModal"
+    );
+
+
+  const loginView =
+    document.getElementById(
+      "sjAuthLoginView"
+    );
+
+
+  const setupView =
+    document.getElementById(
+      "sjAuthSetupView"
+    );
+
+
+  const accountView =
+    document.getElementById(
+      "sjAuthAccountView"
+    );
+
+
+  loginView.hidden =
+    mode !== "login";
+
+
+  setupView.hidden =
+    mode !== "setup";
+
+
+  accountView.hidden =
+    mode !== "account";
+
+
+  const heading =
+    document.getElementById(
+      "sjAuthHeading"
+    );
+
+
+  if (
+    mode === "setup"
+  ) {
+
+    heading.textContent =
+      firstSetup
+        ? "CREAR CONTRASEÑA"
+        : "CAMBIAR CONTRASEÑA";
+
+
+    document
+      .getElementById(
+        "sjSetupIntro"
+      )
+      .textContent =
+        firstSetup
+          ? "Tu invitación fue aceptada. Completa tu cuenta creando una contraseña."
+          : "Introduce una nueva contraseña para tu cuenta.";
+
+
+    document
+      .getElementById(
+        "sjSetupName"
+      )
+      .value =
+        sportsJournalAuth.profile
+          ?.display_name ||
+        "";
+
+  } else if (
+    mode === "account"
+  ) {
+
+    heading.textContent =
+      "MI CUENTA";
+
+
+    renderSportsJournalAccount();
+
+  } else {
+
+    heading.textContent =
+      "INICIAR SESIÓN";
+
+  }
+
+
+  modal.classList.add(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+function closeSportsJournalAuthModal() {
+
+  const modal =
+    document.getElementById(
+      "sportsJournalAuthModal"
+    );
+
+
+  modal.classList.remove(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+async function handleSportsJournalLogin(
+  event
+) {
+
+  event.preventDefault();
+
+
+  const email =
+    document
+      .getElementById(
+        "sjLoginEmail"
+      )
+      .value
+      .trim();
+
+
+  const password =
+    document
+      .getElementById(
+        "sjLoginPassword"
+      )
+      .value;
+
+
+  const errorBox =
+    document.getElementById(
+      "sjLoginError"
+    );
+
+
+  errorBox.hidden =
+    true;
+
+
+  const {
+    data,
+    error
+  } =
+    await window.sportsJournalDb
+      .auth
+      .signInWithPassword({
+        email,
+        password
+      });
+
+
+  if (error) {
+
+    errorBox.textContent =
+      error.message;
+
+
+    errorBox.hidden =
+      false;
+
+
+    return;
+
+  }
+
+
+  sportsJournalAuth.session =
+    data.session;
+
+
+  await loadSportsJournalProfile();
+
+
+  syncSportsJournalAuthUi();
+
+
+  closeSportsJournalAuthModal();
+
+
+  showToast(
+    "SESIÓN INICIADA ✓"
+  );
+
+}
+
+
+/* =========================================================
+   SET / CHANGE PASSWORD
+========================================================= */
+
+async function handleSportsJournalPasswordSetup(
+  event
+) {
+
+  event.preventDefault();
+
+
+  const password =
+    document
+      .getElementById(
+        "sjSetupPassword"
+      )
+      .value;
+
+
+  const confirmation =
+    document
+      .getElementById(
+        "sjSetupPasswordConfirm"
+      )
+      .value;
+
+
+  const displayName =
+    document
+      .getElementById(
+        "sjSetupName"
+      )
+      .value
+      .trim();
+
+
+  const errorBox =
+    document.getElementById(
+      "sjSetupError"
+    );
+
+
+  errorBox.hidden =
+    true;
+
+
+  if (
+    !sportsJournalAuth.session
+  ) {
+
+    errorBox.textContent =
+      "LA SESIÓN DE INVITACIÓN YA NO ESTÁ ACTIVA.";
+
+
+    errorBox.hidden =
+      false;
+
+
+    return;
+
+  }
+
+
+  if (
+    password.length < 8
+  ) {
+
+    errorBox.textContent =
+      "USA UNA CONTRASEÑA DE AL MENOS 8 CARACTERES.";
+
+
+    errorBox.hidden =
+      false;
+
+
+    return;
+
+  }
+
+
+  if (
+    password !==
+    confirmation
+  ) {
+
+    errorBox.textContent =
+      "LAS CONTRASEÑAS NO COINCIDEN.";
+
+
+    errorBox.hidden =
+      false;
+
+
+    return;
+
+  }
+
+
+  const {
+    error: passwordError
+  } =
+    await window.sportsJournalDb
+      .auth
+      .updateUser({
+        password
+      });
+
+
+  if (
+    passwordError
+  ) {
+
+    errorBox.textContent =
+      passwordError.message;
+
+
+    errorBox.hidden =
+      false;
+
+
+    return;
+
+  }
+
+
+  if (
+    displayName
+  ) {
+
+    const userId =
+      sportsJournalAuth
+        .session
+        .user
+        .id;
+
+
+    const {
+      error: profileError
+    } =
+      await window.sportsJournalDb
+        .from(
+          "profiles"
+        )
+        .update({
+          display_name:
+            displayName
+        })
+        .eq(
+          "id",
+          userId
+        );
+
+
+    if (
+      profileError
+    ) {
+
+      console.error(
+        "SPORTS JOURNAL → No se pudo actualizar nombre:",
+        profileError
+      );
+
+    }
+
+  }
+
+
+  await loadSportsJournalProfile();
+
+
+  sportsJournalAuth.inviteLanding =
+    false;
+
+
+  /*
+    Remove invite tokens from visible URL.
+  */
+
+  window.history.replaceState(
+    {},
+    document.title,
+    window.location.pathname
+  );
+
+
+  document
+    .getElementById(
+      "sjSetupPassword"
+    )
+    .value =
+      "";
+
+
+  document
+    .getElementById(
+      "sjSetupPasswordConfirm"
+    )
+    .value =
+      "";
+
+
+  syncSportsJournalAuthUi();
+
+
+  openSportsJournalAuthModal(
+    "account"
+  );
+
+
+  showToast(
+    "CUENTA CONFIGURADA ✓"
+  );
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function handleSportsJournalLogout() {
+
+  const {
+    error
+  } =
+    await window.sportsJournalDb
+      .auth
+      .signOut();
+
+
+  if (error) {
+
+    showToast(
+      "NO SE PUDO CERRAR LA SESIÓN."
+    );
+
+
+    return;
+
+  }
+
+
+  sportsJournalAuth.session =
+    null;
+
+
+  sportsJournalAuth.profile =
+    null;
+
+
+  syncSportsJournalAuthUi();
+
+
+  closeSportsJournalAuthModal();
+
+
+  showToast(
+    "SESIÓN CERRADA."
+  );
+
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+async function loadSportsJournalProfile() {
+
+  const user =
+    sportsJournalAuth
+      .session
+      ?.user;
+
+
+  if (!user) {
+
+    sportsJournalAuth.profile =
+      null;
+
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await window.sportsJournalDb
+      .from(
+        "profiles"
+      )
+      .select(
+        "id, display_name, role, avatar_url, bio"
+      )
+      .eq(
+        "id",
+        user.id
+      )
+      .maybeSingle();
+
+
+  if (error) {
+
+    console.error(
+      "SPORTS JOURNAL → Error cargando perfil:",
+      error
+    );
+
+
+    sportsJournalAuth.profile =
+      null;
+
+
+    return;
+
+  }
+
+
+  sportsJournalAuth.profile =
+    data;
+
+}
+
+
+/* =========================================================
+   ACCOUNT UI
+========================================================= */
+
+function renderSportsJournalAccount() {
+
+  const user =
+    sportsJournalAuth
+      .session
+      ?.user;
+
+
+  if (!user) {
+
+    return;
+
+  }
+
+
+  document
+    .getElementById(
+      "sjAuthAccountEmail"
+    )
+    .textContent =
+      user.email || "";
+
+
+  document
+    .getElementById(
+      "sjAuthAccountName"
+    )
+    .textContent =
+      sportsJournalAuth
+        .profile
+        ?.display_name ||
+      "SPORTS JOURNAL";
+
+
+  document
+    .getElementById(
+      "sjAuthRole"
+    )
+    .textContent =
+      (
+        sportsJournalAuth
+          .profile
+          ?.role ||
+        "journalist"
+      ).toUpperCase();
+
+}
+
+
+/* =========================================================
+   AUTH UI STATE
+========================================================= */
+
+function syncSportsJournalAuthUi() {
+
+  const loggedIn =
+    Boolean(
+      sportsJournalAuth.session
+    );
+
+
+  document.body.classList.toggle(
+    "sj-auth-guest",
+    !loggedIn
+  );
+
+
+  const menuState =
+    document.getElementById(
+      "authMenuState"
+    );
+
+
+  if (menuState) {
+
+    menuState.textContent =
+      loggedIn
+        ? (
+            sportsJournalAuth
+              .profile
+              ?.role ||
+            "CUENTA"
+          ).toUpperCase()
+        : "ENTRAR";
+
+  }
+
+
+  if (loggedIn) {
+
+    openEditorButton.textContent =
+      "+ ESCRIBIR NOTICIA";
+
+
+    menuWriteStoryButton
+      .querySelector(
+        "span"
+      )
+      .textContent =
+        "ESCRIBIR NOTICIA";
+
+  } else {
+
+    openEditorButton.textContent =
+      "INICIAR SESIÓN";
+
+
+    menuWriteStoryButton
+      .querySelector(
+        "span"
+      )
+      .textContent =
+        "INICIAR SESIÓN";
+
+  }
+
+}
+
+
+/* =========================================================
+   INITIAL AUTH SESSION
+========================================================= */
+
+async function initializeSportsJournalAuth() {
+
+  const {
+    data,
+    error
+  } =
+    await window
+      .sportsJournalDb
+      .auth
+      .getSession();
+
+
+  if (error) {
+
+    console.error(
+      "SPORTS JOURNAL → Error leyendo sesión:",
+      error
+    );
+
+  }
+
+
+  sportsJournalAuth.session =
+    data?.session || null;
+
+
+  if (
+    sportsJournalAuth.session
+  ) {
+
+    await loadSportsJournalProfile();
+
+  }
+
+
+  syncSportsJournalAuthUi();
+
+
+  /*
+    Invitation accepted:
+    show first-password screen.
+  */
+
+  if (
+    sportsJournalAuth.session &&
+    sportsJournalAuth.inviteLanding
+  ) {
+
+    openSportsJournalAuthModal(
+      "setup",
+      true
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   AUTH EVENTS
+========================================================= */
+
+window
+  .sportsJournalDb
+  .auth
+  .onAuthStateChange(
+    (event, session) => {
+
+      sportsJournalAuth.session =
+        session;
+
+
+      window.setTimeout(
+        async () => {
+
+          if (session) {
+
+            await loadSportsJournalProfile();
+
+          } else {
+
+            sportsJournalAuth.profile =
+              null;
+
+          }
+
+
+          syncSportsJournalAuthUi();
+
+        },
+        0
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   INSTALL
+========================================================= */
+
+createSportsJournalAuthInterface();
+
+initializeSportsJournalAuth();
+
+/* =========================================================
+   PASO 13.1B — PASSWORD RECOVERY / FIRST PASSWORD
+========================================================= */
+
+
+/* =========================================================
+   ADD RECOVERY BUTTON TO LOGIN
+========================================================= */
+
+function installSportsJournalPasswordRecovery() {
+
+  if (
+    document.getElementById(
+      "sjRecoveryButton"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  const loginForm =
+    document.getElementById(
+      "sjLoginForm"
+    );
+
+
+  if (!loginForm) {
+
+    return;
+
+  }
+
+
+  const recoveryButton =
+    document.createElement(
+      "button"
+    );
+
+
+  recoveryButton.id =
+    "sjRecoveryButton";
+
+
+  recoveryButton.type =
+    "button";
+
+
+  recoveryButton.className =
+    "sj-auth-recovery";
+
+
+  recoveryButton.textContent =
+    "PRIMERA VEZ / OLVIDÉ MI CONTRASEÑA";
+
+
+  const recoveryMessage =
+    document.createElement(
+      "div"
+    );
+
+
+  recoveryMessage.id =
+    "sjRecoveryMessage";
+
+
+  recoveryMessage.className =
+    "sj-auth-message";
+
+
+  recoveryMessage.hidden =
+    true;
+
+
+  loginForm.append(
+    recoveryButton,
+    recoveryMessage
+  );
+
+
+  recoveryButton.addEventListener(
+    "click",
+    sendSportsJournalPasswordRecovery
+  );
+
+}
+
+
+/* =========================================================
+   SEND PASSWORD EMAIL
+========================================================= */
+
+async function sendSportsJournalPasswordRecovery() {
+
+  const emailInput =
+    document.getElementById(
+      "sjLoginEmail"
+    );
+
+
+  const message =
+    document.getElementById(
+      "sjRecoveryMessage"
+    );
+
+
+  const errorBox =
+    document.getElementById(
+      "sjLoginError"
+    );
+
+
+  const email =
+    emailInput.value.trim();
+
+
+  errorBox.hidden =
+    true;
+
+
+  message.hidden =
+    true;
+
+
+  if (!email) {
+
+    errorBox.textContent =
+      "ESCRIBE PRIMERO TU CORREO.";
+
+
+    errorBox.hidden =
+      false;
+
+
+    emailInput.focus();
+
+
+    return;
+
+  }
+
+
+  const redirectUrl =
+    `${window.location.origin}${window.location.pathname}`;
+
+
+  const {
+    error
+  } =
+    await window.sportsJournalDb
+      .auth
+      .resetPasswordForEmail(
+        email,
+        {
+          redirectTo:
+            redirectUrl
+        }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "SPORTS JOURNAL → Error enviando recuperación:",
+      error
+    );
+
+
+    errorBox.textContent =
+      error.message;
+
+
+    errorBox.hidden =
+      false;
+
+
+    return;
+
+  }
+
+
+  message.textContent =
+    "REVISA TU CORREO. TE ENVIAMOS UN ENLACE PARA CREAR O CAMBIAR TU CONTRASEÑA.";
+
+
+  message.hidden =
+    false;
+
+}
+
+
+/* =========================================================
+   PASSWORD RECOVERY EVENT
+========================================================= */
+
+window
+  .sportsJournalDb
+  .auth
+  .onAuthStateChange(
+    (event, session) => {
+
+      if (
+        event !==
+        "PASSWORD_RECOVERY"
+      ) {
+
+        return;
+
+      }
+
+
+      sportsJournalAuth.session =
+        session;
+
+
+      window.setTimeout(
+        async () => {
+
+          await loadSportsJournalProfile();
+
+
+          syncSportsJournalAuthUi();
+
+
+          openSportsJournalAuthModal(
+            "setup",
+            false
+          );
+
+
+          document
+            .getElementById(
+              "sjSetupIntro"
+            )
+            .textContent =
+              "Tu identidad fue verificada. Crea una nueva contraseña para entrar a Sports Journal.";
+
+        },
+        0
+      );
+
+    }
+  );
+
+
+/* =========================================================
+   INSTALL
+========================================================= */
+
+installSportsJournalPasswordRecovery();
+
+/* =========================================================
+   PASO 12.3 — MIGRAR LOCALSTORAGE → SUPABASE
+========================================================= */
+
+window.migrateSportsJournalLocalArticles =
+  async function () {
+
+    console.log(
+      "SPORTS JOURNAL → Iniciando migración..."
+    );
+
+
+    /* -----------------------------------------------------
+       CHECK DATABASE
+    ----------------------------------------------------- */
+
+    if (!window.sportsJournalDb) {
+
+      console.error(
+        "Supabase no está conectado."
+      );
+
+
+      showToast(
+        "SUPABASE NO ESTÁ CONECTADO."
+      );
+
+
+      return;
+
+    }
+
+
+    /* -----------------------------------------------------
+       CHECK SESSION
+    ----------------------------------------------------- */
+
+    const {
+      data: sessionData,
+      error: sessionError
+    } =
+      await window
+        .sportsJournalDb
+        .auth
+        .getSession();
+
+
+    if (
+      sessionError ||
+      !sessionData.session
+    ) {
+
+      console.error(
+        "No hay sesión activa.",
+        sessionError
+      );
+
+
+      showToast(
+        "INICIA SESIÓN ANTES DE MIGRAR."
+      );
+
+
+      return;
+
+    }
+
+
+    const user =
+      sessionData.session.user;
+
+
+    /* -----------------------------------------------------
+       CHECK PROFILE / ADMIN
+    ----------------------------------------------------- */
+
+    const {
+      data: profile,
+      error: profileError
+    } =
+      await window
+        .sportsJournalDb
+        .from("profiles")
+        .select(
+          "id, display_name, role"
+        )
+        .eq(
+          "id",
+          user.id
+        )
+        .single();
+
+
+    if (profileError) {
+
+      console.error(
+        "No se pudo leer el perfil:",
+        profileError
+      );
+
+
+      showToast(
+        "NO SE PUDO COMPROBAR TU CUENTA."
+      );
+
+
+      return;
+
+    }
+
+
+    if (
+      profile.role !== "admin"
+    ) {
+
+      console.warn(
+        "Migración bloqueada. Rol actual:",
+        profile.role
+      );
+
+
+      showToast(
+        "SOLO UN ADMIN PUEDE MIGRAR EL DIARIO."
+      );
+
+
+      return;
+
+    }
+
+
+    /* -----------------------------------------------------
+       CHECK LOCAL ARTICLES
+    ----------------------------------------------------- */
+
+    if (
+      !Array.isArray(articles) ||
+      articles.length === 0
+    ) {
+
+      showToast(
+        "NO HAY NOTICIAS LOCALES PARA MIGRAR."
+      );
+
+
+      return;
+
+    }
+
+
+    /* -----------------------------------------------------
+       CREATE DATABASE PAYLOAD
+    ----------------------------------------------------- */
+
+    const payload =
+      articles.map(
+        (article) => {
+
+          let databaseStatus =
+            article.status === "draft"
+              ? "draft"
+              : "published";
+
+
+          if (
+            article.archivedAt
+          ) {
+
+            databaseStatus =
+              "archived";
+
+          }
+
+
+          return {
+
+            legacy_local_id:
+              String(article.id),
+
+            title:
+              String(
+                article.title || ""
+              ),
+
+            sport:
+              article.sport,
+
+            author_id:
+              user.id,
+
+            author_name:
+              String(
+                article.author ||
+                profile.display_name ||
+                "Sports Journal"
+              ),
+
+            summary:
+              String(
+                article.summary || ""
+              ),
+
+            content:
+              String(
+                article.content || ""
+              ),
+
+            tags:
+              normalizeTags(
+                article.tags
+              ),
+
+            image_url:
+              String(
+                article.imageUrl || ""
+              ),
+
+            image_position:
+              String(
+                article.imagePosition ||
+                "50% 50%"
+              ),
+
+            image_zoom:
+              normalizeZoom(
+                article.imageZoom
+              ),
+
+            image_mode:
+              article.imageMode === "full"
+                ? "full"
+                : "crop",
+
+            status:
+              databaseStatus,
+
+            created_by:
+              user.id,
+
+            updated_by:
+              user.id,
+
+            created_at:
+              article.createdAt ||
+              new Date().toISOString(),
+
+            updated_at:
+              article.updatedAt ||
+              article.createdAt ||
+              new Date().toISOString(),
+
+            published_at:
+              databaseStatus === "draft"
+                ? null
+                : (
+                    article.publishedAt ||
+                    article.createdAt ||
+                    null
+                  ),
+
+            archived_at:
+              databaseStatus === "archived"
+                ? (
+                    article.archivedAt ||
+                    new Date().toISOString()
+                  )
+                : null
+
+          };
+
+        }
+      );
+
+
+    console.log(
+      `SPORTS JOURNAL → ${payload.length} artículos preparados.`
+    );
+
+
+    /* -----------------------------------------------------
+       UPSERT
+       legacy_local_id prevents duplicates
+    ----------------------------------------------------- */
+
+    const {
+      data,
+      error
+    } =
+      await window
+        .sportsJournalDb
+        .from("articles")
+        .upsert(
+          payload,
+          {
+            onConflict:
+              "legacy_local_id"
+          }
+        )
+        .select(
+          "id, legacy_local_id, title, status"
+        );
+
+
+    if (error) {
+
+      console.error(
+        "SPORTS JOURNAL → Error migrando artículos:",
+        error
+      );
+
+
+      showToast(
+        "ERROR DURANTE LA MIGRACIÓN."
+      );
+
+
+      return;
+
+    }
+
+
+    console.table(data);
+
+
+    console.log(
+      "SPORTS JOURNAL → Migración completada.",
+      data
+    );
+
+
+    showToast(
+      `${data.length} NOTICIAS MIGRADAS ✓`
+    );
+
+  };

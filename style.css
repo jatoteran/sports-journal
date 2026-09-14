@@ -5918,3 +5918,332 @@ button.topic-chip:focus-visible {
   }
 
 }
+
+/* =========================================================
+   PASO 13.1 — AUTH / LOGIN
+========================================================= */
+
+.sj-auth-modal {
+  z-index: 2500;
+}
+
+.sj-auth-panel {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: min(560px, calc(100vw - 28px));
+  max-height: calc(100vh - 30px);
+
+  overflow-y: auto;
+
+  border: 4px solid var(--black);
+
+  background: var(--cream);
+
+  transform: translate(-50%, -50%);
+}
+
+.sj-auth-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  gap: 25px;
+
+  border-bottom: var(--border);
+
+  background: var(--black);
+  color: var(--cream);
+
+  padding: 25px;
+}
+
+.sj-auth-header span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: var(--yellow);
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.sj-auth-header h2 {
+  margin: 0;
+
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size: clamp(37px, 8vw, 54px);
+  line-height: 0.9;
+}
+
+.sj-auth-close {
+  border-color: var(--cream);
+
+  color: var(--cream);
+}
+
+.sj-auth-close:hover {
+  border-color: var(--yellow);
+
+  background: var(--yellow);
+  color: var(--black);
+}
+
+.sj-auth-content {
+  padding: 28px;
+}
+
+.sj-auth-intro {
+  margin: 0 0 26px;
+
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.sj-auth-form {
+  display: grid;
+
+  gap: 18px;
+}
+
+.sj-auth-field {
+  display: block;
+}
+
+.sj-auth-field span {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.sj-auth-field input {
+  width: 100%;
+  min-height: 48px;
+
+  border: 2px solid var(--black);
+  border-radius: 0;
+
+  outline: 0;
+
+  background: #faf6e9;
+
+  padding: 11px 13px;
+}
+
+.sj-auth-field input:focus {
+  box-shadow: 5px 5px 0 var(--yellow);
+}
+
+.sj-auth-submit {
+  min-height: 50px;
+
+  border: 3px solid var(--black);
+
+  background: var(--yellow);
+  color: var(--black);
+
+  padding: 10px 16px;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+.sj-auth-submit:hover {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+.sj-auth-error {
+  border-left: 5px solid var(--red);
+
+  background: var(--paper);
+
+  padding: 11px 13px;
+
+  color: var(--red);
+
+  font-size: 9px;
+  font-weight: 900;
+
+  line-height: 1.4;
+}
+
+.sj-auth-account {
+  border: 3px solid var(--black);
+
+  background: var(--paper);
+
+  padding: 20px;
+}
+
+.sj-auth-account-label {
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.sj-auth-account-email {
+  margin: 8px 0 5px;
+
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size: clamp(24px, 5vw, 35px);
+
+  overflow-wrap: anywhere;
+}
+
+.sj-auth-role {
+  display: inline-block;
+
+  margin-top: 8px;
+
+  background: var(--black);
+  color: var(--yellow);
+
+  padding: 6px 9px;
+
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.sj-auth-account-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 8px;
+
+  margin-top: 22px;
+}
+
+.sj-auth-secondary,
+.sj-auth-logout {
+  min-height: 45px;
+
+  border: 2px solid var(--black);
+
+  padding: 8px;
+
+  font-size: 8px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+.sj-auth-secondary {
+  background: transparent;
+}
+
+.sj-auth-secondary:hover {
+  background: var(--yellow);
+}
+
+.sj-auth-logout {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+.sj-auth-logout:hover {
+  background: var(--red);
+  color: white;
+}
+
+/* Público: controles editoriales ocultos */
+
+body.sj-auth-guest #adminDashboardMenuButton,
+body.sj-auth-guest #allArticlesMenuButton,
+body.sj-auth-guest #draftsMenuButton,
+body.sj-auth-guest #publishedMenuButton,
+body.sj-auth-guest #archivedMenuButton,
+body.sj-auth-guest .reader-story-actions {
+  display: none !important;
+}
+
+
+/* El botón principal se convierte en login */
+
+body.sj-auth-guest .write-button {
+  background: var(--yellow);
+}
+
+
+/* Cuenta dentro del menú */
+
+#authMenuButton strong {
+  color: var(--yellow);
+
+  font-size: 8px;
+}
+
+
+@media (max-width: 650px) {
+
+  body.sj-auth-guest .write-button::after {
+    content: "ENTRAR";
+  }
+
+  .sj-auth-content {
+    padding: 22px 17px 28px;
+  }
+
+  .sj-auth-header {
+    padding: 20px 17px;
+  }
+
+  .sj-auth-account-actions {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+/* =========================================================
+   PASO 13.1B — RECUPERAR / CREAR CONTRASEÑA
+========================================================= */
+
+.sj-auth-recovery {
+  width: 100%;
+
+  margin-top: 12px;
+
+  border: 0;
+  border-bottom: 2px solid var(--black);
+
+  background: transparent;
+  color: var(--black);
+
+  padding: 10px 4px;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+.sj-auth-recovery:hover {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+.sj-auth-message {
+  margin-top: 14px;
+
+  border-left: 5px solid var(--yellow);
+
+  background: var(--paper);
+
+  padding: 12px 14px;
+
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1.5;
+}
