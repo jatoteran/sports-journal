@@ -21222,3 +21222,1690 @@ document.addEventListener(
 createJournalistDashboardInterface();
 
 syncSportsJournalRoleInterface();
+
+/* =========================================================
+   PASO 13.4 — GESTIÓN DE LA REDACCIÓN
+========================================================= */
+
+let sportsJournalNewsroomMembers =
+  [];
+
+
+let sportsJournalNewsroomSearch =
+  "";
+
+
+let sportsJournalNewsroomRoleFilter =
+  "all";
+
+
+/* =========================================================
+   CREATE INTERFACE
+========================================================= */
+
+function createSportsJournalNewsroomInterface() {
+
+  if (
+    document.getElementById(
+      "newsroomModal"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     SIDE MENU BUTTON
+  ------------------------------------------------------- */
+
+  const menuButton =
+    document.createElement(
+      "button"
+    );
+
+
+  menuButton.id =
+    "newsroomMenuButton";
+
+
+  menuButton.type =
+    "button";
+
+
+  menuButton.className =
+    "journal-menu-button";
+
+
+  menuButton.innerHTML = `
+    <span>
+      REDACCIÓN
+    </span>
+
+    <span>
+      →
+    </span>
+  `;
+
+
+  const dashboardButton =
+    document.getElementById(
+      "adminDashboardMenuButton"
+    );
+
+
+  dashboardButton.insertAdjacentElement(
+    "afterend",
+    menuButton
+  );
+
+
+  menuButton.addEventListener(
+    "click",
+    openSportsJournalNewsroom
+  );
+
+
+  /* -------------------------------------------------------
+     MODAL
+  ------------------------------------------------------- */
+
+  const modal =
+    document.createElement(
+      "div"
+    );
+
+
+  modal.id =
+    "newsroomModal";
+
+
+  modal.className =
+    "modal newsroom-modal";
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  modal.innerHTML = `
+    <section
+      class="newsroom-panel"
+      aria-label="Gestión de la redacción"
+    >
+
+      <header
+        class="newsroom-header"
+      >
+
+        <div>
+
+          <span>
+            SPORTS JOURNAL · ADMIN
+          </span>
+
+          <h2>
+            REDACCIÓN
+          </h2>
+
+        </div>
+
+
+        <button
+          class="close-button newsroom-close"
+          id="closeNewsroomButton"
+          type="button"
+          aria-label="Cerrar redacción"
+        >
+          ×
+        </button>
+
+      </header>
+
+
+      <div
+        class="newsroom-body"
+      >
+
+        <section
+          class="newsroom-intro"
+        >
+
+          <div>
+
+            <span
+              class="newsroom-intro-label"
+            >
+              EQUIPO SPORTS JOURNAL
+            </span>
+
+            <h3>
+              GESTIONA TU
+              REDACCIÓN
+            </h3>
+
+          </div>
+
+
+          <div
+            class="newsroom-member-total"
+            id="newsroomTotalMembers"
+          >
+            0 MIEMBROS
+          </div>
+
+        </section>
+
+
+        <section
+          class="newsroom-stats"
+        >
+
+          <div
+            class="newsroom-stat"
+          >
+
+            <span>
+              ADMINISTRADORES
+            </span>
+
+            <strong
+              id="newsroomAdminCount"
+            >
+              0
+            </strong>
+
+          </div>
+
+
+          <div
+            class="newsroom-stat"
+          >
+
+            <span>
+              EDITORES
+            </span>
+
+            <strong
+              id="newsroomEditorCount"
+            >
+              0
+            </strong>
+
+          </div>
+
+
+          <div
+            class="newsroom-stat"
+          >
+
+            <span>
+              PERIODISTAS
+            </span>
+
+            <strong
+              id="newsroomJournalistCount"
+            >
+              0
+            </strong>
+
+          </div>
+
+        </section>
+
+
+        <div
+          class="newsroom-toolbar"
+        >
+
+          <div
+            class="newsroom-field"
+          >
+
+            <label
+              for="newsroomSearch"
+            >
+              BUSCAR MIEMBRO
+            </label>
+
+            <input
+              id="newsroomSearch"
+              type="search"
+              placeholder="NOMBRE..."
+              autocomplete="off"
+            />
+
+          </div>
+
+
+          <div
+            class="newsroom-field"
+          >
+
+            <label
+              for="newsroomRoleFilter"
+            >
+              ROL
+            </label>
+
+            <select
+              id="newsroomRoleFilter"
+            >
+
+              <option value="all">
+                TODOS
+              </option>
+
+              <option value="admin">
+                ADMIN
+              </option>
+
+              <option value="editor">
+                EDITOR
+              </option>
+
+              <option value="journalist">
+                PERIODISTA
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <button
+            class="newsroom-clear"
+            id="newsroomClearFilters"
+            type="button"
+          >
+            LIMPIAR
+          </button>
+
+        </div>
+
+
+        <div
+          class="newsroom-list"
+          id="newsroomList"
+        ></div>
+
+      </div>
+
+    </section>
+  `;
+
+
+  document.body.appendChild(
+    modal
+  );
+
+
+  bindSportsJournalNewsroomEvents();
+
+}
+
+
+/* =========================================================
+   EVENTS
+========================================================= */
+
+function bindSportsJournalNewsroomEvents() {
+
+  document
+    .getElementById(
+      "closeNewsroomButton"
+    )
+    .addEventListener(
+      "click",
+      closeSportsJournalNewsroom
+    );
+
+
+  document
+    .getElementById(
+      "newsroomSearch"
+    )
+    .addEventListener(
+      "input",
+      (event) => {
+
+        sportsJournalNewsroomSearch =
+          normalizeSearchText(
+            event.target.value
+          );
+
+
+        renderSportsJournalNewsroomList();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "newsroomRoleFilter"
+    )
+    .addEventListener(
+      "change",
+      (event) => {
+
+        sportsJournalNewsroomRoleFilter =
+          event.target.value;
+
+
+        renderSportsJournalNewsroomList();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "newsroomClearFilters"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        sportsJournalNewsroomSearch =
+          "";
+
+
+        sportsJournalNewsroomRoleFilter =
+          "all";
+
+
+        document
+          .getElementById(
+            "newsroomSearch"
+          )
+          .value =
+            "";
+
+
+        document
+          .getElementById(
+            "newsroomRoleFilter"
+          )
+          .value =
+            "all";
+
+
+        renderSportsJournalNewsroomList();
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   OPEN / CLOSE
+========================================================= */
+
+async function openSportsJournalNewsroom() {
+
+  if (
+    !isSportsJournalAdmin()
+  ) {
+
+    showToast(
+      "SOLO UN ADMIN PUEDE GESTIONAR LA REDACCIÓN."
+    );
+
+
+    return;
+
+  }
+
+
+  closeSideMenu();
+
+
+  const loaded =
+    await loadSportsJournalNewsroomMembers();
+
+
+  if (!loaded) {
+
+    return;
+
+  }
+
+
+  renderSportsJournalNewsroom();
+
+
+  const modal =
+    document.getElementById(
+      "newsroomModal"
+    );
+
+
+  modal.classList.add(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+function closeSportsJournalNewsroom() {
+
+  const modal =
+    document.getElementById(
+      "newsroomModal"
+    );
+
+
+  if (!modal) {
+
+    return;
+
+  }
+
+
+  modal.classList.remove(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+/* =========================================================
+   LOAD PROFILES
+========================================================= */
+
+async function loadSportsJournalNewsroomMembers() {
+
+  if (
+    !isSportsJournalAdmin()
+  ) {
+
+    return false;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await window
+      .sportsJournalDb
+      .from(
+        "profiles"
+      )
+      .select(`
+        id,
+        display_name,
+        role,
+        avatar_url,
+        bio,
+        created_at
+      `)
+      .order(
+        "created_at",
+        {
+          ascending: true
+        }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "SPORTS JOURNAL → Error cargando redacción:",
+      error
+    );
+
+
+    showToast(
+      "NO SE PUDO CARGAR LA REDACCIÓN."
+    );
+
+
+    return false;
+
+  }
+
+
+  sportsJournalNewsroomMembers =
+    data || [];
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   MEMBER ARTICLE COUNTS
+========================================================= */
+
+function getSportsJournalMemberArticleStats(
+  memberId
+) {
+
+  const memberArticles =
+    articles.filter(
+      (article) =>
+        String(
+          article.authorId
+        ) ===
+        String(
+          memberId
+        )
+    );
+
+
+  const stats = {
+
+    total:
+      memberArticles.length,
+
+    draft:
+      0,
+
+    review:
+      0,
+
+    published:
+      0,
+
+    archived:
+      0
+
+  };
+
+
+  memberArticles.forEach(
+    (article) => {
+
+      const state =
+        getJournalistArticleState(
+          article
+        );
+
+
+      if (
+        Object.prototype.hasOwnProperty.call(
+          stats,
+          state
+        )
+      ) {
+
+        stats[state] +=
+          1;
+
+      }
+
+    }
+  );
+
+
+  return stats;
+
+}
+
+
+/* =========================================================
+   FILTER MEMBERS
+========================================================= */
+
+function getFilteredSportsJournalNewsroomMembers() {
+
+  return sportsJournalNewsroomMembers
+    .filter(
+      (member) => {
+
+        if (
+          sportsJournalNewsroomRoleFilter !==
+            "all" &&
+          member.role !==
+            sportsJournalNewsroomRoleFilter
+        ) {
+
+          return false;
+
+        }
+
+
+        if (
+          sportsJournalNewsroomSearch
+        ) {
+
+          const searchable =
+            normalizeSearchText(
+              [
+                member.display_name,
+                member.role,
+                member.bio
+              ].join(
+                " "
+              )
+            );
+
+
+          if (
+            !searchable.includes(
+              sportsJournalNewsroomSearch
+            )
+          ) {
+
+            return false;
+
+          }
+
+        }
+
+
+        return true;
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   RENDER COMPLETE
+========================================================= */
+
+function renderSportsJournalNewsroom() {
+
+  renderSportsJournalNewsroomStats();
+
+  renderSportsJournalNewsroomList();
+
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function renderSportsJournalNewsroomStats() {
+
+  const counts = {
+
+    admin:
+      0,
+
+    editor:
+      0,
+
+    journalist:
+      0
+
+  };
+
+
+  sportsJournalNewsroomMembers
+    .forEach(
+      (member) => {
+
+        if (
+          Object.prototype.hasOwnProperty.call(
+            counts,
+            member.role
+          )
+        ) {
+
+          counts[
+            member.role
+          ] +=
+            1;
+
+        }
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "newsroomTotalMembers"
+    )
+    .textContent =
+      `${sportsJournalNewsroomMembers.length} ${
+        sportsJournalNewsroomMembers.length === 1
+          ? "MIEMBRO"
+          : "MIEMBROS"
+      }`;
+
+
+  document
+    .getElementById(
+      "newsroomAdminCount"
+    )
+    .textContent =
+      counts.admin;
+
+
+  document
+    .getElementById(
+      "newsroomEditorCount"
+    )
+    .textContent =
+      counts.editor;
+
+
+  document
+    .getElementById(
+      "newsroomJournalistCount"
+    )
+    .textContent =
+      counts.journalist;
+
+}
+
+
+/* =========================================================
+   RENDER LIST
+========================================================= */
+
+function renderSportsJournalNewsroomList() {
+
+  const container =
+    document.getElementById(
+      "newsroomList"
+    );
+
+
+  if (!container) {
+
+    return;
+
+  }
+
+
+  const members =
+    getFilteredSportsJournalNewsroomMembers();
+
+
+  container.innerHTML =
+    "";
+
+
+  if (
+    members.length === 0
+  ) {
+
+    container.innerHTML = `
+      <div
+        class="newsroom-empty"
+      >
+
+        <strong>
+          SIN RESULTADOS
+        </strong>
+
+        <p>
+          No encontramos miembros con
+          los filtros seleccionados.
+        </p>
+
+      </div>
+    `;
+
+
+    return;
+
+  }
+
+
+  members.forEach(
+    (member, index) => {
+
+      container.appendChild(
+        createSportsJournalNewsroomMember(
+          member,
+          index
+        )
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   MEMBER ROW
+========================================================= */
+
+function createSportsJournalNewsroomMember(
+  member,
+  index
+) {
+
+  const currentUserId =
+    sportsJournalAuth
+      ?.session
+      ?.user
+      ?.id;
+
+
+  const isCurrentUser =
+    String(
+      member.id
+    ) ===
+    String(
+      currentUserId
+    );
+
+
+  const stats =
+    getSportsJournalMemberArticleStats(
+      member.id
+    );
+
+
+  const row =
+    document.createElement(
+      "article"
+    );
+
+
+  row.className =
+    "newsroom-member";
+
+
+  /* NUMBER */
+
+  const number =
+    document.createElement(
+      "div"
+    );
+
+
+  number.className =
+    "newsroom-member-number";
+
+
+  number.textContent =
+    String(
+      index + 1
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  /* IDENTITY */
+
+  const identity =
+    document.createElement(
+      "div"
+    );
+
+
+  const roleBadge =
+    document.createElement(
+      "span"
+    );
+
+
+  roleBadge.className =
+    `newsroom-role-badge ${member.role}`;
+
+
+  roleBadge.textContent =
+    getSportsJournalRoleLabel(
+      member.role
+    );
+
+
+  const name =
+    document.createElement(
+      "h4"
+    );
+
+
+  name.className =
+    "newsroom-member-name";
+
+
+  name.textContent =
+    member.display_name ||
+    "SPORTS JOURNAL";
+
+
+  identity.append(
+    roleBadge,
+    name
+  );
+
+
+  if (
+    isCurrentUser
+  ) {
+
+    const you =
+      document.createElement(
+        "span"
+      );
+
+
+    you.className =
+      "newsroom-member-you";
+
+
+    you.textContent =
+      "TU CUENTA";
+
+
+    identity.appendChild(
+      you
+    );
+
+  }
+
+
+  const memberSince =
+    document.createElement(
+      "div"
+    );
+
+
+  memberSince.className =
+    "newsroom-member-since";
+
+
+  memberSince.textContent =
+    `EN LA REDACCIÓN DESDE ${formatShortDate(
+      member.created_at
+    )}`;
+
+
+  identity.appendChild(
+    memberSince
+  );
+
+
+  /* ARTICLE STATS */
+
+  const articleStats =
+    document.createElement(
+      "div"
+    );
+
+
+  articleStats.className =
+    "newsroom-member-articles";
+
+
+  articleStats.append(
+    createSportsJournalMiniStat(
+      stats.total,
+      "TOTAL"
+    ),
+
+    createSportsJournalMiniStat(
+      stats.draft,
+      "BORRADORES"
+    ),
+
+    createSportsJournalMiniStat(
+      stats.review,
+      "REVISIÓN"
+    ),
+
+    createSportsJournalMiniStat(
+      stats.published,
+      "PUBLICADAS"
+    )
+  );
+
+
+  /* ROLE CONTROL */
+
+  const roleControl =
+    document.createElement(
+      "div"
+    );
+
+
+  roleControl.className =
+    "newsroom-member-role";
+
+
+  const label =
+    document.createElement(
+      "label"
+    );
+
+
+  label.textContent =
+    isCurrentUser
+      ? "TU ROL"
+      : "CAMBIAR ROL";
+
+
+  const select =
+    document.createElement(
+      "select"
+    );
+
+
+  select.className =
+    "newsroom-role-select";
+
+
+  select.disabled =
+    isCurrentUser;
+
+
+  [
+    [
+      "journalist",
+      "PERIODISTA"
+    ],
+
+    [
+      "editor",
+      "EDITOR"
+    ],
+
+    [
+      "admin",
+      "ADMIN"
+    ]
+
+  ].forEach(
+    ([value, text]) => {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+
+      option.value =
+        value;
+
+
+      option.textContent =
+        text;
+
+
+      select.appendChild(
+        option
+      );
+
+    }
+  );
+
+
+  select.value =
+    member.role;
+
+
+  if (
+    !isCurrentUser
+  ) {
+
+    select.addEventListener(
+      "change",
+      async () => {
+
+        const previousRole =
+          member.role;
+
+
+        const nextRole =
+          select.value;
+
+
+        const confirmed =
+          window.confirm(
+            `¿Cambiar a ${member.display_name} de ${getSportsJournalRoleLabel(
+              previousRole
+            )} a ${getSportsJournalRoleLabel(
+              nextRole
+            )}?`
+          );
+
+
+        if (
+          !confirmed
+        ) {
+
+          select.value =
+            previousRole;
+
+
+          return;
+
+        }
+
+
+        select.disabled =
+          true;
+
+
+        const success =
+          await changeSportsJournalNewsroomRole(
+            member,
+            nextRole
+          );
+
+
+        if (
+          !success
+        ) {
+
+          select.value =
+            previousRole;
+
+        }
+
+
+        select.disabled =
+          false;
+
+      }
+    );
+
+  }
+
+
+  roleControl.append(
+    label,
+    select
+  );
+
+
+  row.append(
+    number,
+    identity,
+    articleStats,
+    roleControl
+  );
+
+
+  return row;
+
+}
+
+
+/* =========================================================
+   MINI STAT
+========================================================= */
+
+function createSportsJournalMiniStat(
+  count,
+  label
+) {
+
+  const stat =
+    document.createElement(
+      "div"
+    );
+
+
+  stat.className =
+    "newsroom-mini-stat";
+
+
+  const value =
+    document.createElement(
+      "strong"
+    );
+
+
+  value.textContent =
+    count;
+
+
+  const text =
+    document.createElement(
+      "span"
+    );
+
+
+  text.textContent =
+    label;
+
+
+  stat.append(
+    value,
+    text
+  );
+
+
+  return stat;
+
+}
+
+
+/* =========================================================
+   ROLE LABEL
+========================================================= */
+
+function getSportsJournalRoleLabel(
+  role
+) {
+
+  if (
+    role === "admin"
+  ) {
+
+    return "ADMIN";
+
+  }
+
+
+  if (
+    role === "editor"
+  ) {
+
+    return "EDITOR";
+
+  }
+
+
+  return "PERIODISTA";
+
+}
+
+
+/* =========================================================
+   CHANGE ROLE
+========================================================= */
+
+async function changeSportsJournalNewsroomRole(
+  member,
+  nextRole
+) {
+
+  if (
+    !isSportsJournalAdmin()
+  ) {
+
+    showToast(
+      "SOLO UN ADMIN PUEDE CAMBIAR ROLES."
+    );
+
+
+    return false;
+
+  }
+
+
+  const allowedRoles = [
+    "admin",
+    "editor",
+    "journalist"
+  ];
+
+
+  if (
+    !allowedRoles.includes(
+      nextRole
+    )
+  ) {
+
+    return false;
+
+  }
+
+
+  const currentUserId =
+    sportsJournalAuth
+      ?.session
+      ?.user
+      ?.id;
+
+
+  if (
+    String(
+      member.id
+    ) ===
+    String(
+      currentUserId
+    )
+  ) {
+
+    showToast(
+      "NO PUEDES CAMBIAR TU PROPIO ROL DESDE EL PANEL."
+    );
+
+
+    return false;
+
+  }
+
+
+  const {
+    error
+  } =
+    await window
+      .sportsJournalDb
+      .from(
+        "profiles"
+      )
+      .update({
+
+        role:
+          nextRole
+
+      })
+      .eq(
+        "id",
+        member.id
+      );
+
+
+  if (error) {
+
+    console.error(
+      "SPORTS JOURNAL → Error cambiando rol:",
+      error
+    );
+
+
+    if (
+      error.code === "42501"
+    ) {
+
+      showToast(
+        "NO TIENES PERMISO PARA CAMBIAR ESE ROL."
+      );
+
+    } else {
+
+      showToast(
+        "NO SE PUDO CAMBIAR EL ROL."
+      );
+
+    }
+
+
+    return false;
+
+  }
+
+
+  member.role =
+    nextRole;
+
+
+  renderSportsJournalNewsroom();
+
+
+  showToast(
+    `${member.display_name.toUpperCase()} AHORA ES ${getSportsJournalRoleLabel(
+      nextRole
+    )} ✓`
+  );
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   REFRESH LOGGED-IN USER ROLE
+========================================================= */
+
+let sportsJournalProfileRefreshBusy =
+  false;
+
+
+async function refreshSportsJournalCurrentProfile() {
+
+  if (
+    sportsJournalProfileRefreshBusy ||
+    !sportsJournalAuth
+      ?.session
+  ) {
+
+    return;
+
+  }
+
+
+  sportsJournalProfileRefreshBusy =
+    true;
+
+
+  try {
+
+    const previousRole =
+      getSportsJournalRole();
+
+
+    await loadSportsJournalProfile();
+
+
+    const nextRole =
+      getSportsJournalRole();
+
+
+    syncSportsJournalAuthUi();
+
+
+    if (
+      previousRole !==
+      nextRole
+    ) {
+
+      console.log(
+        `SPORTS JOURNAL → Rol actualizado: ${previousRole} → ${nextRole}`
+      );
+
+
+      await loadSportsJournalArticlesFromCloud({
+        silent: true
+      });
+
+
+      showToast(
+        `TU ROL AHORA ES ${getSportsJournalRoleLabel(
+          nextRole
+        )}.`
+      );
+
+    }
+
+  } finally {
+
+    sportsJournalProfileRefreshBusy =
+      false;
+
+  }
+
+}
+
+
+/*
+  If an admin changes another logged-in user's role,
+  that user's interface refreshes when they return
+  to the browser tab.
+*/
+
+window.addEventListener(
+  "focus",
+  refreshSportsJournalCurrentProfile
+);
+
+
+/* =========================================================
+   REFRESH NEWSROOM WHEN ARTICLES CHANGE
+========================================================= */
+
+const step134BaseRefreshCloudViews =
+  refreshSportsJournalCloudViews;
+
+
+refreshSportsJournalCloudViews =
+  function () {
+
+    step134BaseRefreshCloudViews();
+
+
+    const newsroom =
+      document.getElementById(
+        "newsroomModal"
+      );
+
+
+    if (
+      newsroom
+        ?.classList
+        .contains(
+          "open"
+        )
+    ) {
+
+      renderSportsJournalNewsroom();
+
+    }
+
+  };
+
+
+/* =========================================================
+   ROLE INTERFACE PATCH
+========================================================= */
+
+const step134BaseSyncRoleInterface =
+  syncSportsJournalRoleInterface;
+
+
+syncSportsJournalRoleInterface =
+  function () {
+
+    step134BaseSyncRoleInterface();
+
+
+    const newsroom =
+      document.getElementById(
+        "newsroomModal"
+      );
+
+
+    if (
+      newsroom
+        ?.classList
+        .contains(
+          "open"
+        ) &&
+      !isSportsJournalAdmin()
+    ) {
+
+      closeSportsJournalNewsroom();
+
+    }
+
+  };
+
+
+/* =========================================================
+   BODY SCROLL
+========================================================= */
+
+const step134BaseSyncBodyScrollState =
+  syncBodyScrollState;
+
+
+syncBodyScrollState =
+  function () {
+
+    step134BaseSyncBodyScrollState();
+
+
+    const newsroom =
+      document.getElementById(
+        "newsroomModal"
+      );
+
+
+    if (
+      newsroom
+        ?.classList
+        .contains(
+          "open"
+        )
+    ) {
+
+      document.body
+        .classList
+        .add(
+          "modal-open"
+        );
+
+    }
+
+  };
+
+
+/* =========================================================
+   ESCAPE
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.key !== "Escape"
+    ) {
+
+      return;
+
+    }
+
+
+    const newsroom =
+      document.getElementById(
+        "newsroomModal"
+      );
+
+
+    if (
+      newsroom
+        ?.classList
+        .contains(
+          "open"
+        )
+    ) {
+
+      closeSportsJournalNewsroom();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   INSTALL
+========================================================= */
+
+createSportsJournalNewsroomInterface();
+
+syncSportsJournalRoleInterface();

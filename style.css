@@ -7742,3 +7742,814 @@ body.sj-role-journalist
   }
 
 }
+
+/* =========================================================
+   PASO 13.4 — GESTIÓN DE LA REDACCIÓN
+========================================================= */
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+#newsroomMenuButton {
+  display: none;
+}
+
+
+body.sj-role-admin #newsroomMenuButton {
+  display: flex;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.newsroom-modal {
+  z-index: 1690;
+}
+
+
+.newsroom-panel {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow-y: auto;
+
+  background: var(--cream);
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.newsroom-header {
+  position: sticky;
+
+  z-index: 30;
+
+  top: 0;
+
+  min-height: 105px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 25px;
+
+  border-bottom:
+    4px
+    solid
+    var(--black);
+
+  background: var(--black);
+  color: var(--cream);
+
+  padding:
+    18px
+    clamp(18px, 4vw, 58px);
+}
+
+
+.newsroom-header span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: var(--yellow);
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+
+.newsroom-header h2 {
+  margin: 0;
+
+  font-family:
+    Impact,
+    "Arial Black",
+    sans-serif;
+
+  font-size:
+    clamp(
+      38px,
+      5vw,
+      62px
+    );
+
+  line-height: 0.88;
+}
+
+
+.newsroom-close {
+  border-color: var(--cream);
+
+  color: var(--cream);
+}
+
+
+.newsroom-close:hover {
+  border-color: var(--yellow);
+
+  background: var(--yellow);
+  color: var(--black);
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+.newsroom-body {
+  width:
+    min(
+      1450px,
+      100%
+    );
+
+  margin:
+    0
+    auto;
+
+  padding:
+    clamp(28px, 4vw, 55px)
+    clamp(16px, 4vw, 58px)
+    80px;
+}
+
+
+/* =========================================================
+   INTRO
+========================================================= */
+
+.newsroom-intro {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  align-items: end;
+
+  gap: 30px;
+
+  margin-bottom: 28px;
+}
+
+
+.newsroom-intro-label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+
+.newsroom-intro h3 {
+  max-width: 900px;
+
+  margin: 0;
+
+  font-family:
+    Impact,
+    "Arial Black",
+    sans-serif;
+
+  font-size:
+    clamp(
+      45px,
+      7vw,
+      86px
+    );
+
+  line-height: 0.87;
+
+  text-transform: uppercase;
+}
+
+
+.newsroom-member-total {
+  border:
+    3px
+    solid
+    var(--black);
+
+  background: var(--yellow);
+
+  padding:
+    13px
+    16px;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.newsroom-stats {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(0, 1fr)
+    );
+
+  border:
+    3px
+    solid
+    var(--black);
+
+  margin-bottom: 35px;
+}
+
+
+.newsroom-stat {
+  min-height: 135px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  background: var(--paper);
+
+  padding: 18px;
+}
+
+
+.newsroom-stat +
+.newsroom-stat {
+  border-left:
+    3px
+    solid
+    var(--black);
+}
+
+
+.newsroom-stat span {
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+
+.newsroom-stat strong {
+  font-family:
+    Impact,
+    "Arial Black",
+    sans-serif;
+
+  font-size:
+    clamp(
+      44px,
+      6vw,
+      68px
+    );
+
+  line-height: 0.8;
+}
+
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.newsroom-toolbar {
+  display: grid;
+
+  grid-template-columns:
+    minmax(250px, 1fr)
+    210px
+    auto;
+
+  border:
+    3px
+    solid
+    var(--black);
+
+  background: var(--paper);
+
+  margin-bottom: 20px;
+}
+
+
+.newsroom-field {
+  border-right:
+    2px
+    solid
+    var(--black);
+
+  padding: 12px;
+}
+
+
+.newsroom-field label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+
+.newsroom-field input,
+.newsroom-field select {
+  width: 100%;
+
+  min-height: 43px;
+
+  border:
+    2px
+    solid
+    var(--black);
+
+  border-radius: 0;
+
+  outline: 0;
+
+  background: var(--cream);
+
+  padding:
+    8px
+    10px;
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+
+.newsroom-field input:focus,
+.newsroom-field select:focus {
+  box-shadow:
+    4px
+    4px
+    0
+    var(--yellow);
+}
+
+
+.newsroom-clear {
+  border: 0;
+
+  background: var(--black);
+  color: var(--yellow);
+
+  padding:
+    12px
+    17px;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.newsroom-clear:hover {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+
+/* =========================================================
+   MEMBER LIST
+========================================================= */
+
+.newsroom-list {
+  border-top:
+    3px
+    solid
+    var(--black);
+}
+
+
+.newsroom-member {
+  display: grid;
+
+  grid-template-columns:
+    55px
+    minmax(210px, 0.75fr)
+    minmax(250px, 1fr)
+    185px;
+
+  gap: 20px;
+
+  align-items: center;
+
+  border-bottom:
+    2px
+    solid
+    var(--black);
+
+  padding:
+    24px
+    0;
+}
+
+
+.newsroom-member-number {
+  font-family:
+    Impact,
+    "Arial Black",
+    sans-serif;
+
+  font-size: 31px;
+}
+
+
+/* =========================================================
+   IDENTITY
+========================================================= */
+
+.newsroom-member-name {
+  margin: 0;
+
+  font-family:
+    Impact,
+    "Arial Black",
+    sans-serif;
+
+  font-size:
+    clamp(
+      25px,
+      3vw,
+      38px
+    );
+
+  line-height: 0.94;
+
+  text-transform: uppercase;
+}
+
+
+.newsroom-member-you {
+  display: inline-block;
+
+  margin-top: 8px;
+
+  background: var(--yellow);
+
+  padding:
+    5px
+    7px;
+
+  font-size: 7px;
+  font-weight: 900;
+}
+
+
+.newsroom-member-since {
+  margin-top: 8px;
+
+  color: #666159;
+
+  font-size: 8px;
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   ARTICLE STATS
+========================================================= */
+
+.newsroom-member-articles {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
+  gap: 6px;
+}
+
+
+.newsroom-mini-stat {
+  border:
+    2px
+    solid
+    var(--black);
+
+  padding:
+    8px;
+
+  text-align: center;
+}
+
+
+.newsroom-mini-stat strong {
+  display: block;
+
+  font-family:
+    Impact,
+    "Arial Black",
+    sans-serif;
+
+  font-size: 25px;
+
+  line-height: 1;
+}
+
+
+.newsroom-mini-stat span {
+  display: block;
+
+  margin-top: 5px;
+
+  font-size: 6px;
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   ROLE
+========================================================= */
+
+.newsroom-member-role {
+  min-width: 0;
+}
+
+
+.newsroom-member-role label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+}
+
+
+.newsroom-role-select {
+  width: 100%;
+
+  min-height: 43px;
+
+  border:
+    2px
+    solid
+    var(--black);
+
+  border-radius: 0;
+
+  background: var(--cream);
+
+  padding:
+    8px;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.newsroom-role-select:disabled {
+  background: var(--paper);
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   ROLE BADGES
+========================================================= */
+
+.newsroom-role-badge {
+  display: inline-block;
+
+  margin-bottom: 9px;
+
+  border:
+    2px
+    solid
+    var(--black);
+
+  padding:
+    5px
+    8px;
+
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+
+.newsroom-role-badge.admin {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+
+.newsroom-role-badge.editor {
+  background: var(--yellow);
+}
+
+
+.newsroom-role-badge.journalist {
+  background: var(--cream);
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.newsroom-empty {
+  min-height: 280px;
+
+  display: grid;
+  place-content: center;
+
+  border:
+    3px
+    solid
+    var(--black);
+
+  padding: 35px;
+
+  text-align: center;
+}
+
+
+.newsroom-empty strong {
+  font-family:
+    Impact,
+    "Arial Black",
+    sans-serif;
+
+  font-size:
+    clamp(
+      37px,
+      7vw,
+      68px
+    );
+}
+
+
+.newsroom-empty p {
+  margin:
+    10px
+    0
+    0;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1000px) {
+
+  .newsroom-member {
+    grid-template-columns:
+      45px
+      minmax(0, 1fr)
+      180px;
+  }
+
+
+  .newsroom-member-articles {
+    grid-column: 2;
+
+    margin-top: 8px;
+  }
+
+
+  .newsroom-member-role {
+    grid-column: 3;
+
+    grid-row:
+      1
+      /
+      span
+      2;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+  .newsroom-header {
+    min-height: 90px;
+
+    padding:
+      14px
+      16px;
+  }
+
+
+  .newsroom-header h2 {
+    font-size: 36px;
+  }
+
+
+  .newsroom-body {
+    padding:
+      25px
+      14px
+      60px;
+  }
+
+
+  .newsroom-intro {
+    grid-template-columns: 1fr;
+
+    gap: 14px;
+  }
+
+
+  .newsroom-member-total {
+    width: fit-content;
+  }
+
+
+  .newsroom-stats {
+    grid-template-columns: 1fr;
+  }
+
+
+  .newsroom-stat +
+  .newsroom-stat {
+    border-left: 0;
+
+    border-top:
+      3px
+      solid
+      var(--black);
+  }
+
+
+  .newsroom-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+
+  .newsroom-field {
+    border-right: 0;
+
+    border-bottom:
+      2px
+      solid
+      var(--black);
+  }
+
+
+  .newsroom-member {
+    grid-template-columns:
+      38px
+      minmax(0, 1fr);
+
+    gap:
+      12px
+      14px;
+
+    align-items: start;
+  }
+
+
+  .newsroom-member-articles,
+  .newsroom-member-role {
+    grid-column: 2;
+
+    grid-row: auto;
+  }
+
+
+  .newsroom-member-articles {
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+
+}
