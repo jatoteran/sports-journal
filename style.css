@@ -6247,3 +6247,425 @@ body.sj-auth-guest .write-button {
   font-weight: 900;
   line-height: 1.5;
 }
+
+/* =========================================================
+   PASO 13.2 — REDACCIÓN MULTIUSUARIO
+   REVIEW WORKFLOW + ROLES
+========================================================= */
+
+
+/* =========================================================
+   REVIEW STATUS
+========================================================= */
+
+.editor-status-value.review {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+
+/* Dashboard / Manager status */
+
+.admin-status-badge.review,
+.article-manager-status.review {
+  background: var(--yellow);
+  color: var(--black);
+
+  border-style: dashed;
+}
+
+
+/* =========================================================
+   ROLE-BASED VISIBILITY
+========================================================= */
+
+
+/*
+  JOURNALIST
+
+  Tiene acceso a:
+  - portada
+  - escribir
+  - sus borradores
+  - sus noticias en revisión
+  - su cuenta
+
+  NO al Admin global.
+*/
+
+body.sj-role-journalist #adminDashboardMenuButton,
+body.sj-role-journalist #allArticlesMenuButton,
+body.sj-role-journalist #publishedMenuButton,
+body.sj-role-journalist #archivedMenuButton,
+body.sj-role-journalist .data-block,
+body.sj-role-journalist .reader-story-actions {
+  display: none !important;
+}
+
+
+/*
+  EDITOR
+
+  Puede gestionar contenido,
+  pero respaldos completos quedan reservados
+  para ADMIN.
+*/
+
+body.sj-role-editor .data-block {
+  display: none !important;
+}
+
+
+/* =========================================================
+   REVIEW MANAGER
+========================================================= */
+
+.review-manager-modal {
+  z-index: 1680;
+}
+
+
+.review-manager-panel {
+  position: absolute;
+
+  inset: 0 0 0 auto;
+
+  width: min(900px, 96vw);
+  height: 100%;
+
+  overflow-y: auto;
+
+  border-left: 4px solid var(--black);
+
+  background: var(--cream);
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.review-manager-header {
+  position: sticky;
+
+  z-index: 20;
+
+  top: 0;
+
+  min-height: 110px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 25px;
+
+  border-bottom: var(--border);
+
+  background: var(--yellow);
+  color: var(--black);
+
+  padding:
+    20px
+    30px;
+}
+
+
+.review-manager-header h2 {
+  margin: 4px 0 0;
+
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      38px,
+      6vw,
+      55px
+    );
+
+  line-height: 0.9;
+}
+
+
+.review-manager-list {
+  padding:
+    30px;
+}
+
+
+/* =========================================================
+   REVIEW CARD
+========================================================= */
+
+.review-story-card {
+  display: grid;
+
+  grid-template-columns:
+    65px
+    minmax(0, 1fr)
+    145px;
+
+  gap: 22px;
+
+  align-items: start;
+
+  border-top:
+    3px
+    solid
+    var(--black);
+
+  padding:
+    26px
+    0;
+}
+
+
+.review-story-card:last-child {
+  border-bottom:
+    3px
+    solid
+    var(--black);
+}
+
+
+.review-story-number {
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size: 35px;
+
+  line-height: 1;
+}
+
+
+.review-story-copy {
+  min-width: 0;
+}
+
+
+.review-story-state {
+  display: inline-block;
+
+  margin-bottom: 11px;
+
+  border:
+    2px
+    dashed
+    var(--black);
+
+  background: var(--yellow);
+
+  padding:
+    6px
+    9px;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+
+.review-story-sport {
+  margin-bottom: 7px;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+}
+
+
+.review-story-title {
+  margin: 0;
+
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      27px,
+      4vw,
+      43px
+    );
+
+  line-height: 0.94;
+
+  text-transform: uppercase;
+}
+
+
+.review-story-summary {
+  max-width: 650px;
+
+  margin:
+    12px
+    0
+    0;
+
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+
+.review-story-meta {
+  margin-top: 14px;
+
+  color: #625e55;
+
+  font-size: 8px;
+  font-weight: 900;
+
+  line-height: 1.55;
+}
+
+
+.review-story-actions {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+
+.review-action-button {
+  min-height: 39px;
+
+  border:
+    2px
+    solid
+    var(--black);
+
+  background: transparent;
+
+  padding:
+    8px
+    10px;
+
+  font-size: 8px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.review-action-button.primary {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+
+.review-action-button.publish {
+  background: var(--yellow);
+}
+
+
+.review-action-button:hover {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+
+/* =========================================================
+   EMPTY REVIEW QUEUE
+========================================================= */
+
+.review-manager-empty {
+  min-height: 330px;
+
+  display: grid;
+  place-content: center;
+
+  border:
+    var(--border);
+
+  padding: 35px;
+
+  text-align: center;
+}
+
+
+.review-manager-empty strong {
+  font-family: Impact, "Arial Black", sans-serif;
+
+  font-size:
+    clamp(
+      38px,
+      7vw,
+      72px
+    );
+
+  line-height: 0.9;
+}
+
+
+.review-manager-empty p {
+  max-width: 470px;
+
+  margin:
+    12px
+    auto
+    0;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   AUTHOR LOCK
+========================================================= */
+
+.field input:disabled {
+  background: var(--paper);
+  color: #555149;
+
+  cursor: not-allowed;
+
+  opacity: 1;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+  .review-manager-header {
+    padding:
+      18px
+      16px;
+  }
+
+
+  .review-manager-list {
+    padding:
+      20px
+      15px;
+  }
+
+
+  .review-story-card {
+    grid-template-columns:
+      42px
+      minmax(0, 1fr);
+
+    gap:
+      12px
+      15px;
+  }
+
+
+  .review-story-copy {
+    grid-column: 2;
+  }
+
+
+  .review-story-actions {
+    grid-column: 2;
+
+    width: 100%;
+
+    display: grid;
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+
+}

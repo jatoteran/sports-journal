@@ -17848,3 +17848,1625 @@ function repairSportsJournalCloudRestoreButton() {
 ========================================================= */
 
 repairSportsJournalCloudRestoreButton();
+
+/* =========================================================
+   PASO 13.2 — MULTIUSER EDITORIAL WORKFLOW
+   ADMIN / EDITOR / JOURNALIST
+   DRAFT → REVIEW → PUBLISHED
+========================================================= */
+
+
+/* =========================================================
+   ROLE HELPERS
+========================================================= */
+
+function getSportsJournalRole() {
+
+  return (
+    sportsJournalAuth
+      ?.profile
+      ?.role ||
+    null
+  );
+
+}
+
+
+function isSportsJournalAdmin() {
+
+  return (
+    getSportsJournalRole() ===
+    "admin"
+  );
+
+}
+
+
+function isSportsJournalEditor() {
+
+  return (
+    getSportsJournalRole() ===
+    "editor"
+  );
+
+}
+
+
+function isSportsJournalJournalist() {
+
+  return (
+    getSportsJournalRole() ===
+    "journalist"
+  );
+
+}
+
+
+function canSportsJournalPublish() {
+
+  return (
+    isSportsJournalAdmin() ||
+    isSportsJournalEditor()
+  );
+
+}
+
+
+/* =========================================================
+   REVIEW COLLECTION
+========================================================= */
+
+function getReviewArticles() {
+
+  return articles
+    .filter(
+      (article) =>
+        article.workflowStatus ===
+          "review"
+    )
+    .sort(
+      (a, b) =>
+        getArticleActivityTime(b) -
+        getArticleActivityTime(a)
+    );
+
+}
+
+
+/* =========================================================
+   DRAFTS SHOULD NOT INCLUDE REVIEW
+========================================================= */
+
+const step132BaseGetDraftArticles =
+  getDraftArticles;
+
+
+getDraftArticles =
+  function () {
+
+    return step132BaseGetDraftArticles()
+      .filter(
+        (article) =>
+          article.workflowStatus !==
+          "review"
+      );
+
+  };
+
+
+/* =========================================================
+   ADMIN ARTICLE STATE
+========================================================= */
+
+const step132BaseGetAdminArticleState =
+  getAdminArticleState;
+
+
+getAdminArticleState =
+  function (
+    article
+  ) {
+
+    if (
+      article.workflowStatus ===
+      "review"
+    ) {
+
+      return "review";
+
+    }
+
+
+    return step132BaseGetAdminArticleState(
+      article
+    );
+
+  };
+
+
+const step132BaseGetAdminArticleStateLabel =
+  getAdminArticleStateLabel;
+
+
+getAdminArticleStateLabel =
+  function (
+    article
+  ) {
+
+    if (
+      article.workflowStatus ===
+      "review"
+    ) {
+
+      return "EN REVISIÓN";
+
+    }
+
+
+    return step132BaseGetAdminArticleStateLabel(
+      article
+    );
+
+  };
+
+
+/* =========================================================
+   ADD REVIEW OPTION TO CENTRAL MANAGER
+========================================================= */
+
+function installReviewFilterOption() {
+
+  const select =
+    document.getElementById(
+      "articleManagerStatus"
+    );
+
+
+  if (
+    !select ||
+    select.querySelector(
+      'option[value="review"]'
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  const option =
+    document.createElement(
+      "option"
+    );
+
+
+  option.value =
+    "review";
+
+
+  option.textContent =
+    "EN REVISIÓN";
+
+
+  const archivedOption =
+    select.querySelector(
+      'option[value="archived"]'
+    );
+
+
+  select.insertBefore(
+    option,
+    archivedOption
+  );
+
+}
+
+
+/* =========================================================
+   CREATE REVIEW MANAGER
+========================================================= */
+
+function createSportsJournalReviewInterface() {
+
+  if (
+    document.getElementById(
+      "reviewManagerModal"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     MENU BUTTON
+  ------------------------------------------------------- */
+
+  const reviewButton =
+    document.createElement(
+      "button"
+    );
+
+
+  reviewButton.id =
+    "reviewMenuButton";
+
+
+  reviewButton.type =
+    "button";
+
+
+  reviewButton.className =
+    "journal-menu-button";
+
+
+  reviewButton.innerHTML = `
+    <span>
+      EN REVISIÓN
+    </span>
+
+    <span
+      class="menu-count"
+      id="reviewCount"
+    >
+      0
+    </span>
+  `;
+
+
+  draftsMenuButton.insertAdjacentElement(
+    "afterend",
+    reviewButton
+  );
+
+
+  reviewButton.addEventListener(
+    "click",
+    () => {
+
+      closeSideMenu();
+
+      openSportsJournalReviewManager();
+
+    }
+  );
+
+
+  /* -------------------------------------------------------
+     REVIEW MODAL
+  ------------------------------------------------------- */
+
+  const modal =
+    document.createElement(
+      "div"
+    );
+
+
+  modal.id =
+    "reviewManagerModal";
+
+
+  modal.className =
+    "modal review-manager-modal";
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  modal.innerHTML = `
+    <div
+      class="modal-backdrop"
+      data-close-review-manager
+    ></div>
+
+    <section
+      class="review-manager-panel"
+      aria-label="Noticias en revisión"
+    >
+
+      <header
+        class="review-manager-header"
+      >
+
+        <div>
+
+          <span
+            class="eyebrow"
+          >
+            SPORTS JOURNAL · REDACCIÓN
+          </span>
+
+          <h2
+            id="reviewManagerHeading"
+          >
+            EN REVISIÓN
+          </h2>
+
+        </div>
+
+
+        <button
+          class="close-button"
+          type="button"
+          data-close-review-manager
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
+
+      </header>
+
+
+      <div
+        class="review-manager-list"
+        id="reviewManagerList"
+      ></div>
+
+    </section>
+  `;
+
+
+  document.body.appendChild(
+    modal
+  );
+
+
+  modal
+    .querySelectorAll(
+      "[data-close-review-manager]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          closeSportsJournalReviewManager
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   OPEN / CLOSE REVIEW
+========================================================= */
+
+function openSportsJournalReviewManager() {
+
+  renderSportsJournalReviewManager();
+
+
+  const modal =
+    document.getElementById(
+      "reviewManagerModal"
+    );
+
+
+  modal.classList.add(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+function closeSportsJournalReviewManager() {
+
+  const modal =
+    document.getElementById(
+      "reviewManagerModal"
+    );
+
+
+  if (!modal) {
+
+    return;
+
+  }
+
+
+  modal.classList.remove(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+/* =========================================================
+   RENDER REVIEW MANAGER
+========================================================= */
+
+function renderSportsJournalReviewManager() {
+
+  const container =
+    document.getElementById(
+      "reviewManagerList"
+    );
+
+
+  const heading =
+    document.getElementById(
+      "reviewManagerHeading"
+    );
+
+
+  if (
+    !container ||
+    !heading
+  ) {
+
+    return;
+
+  }
+
+
+  const reviews =
+    getReviewArticles();
+
+
+  heading.textContent =
+    isSportsJournalJournalist()
+      ? "MIS NOTICIAS EN REVISIÓN"
+      : "COLA DE REVISIÓN";
+
+
+  container.innerHTML =
+    "";
+
+
+  if (
+    reviews.length === 0
+  ) {
+
+    container.innerHTML = `
+      <div
+        class="review-manager-empty"
+      >
+
+        <strong>
+          SIN NOTICIAS
+        </strong>
+
+        <p>
+          ${
+            isSportsJournalJournalist()
+
+              ? "Todavía no tienes noticias enviadas a revisión."
+
+              : "La redacción no tiene noticias pendientes de revisión."
+          }
+        </p>
+
+      </div>
+    `;
+
+
+    return;
+
+  }
+
+
+  reviews.forEach(
+    (article, index) => {
+
+      container.appendChild(
+        createSportsJournalReviewCard(
+          article,
+          index
+        )
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   REVIEW CARD
+========================================================= */
+
+function createSportsJournalReviewCard(
+  article,
+  index
+) {
+
+  const card =
+    document.createElement(
+      "article"
+    );
+
+
+  card.className =
+    "review-story-card";
+
+
+  /* NUMBER */
+
+  const number =
+    document.createElement(
+      "div"
+    );
+
+
+  number.className =
+    "review-story-number";
+
+
+  number.textContent =
+    String(
+      index + 1
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  /* COPY */
+
+  const copy =
+    document.createElement(
+      "div"
+    );
+
+
+  copy.className =
+    "review-story-copy";
+
+
+  const state =
+    document.createElement(
+      "div"
+    );
+
+
+  state.className =
+    "review-story-state";
+
+
+  state.textContent =
+    "EN REVISIÓN";
+
+
+  const sport =
+    document.createElement(
+      "div"
+    );
+
+
+  sport.className =
+    "review-story-sport";
+
+
+  sport.textContent =
+    getSportLabel(
+      article.sport
+    );
+
+
+  const title =
+    document.createElement(
+      "h3"
+    );
+
+
+  title.className =
+    "review-story-title";
+
+
+  title.textContent =
+    article.title ||
+    "NOTICIA SIN TÍTULO";
+
+
+  const summary =
+    document.createElement(
+      "p"
+    );
+
+
+  summary.className =
+    "review-story-summary";
+
+
+  summary.textContent =
+    article.summary ||
+    "";
+
+
+  const meta =
+    document.createElement(
+      "div"
+    );
+
+
+  meta.className =
+    "review-story-meta";
+
+
+  meta.textContent =
+    `${article.author} · ENVIADA ${formatEditorDateTime(
+      article.updatedAt ||
+      article.createdAt
+    )}`;
+
+
+  copy.append(
+    state,
+    sport,
+    title,
+    summary,
+    meta
+  );
+
+
+  /* ACTIONS */
+
+  const actions =
+    document.createElement(
+      "div"
+    );
+
+
+  actions.className =
+    "review-story-actions";
+
+
+  const editButton =
+    createReviewActionButton(
+      canSportsJournalPublish()
+        ? "REVISAR"
+        : "EDITAR",
+      "primary"
+    );
+
+
+  editButton.addEventListener(
+    "click",
+    () => {
+
+      closeSportsJournalReviewManager();
+
+
+      openEditor(
+        article.id
+      );
+
+    }
+  );
+
+
+  actions.appendChild(
+    editButton
+  );
+
+
+  if (
+    canSportsJournalPublish()
+  ) {
+
+    const publishButton =
+      createReviewActionButton(
+        "PUBLICAR",
+        "publish"
+      );
+
+
+    publishButton.addEventListener(
+      "click",
+      () => {
+
+        publishSportsJournalReview(
+          article.id
+        );
+
+      }
+    );
+
+
+    const returnButton =
+      createReviewActionButton(
+        "DEVOLVER",
+        ""
+      );
+
+
+    returnButton.addEventListener(
+      "click",
+      () => {
+
+        returnSportsJournalReviewToDraft(
+          article.id
+        );
+
+      }
+    );
+
+
+    actions.append(
+      publishButton,
+      returnButton
+    );
+
+  } else {
+
+    const withdrawButton =
+      createReviewActionButton(
+        "RETIRAR",
+        ""
+      );
+
+
+    withdrawButton.addEventListener(
+      "click",
+      () => {
+
+        returnSportsJournalReviewToDraft(
+          article.id
+        );
+
+      }
+    );
+
+
+    actions.appendChild(
+      withdrawButton
+    );
+
+  }
+
+
+  card.append(
+    number,
+    copy,
+    actions
+  );
+
+
+  return card;
+
+}
+
+
+/* =========================================================
+   REVIEW ACTION BUTTON
+========================================================= */
+
+function createReviewActionButton(
+  text,
+  modifier
+) {
+
+  const button =
+    document.createElement(
+      "button"
+    );
+
+
+  button.type =
+    "button";
+
+
+  button.className =
+    `review-action-button ${modifier}`.trim();
+
+
+  button.textContent =
+    text;
+
+
+  return button;
+
+}
+
+
+/* =========================================================
+   PUBLISH REVIEW
+========================================================= */
+
+async function publishSportsJournalReview(
+  articleId
+) {
+
+  if (
+    !canSportsJournalPublish()
+  ) {
+
+    showToast(
+      "TU CUENTA NO PUEDE PUBLICAR NOTICIAS."
+    );
+
+
+    return;
+
+  }
+
+
+  const user =
+    await requireSportsJournalCloudUser();
+
+
+  if (!user) {
+
+    return;
+
+  }
+
+
+  const article =
+    findArticle(
+      articleId
+    );
+
+
+  if (
+    !article ||
+    article.workflowStatus !==
+      "review"
+  ) {
+
+    return;
+
+  }
+
+
+  createInternalBackup(
+    "Antes de publicar noticia en revisión"
+  );
+
+
+  const now =
+    new Date()
+      .toISOString();
+
+
+  const {
+    error
+  } =
+    await window
+      .sportsJournalDb
+      .from("articles")
+      .update({
+
+        status:
+          "published",
+
+        published_at:
+          article.publishedAt ||
+          now,
+
+        archived_at:
+          null,
+
+        updated_by:
+          user.id
+
+      })
+      .eq(
+        "id",
+        articleId
+      );
+
+
+  if (error) {
+
+    showSportsJournalCloudError(
+      "Error publicando revisión",
+      error
+    );
+
+
+    return;
+
+  }
+
+
+  await loadSportsJournalArticlesFromCloud({
+    silent: true
+  });
+
+
+  createInternalBackup(
+    "Después de publicar noticia revisada"
+  );
+
+
+  renderSportsJournalReviewManager();
+
+  updateManagementCounts();
+
+
+  showToast(
+    "NOTICIA APROBADA Y PUBLICADA ✓"
+  );
+
+}
+
+
+/* =========================================================
+   REVIEW -> DRAFT
+========================================================= */
+
+async function returnSportsJournalReviewToDraft(
+  articleId
+) {
+
+  const user =
+    await requireSportsJournalCloudUser();
+
+
+  if (!user) {
+
+    return;
+
+  }
+
+
+  const article =
+    findArticle(
+      articleId
+    );
+
+
+  if (
+    !article ||
+    article.workflowStatus !==
+      "review"
+  ) {
+
+    return;
+
+  }
+
+
+  /*
+    Journalist can only withdraw their own article.
+
+    PostgreSQL also enforces this with RLS.
+  */
+
+  if (
+    isSportsJournalJournalist() &&
+    String(
+      article.authorId
+    ) !==
+    String(
+      user.id
+    )
+  ) {
+
+    showToast(
+      "NO PUEDES MODIFICAR ESTA NOTICIA."
+    );
+
+
+    return;
+
+  }
+
+
+  createInternalBackup(
+    "Antes de devolver revisión a borrador"
+  );
+
+
+  const {
+    error
+  } =
+    await window
+      .sportsJournalDb
+      .from("articles")
+      .update({
+
+        status:
+          "draft",
+
+        published_at:
+          null,
+
+        archived_at:
+          null,
+
+        updated_by:
+          user.id
+
+      })
+      .eq(
+        "id",
+        articleId
+      );
+
+
+  if (error) {
+
+    showSportsJournalCloudError(
+      "Error devolviendo revisión",
+      error
+    );
+
+
+    return;
+
+  }
+
+
+  await loadSportsJournalArticlesFromCloud({
+    silent: true
+  });
+
+
+  createInternalBackup(
+    "Después de devolver revisión a borrador"
+  );
+
+
+  renderSportsJournalReviewManager();
+
+  updateManagementCounts();
+
+
+  showToast(
+    isSportsJournalJournalist()
+      ? "NOTICIA RETIRADA A BORRADORES."
+      : "NOTICIA DEVUELTA A BORRADORES."
+  );
+
+}
+
+
+/* =========================================================
+   SAVE ARTICLE ROLE RULES
+========================================================= */
+
+const step132BaseSaveArticle =
+  saveArticle;
+
+
+saveArticle =
+  async function (
+    requestedStatus
+  ) {
+
+    let targetStatus =
+      requestedStatus;
+
+
+    /*
+      Journalist pressing the normal Publish button
+      actually submits to editorial review.
+    */
+
+    if (
+      isSportsJournalJournalist() &&
+      requestedStatus ===
+        "published"
+    ) {
+
+      targetStatus =
+        "review";
+
+    }
+
+
+    /*
+      Review requires a complete article,
+      just like publication.
+    */
+
+    if (
+      targetStatus ===
+        "review" &&
+      !articleForm.reportValidity()
+    ) {
+
+      showToast(
+        "COMPLETA LA NOTICIA ANTES DE ENVIARLA A REVISIÓN."
+      );
+
+
+      return;
+
+    }
+
+
+    /*
+      Journalist name comes from their real profile,
+      not an arbitrary author field.
+    */
+
+    if (
+      isSportsJournalJournalist() &&
+      sportsJournalAuth
+        ?.profile
+        ?.display_name
+    ) {
+
+      authorInput.value =
+        sportsJournalAuth
+          .profile
+          .display_name;
+
+    }
+
+
+    return step132BaseSaveArticle(
+      targetStatus
+    );
+
+  };
+
+
+/* =========================================================
+   EDITOR LABELS
+========================================================= */
+
+const step132BaseUpdateEditorActionLabels =
+  updateEditorActionLabels;
+
+
+updateEditorActionLabels =
+  function (
+    article
+  ) {
+
+    step132BaseUpdateEditorActionLabels(
+      article
+    );
+
+
+    editorStatusValue
+      .classList
+      .remove(
+        "review"
+      );
+
+
+    /* -----------------------------------------------------
+       REVIEW ARTICLE
+    ----------------------------------------------------- */
+
+    if (
+      article
+        ?.workflowStatus ===
+        "review"
+    ) {
+
+      editorStatusValue
+        .classList
+        .remove(
+          "draft",
+          "published",
+          "archived"
+        );
+
+
+      editorStatusValue
+        .classList
+        .add(
+          "review"
+        );
+
+
+      editorStatusValue.textContent =
+        "EN REVISIÓN";
+
+
+      if (
+        canSportsJournalPublish()
+      ) {
+
+        saveDraftButtonText.textContent =
+          "DEVOLVER A BORRADOR";
+
+
+        publishButtonText.textContent =
+          "PUBLICAR NOTICIA";
+
+      } else {
+
+        saveDraftButtonText.textContent =
+          "RETIRAR A BORRADOR";
+
+
+        publishButtonText.textContent =
+          "GUARDAR REVISIÓN";
+
+      }
+
+    }
+
+
+    /* -----------------------------------------------------
+       JOURNALIST DRAFT
+    ----------------------------------------------------- */
+
+    else if (
+      isSportsJournalJournalist()
+    ) {
+
+      publishButtonText.textContent =
+        "ENVIAR A REVISIÓN";
+
+    }
+
+
+    /* -----------------------------------------------------
+       JOURNALISTS NEVER ARCHIVE FROM EDITOR
+    ----------------------------------------------------- */
+
+    const archiveButton =
+      document.getElementById(
+        "archiveEditorButton"
+      );
+
+
+    if (
+      archiveButton &&
+      isSportsJournalJournalist()
+    ) {
+
+      archiveButton.hidden =
+        true;
+
+    }
+
+  };
+
+
+/* =========================================================
+   OPEN EDITOR ROLE RULES
+========================================================= */
+
+const step132BaseOpenEditor =
+  openEditor;
+
+
+openEditor =
+  function (
+    articleId = null
+  ) {
+
+    const role =
+      getSportsJournalRole();
+
+
+    const article =
+      articleId
+        ? findArticle(
+            articleId
+          )
+        : null;
+
+
+    /*
+      Journalist may only edit:
+
+      - new article
+      - own draft
+      - own review
+    */
+
+    if (
+      role === "journalist" &&
+      article
+    ) {
+
+      const userId =
+        sportsJournalAuth
+          ?.session
+          ?.user
+          ?.id;
+
+
+      const state =
+        article.workflowStatus ||
+        article.status;
+
+
+      const ownArticle =
+        String(
+          article.authorId
+        ) ===
+        String(
+          userId
+        );
+
+
+      const editableState =
+        state === "draft" ||
+        state === "review";
+
+
+      if (
+        !ownArticle ||
+        !editableState
+      ) {
+
+        showToast(
+          "ESTA NOTICIA YA NO PUEDE SER EDITADA POR EL PERIODISTA."
+        );
+
+
+        return;
+
+      }
+
+    }
+
+
+    step132BaseOpenEditor(
+      articleId
+    );
+
+
+    /*
+      Lock journalist identity.
+    */
+
+    if (
+      role === "journalist"
+    ) {
+
+      authorInput.value =
+        sportsJournalAuth
+          ?.profile
+          ?.display_name ||
+        authorInput.value;
+
+
+      authorInput.disabled =
+        true;
+
+    } else {
+
+      authorInput.disabled =
+        false;
+
+    }
+
+
+    const currentArticle =
+      articleId
+        ? findArticle(
+            articleId
+          )
+        : null;
+
+
+    updateEditorActionLabels(
+      currentArticle
+    );
+
+  };
+
+
+/* =========================================================
+   REVIEW COUNT
+========================================================= */
+
+const step132BaseUpdateManagementCounts =
+  updateManagementCounts;
+
+
+updateManagementCounts =
+  function () {
+
+    step132BaseUpdateManagementCounts();
+
+
+    const reviewCount =
+      document.getElementById(
+        "reviewCount"
+      );
+
+
+    if (
+      reviewCount
+    ) {
+
+      reviewCount.textContent =
+        getReviewArticles()
+          .length;
+
+    }
+
+  };
+
+
+/* =========================================================
+   ROLE UI
+========================================================= */
+
+function syncSportsJournalRoleInterface() {
+
+  document.body
+    .classList
+    .remove(
+      "sj-role-admin",
+      "sj-role-editor",
+      "sj-role-journalist"
+    );
+
+
+  if (
+    !sportsJournalAuth
+      ?.session
+  ) {
+
+    return;
+
+  }
+
+
+  const role =
+    getSportsJournalRole();
+
+
+  if (role) {
+
+    document.body
+      .classList
+      .add(
+        `sj-role-${role}`
+      );
+
+  }
+
+
+  /*
+    Backups are intentionally ADMIN-only.
+  */
+
+  const dataBlock =
+    document.querySelector(
+      ".data-block"
+    );
+
+
+  if (
+    dataBlock
+  ) {
+
+    dataBlock.hidden =
+      role !== "admin";
+
+  }
+
+
+  updateManagementCounts();
+
+}
+
+
+/* =========================================================
+   PATCH AUTH UI
+========================================================= */
+
+const step132BaseSyncSportsJournalAuthUi =
+  syncSportsJournalAuthUi;
+
+
+syncSportsJournalAuthUi =
+  function () {
+
+    step132BaseSyncSportsJournalAuthUi();
+
+
+    syncSportsJournalRoleInterface();
+
+  };
+
+
+/* =========================================================
+   REVIEW MANAGER + BODY SCROLL
+========================================================= */
+
+const step132BaseSyncBodyScrollState =
+  syncBodyScrollState;
+
+
+syncBodyScrollState =
+  function () {
+
+    step132BaseSyncBodyScrollState();
+
+
+    const reviewModal =
+      document.getElementById(
+        "reviewManagerModal"
+      );
+
+
+    if (
+      reviewModal
+        ?.classList
+        .contains(
+          "open"
+        )
+    ) {
+
+      document.body
+        .classList
+        .add(
+          "modal-open"
+        );
+
+    }
+
+  };
+
+
+/* =========================================================
+   ESCAPE
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.key !==
+      "Escape"
+    ) {
+
+      return;
+
+    }
+
+
+    const reviewModal =
+      document.getElementById(
+        "reviewManagerModal"
+      );
+
+
+    if (
+      reviewModal
+        ?.classList
+        .contains(
+          "open"
+        )
+    ) {
+
+      closeSportsJournalReviewManager();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   INSTALL
+========================================================= */
+
+createSportsJournalReviewInterface();
+
+installReviewFilterOption();
+
+syncSportsJournalRoleInterface();
+
+updateManagementCounts();
