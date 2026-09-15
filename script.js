@@ -16497,3 +16497,1354 @@ window.setTimeout(
   },
   250
 );
+
+/* =========================================================
+   PASO 12.6 — CLOUD BACKUP RESTORE
+   Restaurar respaldos directamente en PostgreSQL
+========================================================= */
+
+let sportsJournalPendingCloudRestore =
+  null;
+
+
+/* =========================================================
+   UUID CHECK
+========================================================= */
+
+function isSportsJournalUuid(value) {
+
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    .test(
+      String(
+        value || ""
+      )
+    );
+
+}
+
+
+/* =========================================================
+   CREATE CLOUD RESTORE INTERFACE
+========================================================= */
+
+function installSportsJournalCloudRestore() {
+
+  if (
+    document.getElementById(
+      "cloudRestoreModal"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     REPLACE OLD RESTORE BUTTON
+
+     Esto elimina los listeners anteriores que bloqueaban
+     Restore durante la transición a Cloud Mode.
+  ------------------------------------------------------- */
+
+  const oldRestoreButton =
+    document.getElementById(
+      "restoreBackupButton"
+    );
+
+
+  const cloudRestoreButton =
+    oldRestoreButton.cloneNode(
+      true
+    );
+
+
+  oldRestoreButton.replaceWith(
+    cloudRestoreButton
+  );
+
+
+  /* -------------------------------------------------------
+     REPLACE OLD FILE INPUT
+
+     Así evitamos que se ejecute el restore antiguo
+     basado solamente en localStorage.
+  ------------------------------------------------------- */
+
+  const oldBackupInput =
+    document.getElementById(
+      "backupFileInput"
+    );
+
+
+  const cloudBackupInput =
+    oldBackupInput.cloneNode(
+      true
+    );
+
+
+  oldBackupInput.replaceWith(
+    cloudBackupInput
+  );
+
+
+  /* -------------------------------------------------------
+     CREATE CLOUD RESTORE MODAL
+  ------------------------------------------------------- */
+
+  const modal =
+    document.createElement(
+      "div"
+    );
+
+
+  modal.id =
+    "cloudRestoreModal";
+
+
+  modal.className =
+    "modal restore-modal";
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  modal.innerHTML = `
+    <div
+      class="modal-backdrop"
+      data-close-cloud-restore
+    ></div>
+
+    <div
+      class="restore-panel"
+    >
+
+      <span
+        class="eyebrow"
+      >
+        RESPALDO CLOUD
+      </span>
+
+      <h2>
+        ¿RESTAURAR DIARIO?
+      </h2>
+
+
+      <div
+        class="restore-file-card"
+      >
+
+        <span>
+          ARCHIVO
+        </span>
+
+        <strong
+          id="cloudRestoreFileName"
+        ></strong>
+
+      </div>
+
+
+      <div
+        class="restore-stats"
+      >
+
+        <div>
+
+          <span>
+            RESPALDO
+          </span>
+
+          <strong
+            id="cloudRestoreBackupCount"
+          ></strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            SUPABASE ACTUAL
+          </span>
+
+          <strong
+            id="cloudRestoreCurrentCount"
+          ></strong>
+
+        </div>
+
+      </div>
+
+
+      <p
+        class="restore-description"
+      >
+        COMBINAR conserva las noticias actuales
+        y añade o actualiza las del respaldo.
+
+        REEMPLAZAR elimina el contenido actual
+        de la base de datos y restaura exactamente
+        las noticias del archivo.
+      </p>
+
+
+      <div
+        class="restore-actions"
+      >
+
+        <button
+          class="secondary-button"
+          type="button"
+          data-close-cloud-restore
+        >
+          CANCELAR
+        </button>
+
+
+        <button
+          class="merge-button"
+          id="cloudMergeBackupButton"
+          type="button"
+        >
+          COMBINAR
+        </button>
+
+
+        <button
+          class="replace-button"
+          id="cloudReplaceBackupButton"
+          type="button"
+        >
+          REEMPLAZAR
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+
+  document.body.appendChild(
+    modal
+  );
+
+
+  /* -------------------------------------------------------
+     OPEN FILE PICKER
+  ------------------------------------------------------- */
+
+  cloudRestoreButton.addEventListener(
+    "click",
+    async () => {
+
+      const user =
+        await requireSportsJournalCloudUser();
+
+
+      if (!user) {
+
+        return;
+
+      }
+
+
+      if (
+        sportsJournalAuth
+          ?.profile
+          ?.role !== "admin"
+      ) {
+
+        showToast(
+          "SOLO UN ADMIN PUEDE RESTAURAR EL DIARIO."
+        );
+
+
+        return;
+
+      }
+
+
+      closeSideMenu();
+
+
+      cloudBackupInput.click();
+
+    }
+  );
+
+
+  /* -------------------------------------------------------
+     FILE SELECTED
+  ------------------------------------------------------- */
+
+  cloudBackupInput.addEventListener(
+    "change",
+    handleSportsJournalCloudBackupFile
+  );
+
+
+  /* -------------------------------------------------------
+     CLOSE
+  ------------------------------------------------------- */
+
+  modal
+    .querySelectorAll(
+      "[data-close-cloud-restore]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          closeSportsJournalCloudRestore
+        );
+
+      }
+    );
+
+
+  /* -------------------------------------------------------
+     MERGE
+  ------------------------------------------------------- */
+
+  document
+    .getElementById(
+      "cloudMergeBackupButton"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        restoreSportsJournalCloudBackup(
+          "merge"
+        );
+
+      }
+    );
+
+
+  /* -------------------------------------------------------
+     REPLACE
+  ------------------------------------------------------- */
+
+  document
+    .getElementById(
+      "cloudReplaceBackupButton"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        restoreSportsJournalCloudBackup(
+          "replace"
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   READ BACKUP FILE
+========================================================= */
+
+async function handleSportsJournalCloudBackupFile(
+  event
+) {
+
+  const file =
+    event.target.files[0];
+
+
+  if (!file) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const parsed =
+      JSON.parse(
+        await file.text()
+      );
+
+
+    const importedArticles =
+      Array.isArray(parsed)
+
+        ? parsed
+
+        : parsed.articles;
+
+
+    if (
+      !Array.isArray(
+        importedArticles
+      )
+    ) {
+
+      throw new Error(
+        "El archivo no contiene artículos válidos."
+      );
+
+    }
+
+
+    const validArticles =
+      importedArticles.filter(
+        (article) =>
+          article &&
+          typeof article ===
+            "object"
+      );
+
+
+    if (
+      validArticles.length === 0
+    ) {
+
+      throw new Error(
+        "El respaldo está vacío."
+      );
+
+    }
+
+
+    sportsJournalPendingCloudRestore = {
+
+      fileName:
+        file.name,
+
+      articles:
+        validArticles
+
+    };
+
+
+    document
+      .getElementById(
+        "cloudRestoreFileName"
+      )
+      .textContent =
+        file.name;
+
+
+    document
+      .getElementById(
+        "cloudRestoreBackupCount"
+      )
+      .textContent =
+        `${validArticles.length} ${
+          validArticles.length === 1
+            ? "NOTICIA"
+            : "NOTICIAS"
+        }`;
+
+
+    document
+      .getElementById(
+        "cloudRestoreCurrentCount"
+      )
+      .textContent =
+        `${articles.length} ${
+          articles.length === 1
+            ? "NOTICIA"
+            : "NOTICIAS"
+        }`;
+
+
+    openSportsJournalCloudRestore();
+
+  } catch (error) {
+
+    console.error(
+      "SPORTS JOURNAL → Respaldo inválido:",
+      error
+    );
+
+
+    showToast(
+      "EL ARCHIVO DE RESPALDO NO ES VÁLIDO."
+    );
+
+  }
+
+
+  event.target.value =
+    "";
+
+}
+
+
+/* =========================================================
+   OPEN / CLOSE
+========================================================= */
+
+function openSportsJournalCloudRestore() {
+
+  const modal =
+    document.getElementById(
+      "cloudRestoreModal"
+    );
+
+
+  modal.classList.add(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+function closeSportsJournalCloudRestore() {
+
+  const modal =
+    document.getElementById(
+      "cloudRestoreModal"
+    );
+
+
+  if (!modal) {
+
+    return;
+
+  }
+
+
+  modal.classList.remove(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  sportsJournalPendingCloudRestore =
+    null;
+
+
+  syncBodyScrollState();
+
+}
+
+
+/* =========================================================
+   BACKUP ARTICLE -> POSTGRES ROW
+========================================================= */
+
+function sportsJournalBackupArticleToCloudRow(
+  article,
+  userId
+) {
+
+  const workflowStatus =
+    article.workflowStatus ||
+    article.status;
+
+
+  let databaseStatus =
+    "published";
+
+
+  if (
+    article.archivedAt ||
+    article.archived_at ||
+    workflowStatus === "archived"
+  ) {
+
+    databaseStatus =
+      "archived";
+
+  } else if (
+    workflowStatus === "review"
+  ) {
+
+    databaseStatus =
+      "review";
+
+  } else if (
+    article.status === "draft" ||
+    workflowStatus === "draft"
+  ) {
+
+    databaseStatus =
+      "draft";
+
+  }
+
+
+  const articleId =
+    article.cloudId ||
+    article.id;
+
+
+  const hasCloudId =
+    isSportsJournalUuid(
+      articleId
+    );
+
+
+  const legacyId =
+    article.legacyLocalId ||
+    article.legacy_local_id ||
+    (
+      !hasCloudId &&
+      article.id
+
+        ? String(
+            article.id
+          )
+
+        : null
+    );
+
+
+  const createdAt =
+    article.createdAt ||
+    article.created_at ||
+    new Date()
+      .toISOString();
+
+
+  const updatedAt =
+    article.updatedAt ||
+    article.updated_at ||
+    createdAt;
+
+
+  let publishedAt =
+    article.publishedAt ||
+    article.published_at ||
+    null;
+
+
+  if (
+    (
+      databaseStatus === "published" ||
+      databaseStatus === "archived"
+    ) &&
+    !publishedAt
+  ) {
+
+    publishedAt =
+      createdAt;
+
+  }
+
+
+  if (
+    databaseStatus === "draft" ||
+    databaseStatus === "review"
+  ) {
+
+    publishedAt =
+      null;
+
+  }
+
+
+  const archivedAt =
+    databaseStatus === "archived"
+
+      ? (
+          article.archivedAt ||
+          article.archived_at ||
+          updatedAt
+        )
+
+      : null;
+
+
+  const authorId =
+    isSportsJournalUuid(
+      article.authorId ||
+      article.author_id
+    )
+
+      ? (
+          article.authorId ||
+          article.author_id
+        )
+
+      : userId;
+
+
+  const createdBy =
+    isSportsJournalUuid(
+      article.createdBy ||
+      article.created_by
+    )
+
+      ? (
+          article.createdBy ||
+          article.created_by
+        )
+
+      : userId;
+
+
+  const updatedBy =
+    isSportsJournalUuid(
+      article.updatedBy ||
+      article.updated_by
+    )
+
+      ? (
+          article.updatedBy ||
+          article.updated_by
+        )
+
+      : userId;
+
+
+  const row = {
+
+    title:
+      String(
+        article.title ||
+        ""
+      ),
+
+    sport:
+      article.sport,
+
+    author_id:
+      authorId,
+
+    author_name:
+      String(
+        article.author ||
+        article.author_name ||
+        sportsJournalAuth
+          ?.profile
+          ?.display_name ||
+        "SPORTS JOURNAL"
+      ),
+
+    summary:
+      String(
+        article.summary ||
+        ""
+      ),
+
+    content:
+      String(
+        article.content ||
+        ""
+      ),
+
+    tags:
+      normalizeTags(
+        article.tags
+      ),
+
+    image_url:
+      String(
+        article.imageUrl ||
+        article.image_url ||
+        ""
+      ),
+
+    image_position:
+      String(
+        article.imagePosition ||
+        article.image_position ||
+        "50% 50%"
+      ),
+
+    image_zoom:
+      normalizeZoom(
+        article.imageZoom ??
+        article.image_zoom
+      ),
+
+    image_mode:
+      (
+        article.imageMode ||
+        article.image_mode
+      ) === "full"
+
+        ? "full"
+
+        : "crop",
+
+    status:
+      databaseStatus,
+
+    created_by:
+      createdBy,
+
+    updated_by:
+      updatedBy,
+
+    created_at:
+      createdAt,
+
+    updated_at:
+      updatedAt,
+
+    published_at:
+      publishedAt,
+
+    archived_at:
+      archivedAt,
+
+    legacy_local_id:
+      legacyId
+
+  };
+
+
+  /*
+    Articles that were born in Supabase
+    already have a real UUID.
+
+    Legacy articles use legacy_local_id
+    instead so the unique constraint prevents
+    duplication.
+  */
+
+  if (
+    hasCloudId &&
+    !legacyId
+  ) {
+
+    row.id =
+      articleId;
+
+  }
+
+
+  return row;
+
+}
+
+
+/* =========================================================
+   UPSERT CLOUD BACKUP
+========================================================= */
+
+async function upsertSportsJournalBackupRows(
+  backupArticles,
+  userId
+) {
+
+  const legacyRows =
+    [];
+
+
+  const cloudRows =
+    [];
+
+
+  backupArticles.forEach(
+    (article) => {
+
+      const row =
+        sportsJournalBackupArticleToCloudRow(
+          article,
+          userId
+        );
+
+
+      if (
+        row.legacy_local_id
+      ) {
+
+        /*
+          Do not send a possibly stale cloud id when
+          legacy_local_id is the canonical conflict key.
+        */
+
+        delete row.id;
+
+
+        legacyRows.push(
+          row
+        );
+
+      } else {
+
+        cloudRows.push(
+          row
+        );
+
+      }
+
+    }
+  );
+
+
+  /* -------------------------------------------------------
+     LEGACY UPSERT
+  ------------------------------------------------------- */
+
+  if (
+    legacyRows.length > 0
+  ) {
+
+    const {
+      error
+    } =
+      await window
+        .sportsJournalDb
+        .from(
+          "articles"
+        )
+        .upsert(
+          legacyRows,
+          {
+            onConflict:
+              "legacy_local_id"
+          }
+        );
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+  }
+
+
+  /* -------------------------------------------------------
+     CLOUD-ID UPSERT
+  ------------------------------------------------------- */
+
+  if (
+    cloudRows.length > 0
+  ) {
+
+    const {
+      error
+    } =
+      await window
+        .sportsJournalDb
+        .from(
+          "articles"
+        )
+        .upsert(
+          cloudRows,
+          {
+            onConflict:
+              "id"
+          }
+        );
+
+
+    if (error) {
+
+      throw error;
+
+    }
+
+  }
+
+
+  return (
+    legacyRows.length +
+    cloudRows.length
+  );
+
+}
+
+
+/* =========================================================
+   RESTORE
+========================================================= */
+
+async function restoreSportsJournalCloudBackup(
+  mode
+) {
+
+  if (
+    !sportsJournalPendingCloudRestore
+  ) {
+
+    return;
+
+  }
+
+
+  const user =
+    await requireSportsJournalCloudUser();
+
+
+  if (!user) {
+
+    return;
+
+  }
+
+
+  if (
+    sportsJournalAuth
+      ?.profile
+      ?.role !== "admin"
+  ) {
+
+    showToast(
+      "SOLO UN ADMIN PUEDE RESTAURAR EL DIARIO."
+    );
+
+
+    return;
+
+  }
+
+
+  const backup =
+    sportsJournalPendingCloudRestore;
+
+
+  /*
+    Keep a local emergency copy before touching
+    PostgreSQL.
+  */
+
+  createInternalBackup(
+    mode === "replace"
+
+      ? "Antes de reemplazar base de datos desde respaldo"
+
+      : "Antes de combinar respaldo con base de datos"
+  );
+
+
+  try {
+
+    /* -----------------------------------------------------
+       REPLACE:
+       delete current database rows first
+    ----------------------------------------------------- */
+
+    if (
+      mode === "replace"
+    ) {
+
+      const {
+        error: deleteError
+      } =
+        await window
+          .sportsJournalDb
+          .from(
+            "articles"
+          )
+          .delete()
+          .gte(
+            "created_at",
+            "1900-01-01T00:00:00.000Z"
+          );
+
+
+      if (
+        deleteError
+      ) {
+
+        throw deleteError;
+
+      }
+
+    }
+
+
+    /* -----------------------------------------------------
+       RESTORE ROWS
+    ----------------------------------------------------- */
+
+    const restoredCount =
+      await upsertSportsJournalBackupRows(
+        backup.articles,
+        user.id
+      );
+
+
+    /* -----------------------------------------------------
+       LOAD CANONICAL DATABASE STATE
+    ----------------------------------------------------- */
+
+    await loadSportsJournalArticlesFromCloud({
+      silent: true
+    });
+
+
+    createInternalBackup(
+      mode === "replace"
+
+        ? "Después de reemplazar base de datos desde respaldo"
+
+        : "Después de combinar respaldo con base de datos"
+    );
+
+
+    closeSportsJournalCloudRestore();
+
+
+    showToast(
+      `${restoredCount} ${
+        restoredCount === 1
+          ? "NOTICIA RESTAURADA"
+          : "NOTICIAS RESTAURADAS"
+      } ✓`
+    );
+
+
+    console.log(
+      `SPORTS JOURNAL → Restore Cloud completado (${mode}).`
+    );
+
+  } catch (error) {
+
+    console.error(
+      "SPORTS JOURNAL → Error restaurando respaldo Cloud:",
+      error
+    );
+
+
+    showSportsJournalCloudError(
+      "Error restaurando respaldo",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   BODY SCROLL
+========================================================= */
+
+const step126BaseSyncBodyScrollState =
+  syncBodyScrollState;
+
+
+syncBodyScrollState =
+  function () {
+
+    step126BaseSyncBodyScrollState();
+
+
+    const cloudRestore =
+      document.getElementById(
+        "cloudRestoreModal"
+      );
+
+
+    if (
+      cloudRestore
+        ?.classList
+        .contains(
+          "open"
+        )
+    ) {
+
+      document.body.classList.add(
+        "modal-open"
+      );
+
+    }
+
+  };
+
+
+/* =========================================================
+   ESCAPE
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.key !== "Escape"
+    ) {
+
+      return;
+
+    }
+
+
+    const cloudRestore =
+      document.getElementById(
+        "cloudRestoreModal"
+      );
+
+
+    if (
+      cloudRestore
+        ?.classList
+        .contains(
+          "open"
+        )
+    ) {
+
+      closeSportsJournalCloudRestore();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   INSTALL
+========================================================= */
+
+installSportsJournalCloudRestore();
+
+/* =========================================================
+   FIX — ACTIVAR RESTAURACIÓN CLOUD
+   Elimina definitivamente el bloqueo temporal del Paso 12.5
+========================================================= */
+
+function repairSportsJournalCloudRestoreButton() {
+
+  /*
+    Aseguramos primero que la interfaz Cloud exista.
+  */
+
+  if (
+    !document.getElementById(
+      "cloudRestoreModal"
+    )
+  ) {
+
+    installSportsJournalCloudRestore();
+
+  }
+
+
+  /* =======================================================
+     REEMPLAZAR BOTÓN
+
+     cloneNode elimina todos los event listeners antiguos,
+     incluido el bloqueo temporal de Cloud Mode.
+  ======================================================= */
+
+  const currentRestoreButton =
+    document.getElementById(
+      "restoreBackupButton"
+    );
+
+
+  const cleanRestoreButton =
+    currentRestoreButton.cloneNode(
+      true
+    );
+
+
+  currentRestoreButton.replaceWith(
+    cleanRestoreButton
+  );
+
+
+  /* =======================================================
+     REEMPLAZAR INPUT
+
+     También eliminamos cualquier listener antiguo
+     de restauración local.
+  ======================================================= */
+
+  const currentBackupInput =
+    document.getElementById(
+      "backupFileInput"
+    );
+
+
+  const cleanBackupInput =
+    currentBackupInput.cloneNode(
+      true
+    );
+
+
+  currentBackupInput.replaceWith(
+    cleanBackupInput
+  );
+
+
+  /* =======================================================
+     BOTÓN → ABRIR JSON
+  ======================================================= */
+
+  cleanRestoreButton.addEventListener(
+    "click",
+    async () => {
+
+      const user =
+        await requireSportsJournalCloudUser();
+
+
+      if (!user) {
+
+        return;
+
+      }
+
+
+      if (
+        sportsJournalAuth
+          ?.profile
+          ?.role !== "admin"
+      ) {
+
+        showToast(
+          "SOLO UN ADMIN PUEDE RESTAURAR EL DIARIO."
+        );
+
+        return;
+
+      }
+
+
+      closeSideMenu();
+
+
+      cleanBackupInput.click();
+
+    }
+  );
+
+
+  /* =======================================================
+     JSON SELECCIONADO
+  ======================================================= */
+
+  cleanBackupInput.addEventListener(
+    "change",
+    handleSportsJournalCloudBackupFile
+  );
+
+
+  console.log(
+    "SPORTS JOURNAL → Restauración Cloud activada ✓"
+  );
+
+}
+
+
+/* =========================================================
+   EJECUTAR FIX
+========================================================= */
+
+repairSportsJournalCloudRestoreButton();
