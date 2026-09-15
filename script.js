@@ -22909,3 +22909,697 @@ document.addEventListener(
 createSportsJournalNewsroomInterface();
 
 syncSportsJournalRoleInterface();
+
+/* =========================================================
+   PASO 13.5 — INVITAR MIEMBROS DESDE SPORTS JOURNAL
+========================================================= */
+
+
+/* =========================================================
+   CREATE INVITE UI
+========================================================= */
+
+function createSportsJournalInviteInterface() {
+
+  if (
+    document.getElementById(
+      "newsroomInviteModal"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     LAUNCH BUTTON INSIDE NEWSROOM
+  ------------------------------------------------------- */
+
+  const newsroomStats =
+    document.querySelector(
+      ".newsroom-stats"
+    );
+
+
+  if (
+    newsroomStats
+  ) {
+
+    const launchButton =
+      document.createElement(
+        "button"
+      );
+
+
+    launchButton.id =
+      "newsroomInviteLaunch";
+
+
+    launchButton.type =
+      "button";
+
+
+    launchButton.className =
+      "newsroom-invite-launch";
+
+
+    launchButton.innerHTML = `
+      <div>
+
+        <span>
+          EQUIPO SPORTS JOURNAL
+        </span>
+
+        <strong>
+          + INVITAR NUEVO MIEMBRO
+        </strong>
+
+      </div>
+
+      <div
+        class="newsroom-invite-launch-arrow"
+      >
+        →
+      </div>
+    `;
+
+
+    newsroomStats
+      .insertAdjacentElement(
+        "afterend",
+        launchButton
+      );
+
+
+    launchButton
+      .addEventListener(
+        "click",
+        openSportsJournalInviteModal
+      );
+
+  }
+
+
+  /* -------------------------------------------------------
+     MODAL
+  ------------------------------------------------------- */
+
+  const modal =
+    document.createElement(
+      "div"
+    );
+
+
+  modal.id =
+    "newsroomInviteModal";
+
+
+  modal.className =
+    "modal newsroom-invite-modal";
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  modal.innerHTML = `
+    <div
+      class="modal-backdrop"
+      data-close-newsroom-invite
+    ></div>
+
+
+    <section
+      class="newsroom-invite-panel"
+      aria-label="Invitar miembro"
+    >
+
+      <header
+        class="newsroom-invite-header"
+      >
+
+        <div>
+
+          <span>
+            SPORTS JOURNAL · ADMIN
+          </span>
+
+          <h2>
+            INVITAR
+          </h2>
+
+        </div>
+
+
+        <button
+          class="close-button"
+          type="button"
+          data-close-newsroom-invite
+          aria-label="Cerrar"
+        >
+          ×
+        </button>
+
+      </header>
+
+
+      <div
+        class="newsroom-invite-content"
+      >
+
+        <p
+          class="newsroom-invite-intro"
+        >
+          El nuevo miembro recibirá un correo
+          para crear su contraseña y acceder
+          a SPORTS JOURNAL.
+        </p>
+
+
+        <form
+          class="newsroom-invite-form"
+          id="newsroomInviteForm"
+        >
+
+          <label
+            class="newsroom-invite-field"
+          >
+
+            <span>
+              NOMBRE
+            </span>
+
+            <input
+              id="newsroomInviteName"
+              type="text"
+              maxlength="80"
+              autocomplete="name"
+              placeholder="Ej. María González"
+              required
+            />
+
+          </label>
+
+
+          <label
+            class="newsroom-invite-field"
+          >
+
+            <span>
+              CORREO
+            </span>
+
+            <input
+              id="newsroomInviteEmail"
+              type="email"
+              autocomplete="email"
+              placeholder="periodista@email.com"
+              required
+            />
+
+          </label>
+
+
+          <div
+            class="newsroom-invite-role"
+          >
+            ROL INICIAL:
+            PERIODISTA
+
+            <br>
+
+            Después podrás convertirlo
+            en EDITOR desde REDACCIÓN.
+          </div>
+
+
+          <div
+            class="newsroom-invite-error"
+            id="newsroomInviteError"
+            hidden
+          ></div>
+
+
+          <button
+            class="newsroom-invite-submit"
+            id="newsroomInviteSubmit"
+            type="submit"
+          >
+            ENVIAR INVITACIÓN →
+          </button>
+
+        </form>
+
+      </div>
+
+    </section>
+  `;
+
+
+  document.body
+    .appendChild(
+      modal
+    );
+
+
+  /* -------------------------------------------------------
+     EVENTS
+  ------------------------------------------------------- */
+
+  modal
+    .querySelectorAll(
+      "[data-close-newsroom-invite]"
+    )
+    .forEach(
+      (element) => {
+
+        element.addEventListener(
+          "click",
+          closeSportsJournalInviteModal
+        );
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "newsroomInviteForm"
+    )
+    .addEventListener(
+      "submit",
+      handleSportsJournalMemberInvite
+    );
+
+}
+
+
+/* =========================================================
+   OPEN / CLOSE
+========================================================= */
+
+function openSportsJournalInviteModal() {
+
+  if (
+    !isSportsJournalAdmin()
+  ) {
+
+    showToast(
+      "SOLO UN ADMIN PUEDE INVITAR MIEMBROS."
+    );
+
+
+    return;
+
+  }
+
+
+  const modal =
+    document.getElementById(
+      "newsroomInviteModal"
+    );
+
+
+  document
+    .getElementById(
+      "newsroomInviteError"
+    )
+    .hidden =
+      true;
+
+
+  modal
+    .classList
+    .add(
+      "open"
+    );
+
+
+  modal
+    .setAttribute(
+      "aria-hidden",
+      "false"
+    );
+
+
+  syncBodyScrollState();
+
+}
+
+
+/* =========================================================
+   CLOSE
+========================================================= */
+
+function closeSportsJournalInviteModal() {
+
+  const modal =
+    document.getElementById(
+      "newsroomInviteModal"
+    );
+
+
+  if (!modal) {
+
+    return;
+
+  }
+
+
+  modal
+    .classList
+    .remove(
+      "open"
+    );
+
+
+  modal
+    .setAttribute(
+      "aria-hidden",
+      "true"
+    );
+
+
+  syncBodyScrollState();
+
+}
+
+
+/* =========================================================
+   SEND INVITATION
+========================================================= */
+
+async function handleSportsJournalMemberInvite(
+  event
+) {
+
+  event.preventDefault();
+
+
+  if (
+    !isSportsJournalAdmin()
+  ) {
+
+    showToast(
+      "SOLO UN ADMIN PUEDE INVITAR MIEMBROS."
+    );
+
+
+    return;
+
+  }
+
+
+  const nameInput =
+    document.getElementById(
+      "newsroomInviteName"
+    );
+
+
+  const emailInput =
+    document.getElementById(
+      "newsroomInviteEmail"
+    );
+
+
+  const errorBox =
+    document.getElementById(
+      "newsroomInviteError"
+    );
+
+
+  const submitButton =
+    document.getElementById(
+      "newsroomInviteSubmit"
+    );
+
+
+  const displayName =
+    nameInput
+      .value
+      .trim();
+
+
+  const email =
+    emailInput
+      .value
+      .trim()
+      .toLowerCase();
+
+
+  errorBox.hidden =
+    true;
+
+
+  if (
+    !displayName ||
+    !email
+  ) {
+
+    errorBox.textContent =
+      "COMPLETA NOMBRE Y CORREO.";
+
+
+    errorBox.hidden =
+      false;
+
+
+    return;
+
+  }
+
+
+  submitButton.disabled =
+    true;
+
+
+  submitButton.textContent =
+    "ENVIANDO...";
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await window
+        .sportsJournalDb
+        .functions
+        .invoke(
+          "invite-newsroom-member",
+          {
+
+            body: {
+
+              email,
+
+              displayName
+
+            }
+
+          }
+        );
+
+
+    if (
+      error
+    ) {
+
+      console.error(
+        "SPORTS JOURNAL → Edge Function error:",
+        error
+      );
+
+
+      errorBox.textContent =
+        data?.error ||
+        error.message ||
+        "NO SE PUDO ENVIAR LA INVITACIÓN.";
+
+
+      errorBox.hidden =
+        false;
+
+
+      return;
+
+    }
+
+
+    if (
+      !data?.ok
+    ) {
+
+      errorBox.textContent =
+        data?.error ||
+        "NO SE PUDO ENVIAR LA INVITACIÓN.";
+
+
+      errorBox.hidden =
+        false;
+
+
+      return;
+
+    }
+
+
+    /* -----------------------------------------------------
+       SUCCESS
+    ----------------------------------------------------- */
+
+    document
+      .getElementById(
+        "newsroomInviteForm"
+      )
+      .reset();
+
+
+    closeSportsJournalInviteModal();
+
+
+    showToast(
+      "INVITACIÓN ENVIADA ✓"
+    );
+
+
+    /*
+      The auth.users trigger creates the profile,
+      so wait briefly and refresh the newsroom.
+    */
+
+    window.setTimeout(
+      async () => {
+
+        const loaded =
+          await loadSportsJournalNewsroomMembers();
+
+
+        if (
+          loaded
+        ) {
+
+          renderSportsJournalNewsroom();
+
+        }
+
+      },
+      600
+    );
+
+  } catch (error) {
+
+    console.error(
+      "SPORTS JOURNAL → Invite exception:",
+      error
+    );
+
+
+    errorBox.textContent =
+      "NO SE PUDO CONTACTAR CON EL SERVIDOR.";
+
+
+    errorBox.hidden =
+      false;
+
+  } finally {
+
+    submitButton.disabled =
+      false;
+
+
+    submitButton.textContent =
+      "ENVIAR INVITACIÓN →";
+
+  }
+
+}
+
+
+/* =========================================================
+   BODY SCROLL
+========================================================= */
+
+const step135BaseSyncBodyScrollState =
+  syncBodyScrollState;
+
+
+syncBodyScrollState =
+  function () {
+
+    step135BaseSyncBodyScrollState();
+
+
+    const inviteModal =
+      document.getElementById(
+        "newsroomInviteModal"
+      );
+
+
+    if (
+      inviteModal
+        ?.classList
+        .contains(
+          "open"
+        )
+    ) {
+
+      document.body
+        .classList
+        .add(
+          "modal-open"
+        );
+
+    }
+
+  };
+
+
+/* =========================================================
+   ESCAPE
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.key !== "Escape"
+    ) {
+
+      return;
+
+    }
+
+
+    const inviteModal =
+      document.getElementById(
+        "newsroomInviteModal"
+      );
+
+
+    if (
+      inviteModal
+        ?.classList
+        .contains(
+          "open"
+        )
+    ) {
+
+      closeSportsJournalInviteModal();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   INSTALL
+========================================================= */
+
+createSportsJournalInviteInterface();
