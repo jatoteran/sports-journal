@@ -19470,3 +19470,1755 @@ installReviewFilterOption();
 syncSportsJournalRoleInterface();
 
 updateManagementCounts();
+
+/* =========================================================
+   PASO 13.3 — PANEL PERSONAL DEL PERIODISTA
+========================================================= */
+
+let journalistDashboardFilter =
+  "all";
+
+
+let journalistDashboardSearch =
+  "";
+
+
+/* =========================================================
+   CURRENT JOURNALIST ARTICLES
+========================================================= */
+
+function getCurrentJournalistArticles() {
+
+  const userId =
+    sportsJournalAuth
+      ?.session
+      ?.user
+      ?.id;
+
+
+  if (!userId) {
+
+    return [];
+
+  }
+
+
+  return articles
+    .filter(
+      (article) =>
+        String(
+          article.authorId
+        ) ===
+        String(
+          userId
+        )
+    )
+    .sort(
+      (a, b) =>
+        getArticleActivityTime(b) -
+        getArticleActivityTime(a)
+    );
+
+}
+
+
+/* =========================================================
+   ARTICLE STATE
+========================================================= */
+
+function getJournalistArticleState(
+  article
+) {
+
+  if (
+    article.archivedAt ||
+    article.workflowStatus ===
+      "archived"
+  ) {
+
+    return "archived";
+
+  }
+
+
+  if (
+    article.workflowStatus ===
+      "review"
+  ) {
+
+    return "review";
+
+  }
+
+
+  if (
+    article.status ===
+      "draft"
+  ) {
+
+    return "draft";
+
+  }
+
+
+  return "published";
+
+}
+
+
+function getJournalistArticleStateLabel(
+  article
+) {
+
+  const state =
+    getJournalistArticleState(
+      article
+    );
+
+
+  if (
+    state === "review"
+  ) {
+
+    return "EN REVISIÓN";
+
+  }
+
+
+  if (
+    state === "draft"
+  ) {
+
+    return "BORRADOR";
+
+  }
+
+
+  if (
+    state === "archived"
+  ) {
+
+    return "ARCHIVADA";
+
+  }
+
+
+  return "PUBLICADA";
+
+}
+
+
+/* =========================================================
+   CREATE INTERFACE
+========================================================= */
+
+function createJournalistDashboardInterface() {
+
+  if (
+    document.getElementById(
+      "journalistDashboardModal"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  /* -------------------------------------------------------
+     MENU BUTTON
+  ------------------------------------------------------- */
+
+  const menuButton =
+    document.createElement(
+      "button"
+    );
+
+
+  menuButton.id =
+    "journalistDashboardMenuButton";
+
+
+  menuButton.type =
+    "button";
+
+
+  menuButton.className =
+    "journal-menu-button";
+
+
+  menuButton.innerHTML = `
+    <span>
+      MI PANEL
+    </span>
+
+    <span>
+      →
+    </span>
+  `;
+
+
+  const authButton =
+    document.getElementById(
+      "authMenuButton"
+    );
+
+
+  authButton.insertAdjacentElement(
+    "afterend",
+    menuButton
+  );
+
+
+  menuButton.addEventListener(
+    "click",
+    openJournalistDashboard
+  );
+
+
+  /* -------------------------------------------------------
+     MODAL
+  ------------------------------------------------------- */
+
+  const modal =
+    document.createElement(
+      "div"
+    );
+
+
+  modal.id =
+    "journalistDashboardModal";
+
+
+  modal.className =
+    "modal journalist-dashboard-modal";
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  modal.innerHTML = `
+    <section
+      class="journalist-dashboard-panel"
+      aria-label="Panel personal del periodista"
+    >
+
+      <header
+        class="journalist-dashboard-header"
+      >
+
+        <div>
+
+          <span
+            class="journalist-dashboard-eyebrow"
+          >
+            SPORTS JOURNAL · REDACCIÓN
+          </span>
+
+          <h2>
+            MI PANEL
+          </h2>
+
+        </div>
+
+
+        <button
+          class="close-button journalist-dashboard-close"
+          id="closeJournalistDashboardButton"
+          type="button"
+          aria-label="Cerrar panel"
+        >
+          ×
+        </button>
+
+      </header>
+
+
+      <div
+        class="journalist-dashboard-body"
+      >
+
+        <!-- PROFILE -->
+
+        <section
+          class="journalist-dashboard-profile"
+        >
+
+          <div>
+
+            <span
+              class="journalist-dashboard-profile-label"
+            >
+              PERIODISTA
+            </span>
+
+            <h3
+              class="journalist-dashboard-name"
+              id="journalistDashboardName"
+            >
+              SPORTS JOURNAL
+            </h3>
+
+            <div
+              class="journalist-dashboard-role"
+            >
+              PERIODISTA · SPORTS JOURNAL
+            </div>
+
+          </div>
+
+
+          <button
+            class="journalist-dashboard-new"
+            id="journalistDashboardNewStory"
+            type="button"
+          >
+            + NUEVA NOTICIA
+          </button>
+
+        </section>
+
+
+        <!-- STATS -->
+
+        <section
+          class="journalist-stats-grid"
+        >
+
+          <button
+            class="journalist-stat-card"
+            type="button"
+            data-journalist-stat="all"
+          >
+
+            <span
+              class="journalist-stat-label"
+            >
+              TOTAL
+            </span>
+
+            <strong
+              id="journalistTotalCount"
+            >
+              0
+            </strong>
+
+            <small>
+              MIS NOTICIAS
+            </small>
+
+          </button>
+
+
+          <button
+            class="journalist-stat-card"
+            type="button"
+            data-journalist-stat="draft"
+          >
+
+            <span
+              class="journalist-stat-label"
+            >
+              BORRADORES
+            </span>
+
+            <strong
+              id="journalistDraftCount"
+            >
+              0
+            </strong>
+
+            <small>
+              EN PREPARACIÓN
+            </small>
+
+          </button>
+
+
+          <button
+            class="journalist-stat-card"
+            type="button"
+            data-journalist-stat="review"
+          >
+
+            <span
+              class="journalist-stat-label"
+            >
+              EN REVISIÓN
+            </span>
+
+            <strong
+              id="journalistReviewCount"
+            >
+              0
+            </strong>
+
+            <small>
+              ENVIADAS A REDACCIÓN
+            </small>
+
+          </button>
+
+
+          <button
+            class="journalist-stat-card"
+            type="button"
+            data-journalist-stat="published"
+          >
+
+            <span
+              class="journalist-stat-label"
+            >
+              PUBLICADAS
+            </span>
+
+            <strong
+              id="journalistPublishedCount"
+            >
+              0
+            </strong>
+
+            <small>
+              EN EL DIARIO
+            </small>
+
+          </button>
+
+
+          <button
+            class="journalist-stat-card"
+            type="button"
+            data-journalist-stat="archived"
+          >
+
+            <span
+              class="journalist-stat-label"
+            >
+              ARCHIVADAS
+            </span>
+
+            <strong
+              id="journalistArchivedCount"
+            >
+              0
+            </strong>
+
+            <small>
+              RETIRADAS
+            </small>
+
+          </button>
+
+        </section>
+
+
+        <!-- ARTICLES -->
+
+        <section>
+
+          <div
+            class="journalist-dashboard-section-heading"
+          >
+
+            <span
+              class="journalist-dashboard-section-number"
+            >
+              01
+            </span>
+
+            <h3>
+              MIS NOTICIAS
+            </h3>
+
+          </div>
+
+
+          <div
+            class="journalist-dashboard-tools"
+          >
+
+            <label
+              class="journalist-dashboard-search"
+            >
+
+              <span>
+                BUSCAR
+              </span>
+
+              <input
+                id="journalistDashboardSearch"
+                type="search"
+                placeholder="TÍTULO, TEMA, DEPORTE..."
+                autocomplete="off"
+              />
+
+            </label>
+
+
+            <div
+              class="journalist-filter-buttons"
+            >
+
+              <button
+                class="journalist-filter-button active"
+                type="button"
+                data-journalist-filter="all"
+              >
+                TODAS
+              </button>
+
+
+              <button
+                class="journalist-filter-button"
+                type="button"
+                data-journalist-filter="draft"
+              >
+                BORRADORES
+              </button>
+
+
+              <button
+                class="journalist-filter-button"
+                type="button"
+                data-journalist-filter="review"
+              >
+                REVISIÓN
+              </button>
+
+
+              <button
+                class="journalist-filter-button"
+                type="button"
+                data-journalist-filter="published"
+              >
+                PUBLICADAS
+              </button>
+
+
+              <button
+                class="journalist-filter-button"
+                type="button"
+                data-journalist-filter="archived"
+              >
+                ARCHIVADAS
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <div
+            class="journalist-results-summary"
+          >
+
+            <span>
+              RESULTADOS
+            </span>
+
+            <strong
+              id="journalistResultsCount"
+            >
+              0 NOTICIAS
+            </strong>
+
+          </div>
+
+
+          <div
+            class="journalist-articles-list"
+            id="journalistArticlesList"
+          ></div>
+
+        </section>
+
+      </div>
+
+    </section>
+  `;
+
+
+  document.body.appendChild(
+    modal
+  );
+
+
+  bindJournalistDashboardEvents();
+
+}
+
+
+/* =========================================================
+   EVENTS
+========================================================= */
+
+function bindJournalistDashboardEvents() {
+
+  document
+    .getElementById(
+      "closeJournalistDashboardButton"
+    )
+    .addEventListener(
+      "click",
+      closeJournalistDashboard
+    );
+
+
+  document
+    .getElementById(
+      "journalistDashboardNewStory"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        closeJournalistDashboard();
+
+        openEditor();
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "journalistDashboardSearch"
+    )
+    .addEventListener(
+      "input",
+      (event) => {
+
+        journalistDashboardSearch =
+          normalizeSearchText(
+            event.target.value
+          );
+
+
+        renderJournalistDashboardArticles();
+
+      }
+    );
+
+
+  document
+    .querySelectorAll(
+      "[data-journalist-filter]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            setJournalistDashboardFilter(
+              button.dataset
+                .journalistFilter
+            );
+
+          }
+        );
+
+      }
+    );
+
+
+  document
+    .querySelectorAll(
+      "[data-journalist-stat]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            setJournalistDashboardFilter(
+              button.dataset
+                .journalistStat
+            );
+
+          }
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   OPEN / CLOSE
+========================================================= */
+
+function openJournalistDashboard() {
+
+  if (
+    !isSportsJournalJournalist()
+  ) {
+
+    showToast(
+      "ESTE PANEL ES PARA PERIODISTAS."
+    );
+
+
+    return;
+
+  }
+
+
+  closeSideMenu();
+
+
+  renderJournalistDashboard();
+
+
+  const modal =
+    document.getElementById(
+      "journalistDashboardModal"
+    );
+
+
+  modal.classList.add(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "false"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+function closeJournalistDashboard() {
+
+  const modal =
+    document.getElementById(
+      "journalistDashboardModal"
+    );
+
+
+  if (!modal) {
+
+    return;
+
+  }
+
+
+  modal.classList.remove(
+    "open"
+  );
+
+
+  modal.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+
+
+  syncBodyScrollState();
+
+}
+
+
+/* =========================================================
+   FILTER
+========================================================= */
+
+function setJournalistDashboardFilter(
+  filter
+) {
+
+  journalistDashboardFilter =
+    filter;
+
+
+  document
+    .querySelectorAll(
+      "[data-journalist-filter]"
+    )
+    .forEach(
+      (button) => {
+
+        button.classList.toggle(
+          "active",
+          button.dataset
+            .journalistFilter ===
+            filter
+        );
+
+      }
+    );
+
+
+  document
+    .querySelectorAll(
+      "[data-journalist-stat]"
+    )
+    .forEach(
+      (button) => {
+
+        button.classList.toggle(
+          "active",
+          button.dataset
+            .journalistStat ===
+            filter
+        );
+
+      }
+    );
+
+
+  renderJournalistDashboardArticles();
+
+}
+
+
+/* =========================================================
+   RENDER COMPLETE PANEL
+========================================================= */
+
+function renderJournalistDashboard() {
+
+  const profile =
+    sportsJournalAuth
+      ?.profile;
+
+
+  document
+    .getElementById(
+      "journalistDashboardName"
+    )
+    .textContent =
+      profile
+        ?.display_name ||
+      "SPORTS JOURNAL";
+
+
+  renderJournalistDashboardStats();
+
+  renderJournalistDashboardArticles();
+
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function renderJournalistDashboardStats() {
+
+  const ownArticles =
+    getCurrentJournalistArticles();
+
+
+  const counts = {
+
+    all:
+      ownArticles.length,
+
+    draft:
+      0,
+
+    review:
+      0,
+
+    published:
+      0,
+
+    archived:
+      0
+
+  };
+
+
+  ownArticles.forEach(
+    (article) => {
+
+      const state =
+        getJournalistArticleState(
+          article
+        );
+
+
+      counts[state] +=
+        1;
+
+    }
+  );
+
+
+  document
+    .getElementById(
+      "journalistTotalCount"
+    )
+    .textContent =
+      counts.all;
+
+
+  document
+    .getElementById(
+      "journalistDraftCount"
+    )
+    .textContent =
+      counts.draft;
+
+
+  document
+    .getElementById(
+      "journalistReviewCount"
+    )
+    .textContent =
+      counts.review;
+
+
+  document
+    .getElementById(
+      "journalistPublishedCount"
+    )
+    .textContent =
+      counts.published;
+
+
+  document
+    .getElementById(
+      "journalistArchivedCount"
+    )
+    .textContent =
+      counts.archived;
+
+}
+
+
+/* =========================================================
+   FILTERED JOURNALIST ARTICLES
+========================================================= */
+
+function getFilteredJournalistDashboardArticles() {
+
+  return getCurrentJournalistArticles()
+    .filter(
+      (article) => {
+
+        const state =
+          getJournalistArticleState(
+            article
+          );
+
+
+        if (
+          journalistDashboardFilter !==
+            "all" &&
+          state !==
+            journalistDashboardFilter
+        ) {
+
+          return false;
+
+        }
+
+
+        if (
+          journalistDashboardSearch
+        ) {
+
+          const searchable =
+            normalizeSearchText(
+              [
+                article.title,
+                article.summary,
+                article.content,
+                getSportLabel(
+                  article.sport
+                ),
+                ...normalizeTags(
+                  article.tags
+                )
+              ].join(
+                " "
+              )
+            );
+
+
+          if (
+            !searchable.includes(
+              journalistDashboardSearch
+            )
+          ) {
+
+            return false;
+
+          }
+
+        }
+
+
+        return true;
+
+      }
+    );
+
+}
+
+
+/* =========================================================
+   RENDER ARTICLE LIST
+========================================================= */
+
+function renderJournalistDashboardArticles() {
+
+  const container =
+    document.getElementById(
+      "journalistArticlesList"
+    );
+
+
+  if (!container) {
+
+    return;
+
+  }
+
+
+  const items =
+    getFilteredJournalistDashboardArticles();
+
+
+  const resultCounter =
+    document.getElementById(
+      "journalistResultsCount"
+    );
+
+
+  resultCounter.textContent =
+    `${items.length} ${
+      items.length === 1
+        ? "NOTICIA"
+        : "NOTICIAS"
+    }`;
+
+
+  container.innerHTML =
+    "";
+
+
+  if (
+    items.length === 0
+  ) {
+
+    container.innerHTML = `
+      <div
+        class="journalist-dashboard-empty"
+      >
+
+        <strong>
+          SIN NOTICIAS
+        </strong>
+
+        <p>
+          No hay artículos que coincidan
+          con esta búsqueda o estado.
+        </p>
+
+      </div>
+    `;
+
+
+    return;
+
+  }
+
+
+  items.forEach(
+    (article, index) => {
+
+      container.appendChild(
+        createJournalistDashboardArticleRow(
+          article,
+          index
+        )
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   ARTICLE ROW
+========================================================= */
+
+function createJournalistDashboardArticleRow(
+  article,
+  index
+) {
+
+  const state =
+    getJournalistArticleState(
+      article
+    );
+
+
+  const row =
+    document.createElement(
+      "article"
+    );
+
+
+  row.className =
+    "journalist-article-row";
+
+
+  /* -------------------------------------------------------
+     NUMBER
+  ------------------------------------------------------- */
+
+  const number =
+    document.createElement(
+      "div"
+    );
+
+
+  number.className =
+    "journalist-article-number";
+
+
+  number.textContent =
+    String(
+      index + 1
+    ).padStart(
+      2,
+      "0"
+    );
+
+
+  /* -------------------------------------------------------
+     STATUS
+  ------------------------------------------------------- */
+
+  const status =
+    document.createElement(
+      "div"
+    );
+
+
+  status.className =
+    `journalist-article-status ${state}`;
+
+
+  status.textContent =
+    getJournalistArticleStateLabel(
+      article
+    );
+
+
+  /* -------------------------------------------------------
+     SPORT
+  ------------------------------------------------------- */
+
+  const sport =
+    document.createElement(
+      "div"
+    );
+
+
+  sport.className =
+    "journalist-article-sport";
+
+
+  sport.textContent =
+    getSportLabel(
+      article.sport
+    );
+
+
+  /* -------------------------------------------------------
+     COPY
+  ------------------------------------------------------- */
+
+  const copy =
+    document.createElement(
+      "div"
+    );
+
+
+  copy.className =
+    "journalist-article-copy";
+
+
+  const title =
+    document.createElement(
+      "h4"
+    );
+
+
+  title.className =
+    "journalist-article-title";
+
+
+  title.textContent =
+    article.title?.trim() ||
+    "NOTICIA SIN TÍTULO";
+
+
+  copy.appendChild(
+    title
+  );
+
+
+  if (
+    article.summary
+  ) {
+
+    const summary =
+      document.createElement(
+        "p"
+      );
+
+
+    summary.className =
+      "journalist-article-summary";
+
+
+    summary.textContent =
+      article.summary;
+
+
+    copy.appendChild(
+      summary
+    );
+
+  }
+
+
+  const tags =
+    normalizeTags(
+      article.tags
+    );
+
+
+  if (
+    tags.length > 0
+  ) {
+
+    const tagContainer =
+      document.createElement(
+        "div"
+      );
+
+
+    tagContainer.className =
+      "journalist-article-tags";
+
+
+    tags
+      .slice(
+        0,
+        4
+      )
+      .forEach(
+        (tag) => {
+
+          const chip =
+            document.createElement(
+              "span"
+            );
+
+
+          chip.className =
+            "journalist-article-tag";
+
+
+          chip.textContent =
+            tag;
+
+
+          tagContainer.appendChild(
+            chip
+          );
+
+        }
+      );
+
+
+    copy.appendChild(
+      tagContainer
+    );
+
+  }
+
+
+  const meta =
+    document.createElement(
+      "div"
+    );
+
+
+  meta.className =
+    "journalist-article-meta";
+
+
+  meta.textContent =
+    getJournalistDashboardDateText(
+      article
+    );
+
+
+  copy.appendChild(
+    meta
+  );
+
+
+  /* -------------------------------------------------------
+     ACTIONS
+  ------------------------------------------------------- */
+
+  const actions =
+    document.createElement(
+      "div"
+    );
+
+
+  actions.className =
+    "journalist-article-actions";
+
+
+  /* DRAFT */
+
+  if (
+    state === "draft"
+  ) {
+
+    const editButton =
+      createJournalistArticleAction(
+        "EDITAR",
+        "primary"
+      );
+
+
+    editButton.addEventListener(
+      "click",
+      () => {
+
+        closeJournalistDashboard();
+
+
+        openEditor(
+          article.id
+        );
+
+      }
+    );
+
+
+    actions.appendChild(
+      editButton
+    );
+
+  }
+
+
+  /* REVIEW */
+
+  else if (
+    state === "review"
+  ) {
+
+    const editButton =
+      createJournalistArticleAction(
+        "EDITAR",
+        "primary"
+      );
+
+
+    editButton.addEventListener(
+      "click",
+      () => {
+
+        closeJournalistDashboard();
+
+
+        openEditor(
+          article.id
+        );
+
+      }
+    );
+
+
+    const withdrawButton =
+      createJournalistArticleAction(
+        "RETIRAR",
+        "review"
+      );
+
+
+    withdrawButton.addEventListener(
+      "click",
+      async () => {
+
+        await returnSportsJournalReviewToDraft(
+          article.id
+        );
+
+
+        renderJournalistDashboard();
+
+      }
+    );
+
+
+    actions.append(
+      editButton,
+      withdrawButton
+    );
+
+  }
+
+
+  /* PUBLISHED */
+
+  else if (
+    state === "published"
+  ) {
+
+    const readButton =
+      createJournalistArticleAction(
+        "LEER",
+        "primary"
+      );
+
+
+    readButton.addEventListener(
+      "click",
+      () => {
+
+        closeJournalistDashboard();
+
+
+        openReader(
+          article.id
+        );
+
+      }
+    );
+
+
+    actions.appendChild(
+      readButton
+    );
+
+  }
+
+
+  /* ARCHIVED */
+
+  else if (
+    state === "archived"
+  ) {
+
+    const archivedLabel =
+      document.createElement(
+        "div"
+      );
+
+
+    archivedLabel.className =
+      "journalist-article-action";
+
+
+    archivedLabel.textContent =
+      "SIN ACCIONES";
+
+
+    actions.appendChild(
+      archivedLabel
+    );
+
+  }
+
+
+  row.append(
+    number,
+    status,
+    sport,
+    copy,
+    actions
+  );
+
+
+  return row;
+
+}
+
+
+/* =========================================================
+   ACTION BUTTON
+========================================================= */
+
+function createJournalistArticleAction(
+  text,
+  modifier
+) {
+
+  const button =
+    document.createElement(
+      "button"
+    );
+
+
+  button.type =
+    "button";
+
+
+  button.className =
+    `journalist-article-action ${modifier}`.trim();
+
+
+  button.textContent =
+    text;
+
+
+  return button;
+
+}
+
+
+/* =========================================================
+   DATE LABEL
+========================================================= */
+
+function getJournalistDashboardDateText(
+  article
+) {
+
+  const state =
+    getJournalistArticleState(
+      article
+    );
+
+
+  if (
+    state === "review"
+  ) {
+
+    return (
+      `ENVIADA A REVISIÓN · ${formatEditorDateTime(
+        article.updatedAt ||
+        article.createdAt
+      )}`
+    );
+
+  }
+
+
+  if (
+    state === "published"
+  ) {
+
+    return (
+      `PUBLICADA · ${formatEditorDateTime(
+        article.publishedAt ||
+        article.createdAt
+      )}`
+    );
+
+  }
+
+
+  if (
+    state === "archived"
+  ) {
+
+    return (
+      `ARCHIVADA · ${formatEditorDateTime(
+        article.archivedAt ||
+        article.updatedAt
+      )}`
+    );
+
+  }
+
+
+  return (
+    `ÚLTIMA EDICIÓN · ${formatEditorDateTime(
+      article.updatedAt ||
+      article.createdAt
+    )}`
+  );
+
+}
+
+
+/* =========================================================
+   REFRESH AFTER CLOUD CHANGES
+========================================================= */
+
+const step133BaseRefreshCloudViews =
+  refreshSportsJournalCloudViews;
+
+
+refreshSportsJournalCloudViews =
+  function () {
+
+    step133BaseRefreshCloudViews();
+
+
+    const dashboard =
+      document.getElementById(
+        "journalistDashboardModal"
+      );
+
+
+    if (
+      dashboard
+        ?.classList
+        .contains(
+          "open"
+        )
+    ) {
+
+      renderJournalistDashboard();
+
+    }
+
+  };
+
+
+/* =========================================================
+   ROLE CHANGES
+========================================================= */
+
+const step133BaseSyncRoleInterface =
+  syncSportsJournalRoleInterface;
+
+
+syncSportsJournalRoleInterface =
+  function () {
+
+    step133BaseSyncRoleInterface();
+
+
+    const dashboard =
+      document.getElementById(
+        "journalistDashboardModal"
+      );
+
+
+    /*
+      Example:
+      journalist logs out while dashboard is open.
+    */
+
+    if (
+      dashboard
+        ?.classList
+        .contains(
+          "open"
+        ) &&
+      !isSportsJournalJournalist()
+    ) {
+
+      closeJournalistDashboard();
+
+    }
+
+  };
+
+
+/* =========================================================
+   BODY SCROLL
+========================================================= */
+
+const step133BaseSyncBodyScrollState =
+  syncBodyScrollState;
+
+
+syncBodyScrollState =
+  function () {
+
+    step133BaseSyncBodyScrollState();
+
+
+    const dashboard =
+      document.getElementById(
+        "journalistDashboardModal"
+      );
+
+
+    if (
+      dashboard
+        ?.classList
+        .contains(
+          "open"
+        )
+    ) {
+
+      document.body
+        .classList
+        .add(
+          "modal-open"
+        );
+
+    }
+
+  };
+
+
+/* =========================================================
+   ESCAPE
+========================================================= */
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+
+    if (
+      event.key !==
+      "Escape"
+    ) {
+
+      return;
+
+    }
+
+
+    const dashboard =
+      document.getElementById(
+        "journalistDashboardModal"
+      );
+
+
+    if (
+      dashboard
+        ?.classList
+        .contains(
+          "open"
+        )
+    ) {
+
+      closeJournalistDashboard();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   INSTALL
+========================================================= */
+
+createJournalistDashboardInterface();
+
+syncSportsJournalRoleInterface();

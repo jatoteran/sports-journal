@@ -6669,3 +6669,1076 @@ body.sj-role-editor .data-block {
   }
 
 }
+
+/* =========================================================
+   PASO 13.3 — PANEL PERSONAL DEL PERIODISTA
+========================================================= */
+
+
+/* =========================================================
+   SIDE MENU
+========================================================= */
+
+#journalistDashboardMenuButton {
+  display: none;
+}
+
+
+body.sj-role-journalist
+#journalistDashboardMenuButton {
+  display: flex;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.journalist-dashboard-modal {
+  z-index: 1670;
+}
+
+
+.journalist-dashboard-panel {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow-y: auto;
+
+  background: var(--cream);
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.journalist-dashboard-header {
+  position: sticky;
+
+  z-index: 30;
+
+  top: 0;
+
+  min-height: 105px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 25px;
+
+  border-bottom:
+    4px
+    solid
+    var(--black);
+
+  background: var(--black);
+  color: var(--cream);
+
+  padding:
+    18px
+    clamp(18px, 4vw, 58px);
+}
+
+
+.journalist-dashboard-eyebrow {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: var(--yellow);
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+
+.journalist-dashboard-header h2 {
+  margin: 0;
+
+  font-family:
+    Impact,
+    "Arial Black",
+    sans-serif;
+
+  font-size:
+    clamp(
+      38px,
+      5vw,
+      62px
+    );
+
+  line-height: 0.88;
+}
+
+
+.journalist-dashboard-close {
+  border-color: var(--cream);
+
+  color: var(--cream);
+}
+
+
+.journalist-dashboard-close:hover {
+  border-color: var(--yellow);
+
+  background: var(--yellow);
+  color: var(--black);
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+.journalist-dashboard-body {
+  width:
+    min(
+      1500px,
+      100%
+    );
+
+  margin:
+    0
+    auto;
+
+  padding:
+    clamp(28px, 4vw, 55px)
+    clamp(16px, 4vw, 58px)
+    80px;
+}
+
+
+/* =========================================================
+   PROFILE INTRO
+========================================================= */
+
+.journalist-dashboard-profile {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  align-items: end;
+
+  gap: 30px;
+
+  margin-bottom: 30px;
+}
+
+
+.journalist-dashboard-profile-label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+
+.journalist-dashboard-name {
+  margin: 0;
+
+  font-family:
+    Impact,
+    "Arial Black",
+    sans-serif;
+
+  font-size:
+    clamp(
+      48px,
+      7vw,
+      92px
+    );
+
+  line-height: 0.86;
+
+  text-transform: uppercase;
+}
+
+
+.journalist-dashboard-role {
+  width: fit-content;
+
+  margin-top: 15px;
+
+  border:
+    3px
+    solid
+    var(--black);
+
+  background: var(--yellow);
+
+  padding:
+    7px
+    10px;
+
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+
+.journalist-dashboard-new {
+  min-height: 55px;
+
+  border:
+    3px
+    solid
+    var(--black);
+
+  background: var(--black);
+  color: var(--yellow);
+
+  padding:
+    12px
+    18px;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.journalist-dashboard-new:hover {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.journalist-stats-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      5,
+      minmax(0, 1fr)
+    );
+
+  border:
+    3px
+    solid
+    var(--black);
+
+  margin-bottom: 42px;
+}
+
+
+.journalist-stat-card {
+  min-height: 145px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  border: 0;
+
+  background: var(--paper);
+
+  padding:
+    18px;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+
+.journalist-stat-card +
+.journalist-stat-card {
+  border-left:
+    3px
+    solid
+    var(--black);
+}
+
+
+.journalist-stat-card:hover,
+.journalist-stat-card.active {
+  background: var(--yellow);
+}
+
+
+.journalist-stat-label {
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+}
+
+
+.journalist-stat-card strong {
+  font-family:
+    Impact,
+    "Arial Black",
+    sans-serif;
+
+  font-size:
+    clamp(
+      42px,
+      6vw,
+      70px
+    );
+
+  line-height: 0.8;
+}
+
+
+.journalist-stat-card small {
+  font-size: 8px;
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   SECTION HEADING
+========================================================= */
+
+.journalist-dashboard-section-heading {
+  display: grid;
+
+  grid-template-columns:
+    auto
+    minmax(0, 1fr);
+
+  gap: 14px;
+
+  align-items: center;
+
+  margin-bottom: 19px;
+}
+
+
+.journalist-dashboard-section-number {
+  width: 35px;
+  height: 35px;
+
+  display: grid;
+  place-items: center;
+
+  background: var(--black);
+  color: var(--yellow);
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+
+.journalist-dashboard-section-heading h3 {
+  margin: 0;
+
+  border-bottom:
+    3px
+    solid
+    var(--black);
+
+  padding-bottom: 8px;
+
+  font-family:
+    Impact,
+    "Arial Black",
+    sans-serif;
+
+  font-size:
+    clamp(
+      28px,
+      4vw,
+      42px
+    );
+
+  line-height: 0.9;
+}
+
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+.journalist-dashboard-tools {
+  display: grid;
+
+  grid-template-columns:
+    minmax(240px, 1fr)
+    auto;
+
+  gap: 15px;
+
+  margin-bottom: 20px;
+}
+
+
+.journalist-dashboard-search {
+  display: flex;
+
+  border:
+    3px
+    solid
+    var(--black);
+
+  background: var(--paper);
+}
+
+
+.journalist-dashboard-search span {
+  display: grid;
+  place-items: center;
+
+  border-right:
+    2px
+    solid
+    var(--black);
+
+  padding:
+    0
+    13px;
+
+  font-size: 8px;
+  font-weight: 900;
+}
+
+
+.journalist-dashboard-search input {
+  width: 100%;
+
+  min-height: 48px;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+
+  padding:
+    10px
+    13px;
+
+  font-size: 10px;
+  font-weight: 900;
+}
+
+
+.journalist-dashboard-search input:focus {
+  background: #faf6e9;
+}
+
+
+/* =========================================================
+   FILTER BUTTONS
+========================================================= */
+
+.journalist-filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+
+  border:
+    3px
+    solid
+    var(--black);
+}
+
+
+.journalist-filter-button {
+  min-height: 48px;
+
+  border: 0;
+
+  background: transparent;
+
+  padding:
+    10px
+    12px;
+
+  font-size: 8px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.journalist-filter-button +
+.journalist-filter-button {
+  border-left:
+    2px
+    solid
+    var(--black);
+}
+
+
+.journalist-filter-button:hover,
+.journalist-filter-button.active {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+
+/* =========================================================
+   RESULT SUMMARY
+========================================================= */
+
+.journalist-results-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  min-height: 45px;
+
+  border-top:
+    2px
+    solid
+    var(--black);
+
+  border-bottom:
+    2px
+    solid
+    var(--black);
+
+  margin-bottom: 12px;
+
+  padding:
+    8px
+    0;
+
+  font-size: 9px;
+  font-weight: 900;
+}
+
+
+.journalist-results-summary strong {
+  font-family:
+    Impact,
+    "Arial Black",
+    sans-serif;
+
+  font-size: 19px;
+}
+
+
+/* =========================================================
+   ARTICLE LIST
+========================================================= */
+
+.journalist-articles-list {
+  border-top:
+    3px
+    solid
+    var(--black);
+}
+
+
+.journalist-article-row {
+  display: grid;
+
+  grid-template-columns:
+    55px
+    115px
+    110px
+    minmax(0, 1fr)
+    145px;
+
+  gap: 18px;
+
+  align-items: start;
+
+  border-bottom:
+    2px
+    solid
+    var(--black);
+
+  padding:
+    23px
+    0;
+}
+
+
+.journalist-article-number {
+  font-family:
+    Impact,
+    "Arial Black",
+    sans-serif;
+
+  font-size: 30px;
+
+  line-height: 1;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.journalist-article-status {
+  width: fit-content;
+
+  border:
+    2px
+    solid
+    var(--black);
+
+  padding:
+    6px
+    8px;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+
+.journalist-article-status.draft {
+  background: var(--cream);
+}
+
+
+.journalist-article-status.review {
+  border-style: dashed;
+
+  background: var(--yellow);
+}
+
+
+.journalist-article-status.published {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+
+.journalist-article-status.archived {
+  background: #69655d;
+  color: white;
+}
+
+
+/* =========================================================
+   SPORT
+========================================================= */
+
+.journalist-article-sport {
+  padding-top: 6px;
+
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+
+/* =========================================================
+   COPY
+========================================================= */
+
+.journalist-article-copy {
+  min-width: 0;
+}
+
+
+.journalist-article-title {
+  margin: 0;
+
+  font-family:
+    Impact,
+    "Arial Black",
+    sans-serif;
+
+  font-size:
+    clamp(
+      25px,
+      3vw,
+      39px
+    );
+
+  line-height: 0.94;
+
+  text-transform: uppercase;
+}
+
+
+.journalist-article-summary {
+  max-width: 700px;
+
+  margin:
+    9px
+    0
+    0;
+
+  color: #48453f;
+
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+
+.journalist-article-tags {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 5px;
+
+  margin-top: 10px;
+}
+
+
+.journalist-article-tag {
+  border:
+    1px
+    solid
+    var(--black);
+
+  padding:
+    4px
+    6px;
+
+  font-size: 7px;
+  font-weight: 900;
+
+  text-transform: uppercase;
+}
+
+
+.journalist-article-meta {
+  margin-top: 10px;
+
+  color: #6a665e;
+
+  font-size: 8px;
+  font-weight: 900;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.journalist-article-actions {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+
+.journalist-article-action {
+  min-height: 37px;
+
+  border:
+    2px
+    solid
+    var(--black);
+
+  background: transparent;
+
+  padding:
+    7px
+    9px;
+
+  font-size: 8px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.journalist-article-action.primary {
+  background: var(--black);
+  color: var(--yellow);
+}
+
+
+.journalist-article-action.review {
+  background: var(--yellow);
+}
+
+
+.journalist-article-action:hover {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.journalist-dashboard-empty {
+  min-height: 300px;
+
+  display: grid;
+  place-content: center;
+
+  border:
+    3px
+    solid
+    var(--black);
+
+  padding:
+    35px;
+
+  text-align: center;
+}
+
+
+.journalist-dashboard-empty strong {
+  font-family:
+    Impact,
+    "Arial Black",
+    sans-serif;
+
+  font-size:
+    clamp(
+      37px,
+      7vw,
+      70px
+    );
+
+  line-height: 0.9;
+}
+
+
+.journalist-dashboard-empty p {
+  max-width: 470px;
+
+  margin:
+    12px
+    auto
+    0;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1050px) {
+
+  .journalist-stats-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+
+  .journalist-stat-card {
+    border-bottom:
+      3px
+      solid
+      var(--black);
+  }
+
+
+  .journalist-stat-card:nth-child(odd) {
+    border-left: 0;
+  }
+
+
+  .journalist-stat-card:last-child {
+    grid-column:
+      1
+      /
+      -1;
+
+    border-bottom: 0;
+    border-left: 0;
+  }
+
+
+  .journalist-article-row {
+    grid-template-columns:
+      45px
+      105px
+      minmax(0, 1fr)
+      130px;
+  }
+
+
+  .journalist-article-sport {
+    grid-column: 2;
+  }
+
+
+  .journalist-article-copy {
+    grid-column: 3;
+
+    grid-row:
+      1
+      /
+      span
+      2;
+  }
+
+
+  .journalist-article-actions {
+    grid-column: 4;
+
+    grid-row:
+      1
+      /
+      span
+      2;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+  .journalist-dashboard-header {
+    min-height: 90px;
+
+    padding:
+      14px
+      16px;
+  }
+
+
+  .journalist-dashboard-header h2 {
+    font-size: 37px;
+  }
+
+
+  .journalist-dashboard-body {
+    padding:
+      25px
+      14px
+      60px;
+  }
+
+
+  .journalist-dashboard-profile {
+    grid-template-columns:
+      1fr;
+
+    gap: 18px;
+  }
+
+
+  .journalist-dashboard-new {
+    width: 100%;
+  }
+
+
+  .journalist-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .journalist-stat-card,
+  .journalist-stat-card:last-child {
+    grid-column: auto;
+
+    border-left: 0;
+    border-bottom:
+      3px
+      solid
+      var(--black);
+  }
+
+
+  .journalist-stat-card:last-child {
+    border-bottom: 0;
+  }
+
+
+  .journalist-dashboard-tools {
+    grid-template-columns: 1fr;
+  }
+
+
+  .journalist-filter-buttons {
+    display: grid;
+
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+
+
+  .journalist-filter-button +
+  .journalist-filter-button {
+    border-left: 0;
+  }
+
+
+  .journalist-filter-button:nth-child(even) {
+    border-left:
+      2px
+      solid
+      var(--black);
+  }
+
+
+  .journalist-filter-button:nth-child(n + 3) {
+    border-top:
+      2px
+      solid
+      var(--black);
+  }
+
+
+  .journalist-filter-button:last-child {
+    grid-column:
+      1
+      /
+      -1;
+
+    border-left: 0;
+  }
+
+
+  .journalist-article-row {
+    grid-template-columns:
+      40px
+      minmax(0, 1fr);
+
+    gap:
+      11px
+      14px;
+  }
+
+
+  .journalist-article-status,
+  .journalist-article-sport,
+  .journalist-article-copy,
+  .journalist-article-actions {
+    grid-column: 2;
+
+    grid-row: auto;
+  }
+
+
+  .journalist-article-actions {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+
+}
