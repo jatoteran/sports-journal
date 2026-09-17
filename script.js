@@ -24300,3 +24300,49 @@ window.setTimeout(
   },
   700
 );
+
+/* =========================================================
+   PASO 15.2B — FIX READER CLOSE URL
+   VOLVER / X deben regresar a la URL principal
+========================================================= */
+
+function installSportsJournalReaderCloseUrlFix() {
+
+  document
+    .querySelectorAll(
+      "[data-close-reader]"
+    )
+    .forEach(
+      (button) => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            /*
+              El listener antiguo ya cierra visualmente
+              el Reader.
+
+              Aquí sincronizamos también la URL
+              y el título del navegador.
+            */
+
+            removeSportsJournalStoryFromUrl();
+
+            resetSportsJournalDocumentTitle();
+
+          }
+        );
+
+      }
+    );
+
+
+  console.log(
+    "SPORTS JOURNAL → Reader URL close fix activo ✓"
+  );
+
+}
+
+
+installSportsJournalReaderCloseUrlFix();
