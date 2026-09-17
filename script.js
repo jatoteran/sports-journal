@@ -23603,3 +23603,700 @@ document.addEventListener(
 ========================================================= */
 
 createSportsJournalInviteInterface();
+
+/* =========================================================
+   PASO 15.2 — ARTICLE URL ROUTING
+   Permanent shareable URLs for SPORTS JOURNAL stories
+========================================================= */
+
+
+/* =========================================================
+   DOCUMENT TITLE
+========================================================= */
+
+const SPORTS_JOURNAL_BASE_DOCUMENT_TITLE =
+  document.title;
+
+
+/* =========================================================
+   CLOUD ARTICLE -> INCLUDE SLUG
+========================================================= */
+
+const step152BaseCloudArticleConverter =
+  cloudArticleToSportsJournalArticle;
+
+
+cloudArticleToSportsJournalArticle =
+  function (
+    row
+  ) {
+
+    const article =
+      step152BaseCloudArticleConverter(
+        row
+      );
+
+
+    article.slug =
+      row.slug ||
+      null;
+
+
+    return article;
+
+  };
+
+
+/* =========================================================
+   BACKUPS -> PRESERVE SLUG
+========================================================= */
+
+const step152BaseBackupArticleToCloudRow =
+  sportsJournalBackupArticleToCloudRow;
+
+
+sportsJournalBackupArticleToCloudRow =
+  function (
+    article,
+    userId
+  ) {
+
+    const row =
+      step152BaseBackupArticleToCloudRow(
+        article,
+        userId
+      );
+
+
+    if (
+      article.slug
+    ) {
+
+      row.slug =
+        article.slug;
+
+    }
+
+
+    return row;
+
+  };
+
+
+/* =========================================================
+   FIND ARTICLE BY SLUG
+========================================================= */
+
+function findSportsJournalArticleBySlug(
+  slug
+) {
+
+  if (!slug) {
+
+    return null;
+
+  }
+
+
+  const normalizedSlug =
+    String(
+      slug
+    )
+      .trim()
+      .toLowerCase();
+
+
+  return (
+    articles.find(
+      (article) =>
+        String(
+          article.slug ||
+          ""
+        )
+          .toLowerCase() ===
+        normalizedSlug
+    ) ||
+    null
+  );
+
+}
+
+
+/* =========================================================
+   CURRENT STORY FROM URL
+========================================================= */
+
+function getSportsJournalStorySlugFromUrl() {
+
+  const url =
+    new URL(
+      window.location.href
+    );
+
+
+  return (
+    url.searchParams.get(
+      "story"
+    ) ||
+    ""
+  );
+
+}
+
+
+/* =========================================================
+   CREATE ARTICLE URL
+========================================================= */
+
+function getSportsJournalArticleUrl(
+  article
+) {
+
+  if (
+    !article?.slug
+  ) {
+
+    return null;
+
+  }
+
+
+  const url =
+    new URL(
+      window.location.href
+    );
+
+
+  /*
+    Never preserve Auth hashes/tokens
+    inside an article URL.
+  */
+
+  url.hash =
+    "";
+
+
+  url.searchParams.set(
+    "story",
+    article.slug
+  );
+
+
+  return url.toString();
+
+}
+
+
+/* =========================================================
+   SET STORY URL
+========================================================= */
+
+function setSportsJournalStoryUrl(
+  article,
+  mode = "push"
+) {
+
+  if (
+    !article?.slug
+  ) {
+
+    return;
+
+  }
+
+
+  const currentSlug =
+    getSportsJournalStorySlugFromUrl();
+
+
+  if (
+    currentSlug ===
+    article.slug
+  ) {
+
+    return;
+
+  }
+
+
+  const url =
+    getSportsJournalArticleUrl(
+      article
+    );
+
+
+  if (!url) {
+
+    return;
+
+  }
+
+
+  const state = {
+
+    ...(
+      window.history.state ||
+      {}
+    ),
+
+    sportsJournalStory:
+      article.slug
+
+  };
+
+
+  if (
+    mode === "replace"
+  ) {
+
+    window.history.replaceState(
+      state,
+      "",
+      url
+    );
+
+  } else {
+
+    window.history.pushState(
+      state,
+      "",
+      url
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   REMOVE STORY FROM URL
+========================================================= */
+
+function removeSportsJournalStoryFromUrl() {
+
+  const url =
+    new URL(
+      window.location.href
+    );
+
+
+  if (
+    !url.searchParams.has(
+      "story"
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  url.searchParams.delete(
+    "story"
+  );
+
+
+  url.hash =
+    "";
+
+
+  const state = {
+
+    ...(
+      window.history.state ||
+      {}
+    )
+
+  };
+
+
+  delete state
+    .sportsJournalStory;
+
+
+  window.history.replaceState(
+    state,
+    "",
+    url.toString()
+  );
+
+}
+
+
+/* =========================================================
+   DOCUMENT TITLE
+========================================================= */
+
+function setSportsJournalArticleDocumentTitle(
+  article
+) {
+
+  if (
+    !article?.title
+  ) {
+
+    document.title =
+      SPORTS_JOURNAL_BASE_DOCUMENT_TITLE;
+
+
+    return;
+
+  }
+
+
+  document.title =
+    `${article.title} | Sports Journal`;
+
+}
+
+
+function resetSportsJournalDocumentTitle() {
+
+  document.title =
+    SPORTS_JOURNAL_BASE_DOCUMENT_TITLE;
+
+}
+
+
+/* =========================================================
+   OPEN READER + URL
+========================================================= */
+
+const step152BaseOpenReader =
+  openReader;
+
+
+openReader =
+  function (
+    articleId,
+    options = {}
+  ) {
+
+    const article =
+      findArticle(
+        articleId
+      );
+
+
+    /*
+      Open the existing SPORTS JOURNAL Reader first.
+    */
+
+    const result =
+      step152BaseOpenReader(
+        articleId
+      );
+
+
+    if (!article) {
+
+      return result;
+
+    }
+
+
+    setSportsJournalArticleDocumentTitle(
+      article
+    );
+
+
+    /*
+      Normal click:
+      update browser URL.
+
+      URL routing:
+      do not push another history entry.
+    */
+
+    if (
+      options.syncUrl !==
+        false
+    ) {
+
+      setSportsJournalStoryUrl(
+        article,
+        options.replaceUrl
+          ? "replace"
+          : "push"
+      );
+
+    }
+
+
+    return result;
+
+  };
+
+
+/* =========================================================
+   CLOSE READER + URL
+========================================================= */
+
+const step152BaseCloseReader =
+  closeReader;
+
+
+closeReader =
+  function (
+    options = {}
+  ) {
+
+    const result =
+      step152BaseCloseReader();
+
+
+    resetSportsJournalDocumentTitle();
+
+
+    if (
+      options.syncUrl !==
+        false
+    ) {
+
+      removeSportsJournalStoryFromUrl();
+
+    }
+
+
+    return result;
+
+  };
+
+
+/* =========================================================
+   OPEN STORY FROM CURRENT URL
+========================================================= */
+
+function syncSportsJournalStoryFromUrl(
+  options = {}
+) {
+
+  const {
+    showNotFound = false
+  } = options;
+
+
+  const slug =
+    getSportsJournalStorySlugFromUrl();
+
+
+  /*
+    No story in URL.
+  */
+
+  if (!slug) {
+
+    const reader =
+      document.getElementById(
+        "readerModal"
+      );
+
+
+    if (
+      reader
+        ?.classList
+        .contains(
+          "open"
+        )
+    ) {
+
+      step152BaseCloseReader();
+
+    }
+
+
+    resetSportsJournalDocumentTitle();
+
+
+    return true;
+
+  }
+
+
+  /*
+    Find article currently available
+    to this Supabase session.
+
+    Guests only have published articles
+    because RLS already filters them.
+  */
+
+  const article =
+    findSportsJournalArticleBySlug(
+      slug
+    );
+
+
+  if (!article) {
+
+    if (
+      showNotFound
+    ) {
+
+      showToast(
+        "ESTA NOTICIA NO EXISTE O NO ESTÁ DISPONIBLE."
+      );
+
+    }
+
+
+    return false;
+
+  }
+
+
+  /*
+    Use base reader so we don't modify URL again.
+  */
+
+  step152BaseOpenReader(
+    article.id
+  );
+
+
+  setSportsJournalArticleDocumentTitle(
+    article
+  );
+
+
+  return true;
+
+}
+
+
+/* =========================================================
+   CLOUD LOAD -> URL ROUTER
+========================================================= */
+
+const step152BaseLoadArticlesFromCloud =
+  loadSportsJournalArticlesFromCloud;
+
+
+loadSportsJournalArticlesFromCloud =
+  async function (
+    options = {}
+  ) {
+
+    const loaded =
+      await step152BaseLoadArticlesFromCloud(
+        options
+      );
+
+
+    if (
+      loaded
+    ) {
+
+      syncSportsJournalStoryFromUrl({
+        showNotFound:
+          false
+      });
+
+    }
+
+
+    return loaded;
+
+  };
+
+
+/* =========================================================
+   BROWSER BACK / FORWARD
+========================================================= */
+
+window.addEventListener(
+  "popstate",
+  () => {
+
+    const slug =
+      getSportsJournalStorySlugFromUrl();
+
+
+    /*
+      Going back to an article.
+    */
+
+    if (slug) {
+
+      const article =
+        findSportsJournalArticleBySlug(
+          slug
+        );
+
+
+      if (
+        article
+      ) {
+
+        step152BaseOpenReader(
+          article.id
+        );
+
+
+        setSportsJournalArticleDocumentTitle(
+          article
+        );
+
+      }
+
+
+      return;
+
+    }
+
+
+    /*
+      Going back to the newspaper.
+    */
+
+    const reader =
+      document.getElementById(
+        "readerModal"
+      );
+
+
+    if (
+      reader
+        ?.classList
+        .contains(
+          "open"
+        )
+    ) {
+
+      step152BaseCloseReader();
+
+    }
+
+
+    resetSportsJournalDocumentTitle();
+
+  }
+);
+
+
+/* =========================================================
+   INITIAL URL CHECK
+
+   Cloud loading normally handles this,
+   but this also covers cases where articles
+   were already loaded before this patch ran.
+========================================================= */
+
+window.setTimeout(
+  () => {
+
+    if (
+      getSportsJournalStorySlugFromUrl() &&
+      articles.length > 0
+    ) {
+
+      syncSportsJournalStoryFromUrl({
+        showNotFound:
+          true
+      });
+
+    }
+
+  },
+  700
+);
