@@ -4784,6 +4784,8 @@ function openReader(
 
   closeSportsJournalPublicAuthor({ syncUrl: false });
 
+  closeSportsJournalAbout({ syncUrl: false });
+
 
   readerSport.textContent =
     getSportLabel(
@@ -6596,7 +6598,8 @@ function syncBodyScrollState() {
 
   document.body.classList.toggle(
     "modal-open",
-    open || document.getElementById("publicAuthorModal")?.classList.contains("open")
+    open || document.getElementById("publicAuthorModal")?.classList.contains("open") ||
+      document.getElementById("aboutModal")?.classList.contains("open")
   );
 
 }
@@ -23982,6 +23985,7 @@ function setSportsJournalStoryUrl(
 
   const storyUrl = new URL(url);
   storyUrl.searchParams.delete("author");
+  storyUrl.searchParams.delete("page");
 
 
   const state = {
@@ -24693,6 +24697,7 @@ function setSportsJournalPublicAuthorMetadata(profile) {
 }
 
 async function openSportsJournalPublicAuthor(profileId, options = {}) {
+  closeSportsJournalAbout({ syncUrl: false });
   const modal = document.getElementById("publicAuthorModal");
   const sequence = ++sportsJournalPublicAuthorSequence;
   sportsJournalPublicAuthorId = profileId;
@@ -24776,6 +24781,8 @@ function closeSportsJournalPublicAuthor(options = {}) {
 }
 
 function syncSportsJournalPublicAuthorRoute() {
+  if (syncSportsJournalAboutRoute()) return true;
+  closeSportsJournalAbout({ syncUrl: false });
   const url = new URL(location.href);
   const id = url.searchParams.get("author");
   if (!id) return false;
@@ -24806,6 +24813,94 @@ document.getElementById("publicAuthorModal").addEventListener("keydown", event =
     if ((!event.shiftKey && document.activeElement === last) || (event.shiftKey && document.activeElement === first) || !items.includes(document.activeElement)) {
       event.preventDefault();
       (event.shiftKey ? last : first)?.focus();
+    }
+  }
+});
+
+function setSportsJournalAboutMetadata() {
+  resetSportsJournalDocumentTitle();
+  const canonical = document.querySelector('link[rel="canonical"]');
+  const url = new URL(canonical.href);
+  url.searchParams.set("page", "about");
+  canonical.href = url.toString();
+  const title = "Sobre Sports Journal | Noticias y análisis deportivo";
+  const description = "Conoce Sports Journal, una publicación de noticias y análisis sobre fútbol, tenis, béisbol y baloncesto.";
+  document.title = title;
+  setSportsJournalSeoMeta("name", "description", description);
+  setSportsJournalSeoMeta("property", "og:title", title);
+  setSportsJournalSeoMeta("property", "og:description", description);
+  setSportsJournalSeoMeta("property", "og:url", url.toString());
+  setSportsJournalSeoMeta("name", "twitter:title", title);
+  setSportsJournalSeoMeta("name", "twitter:description", description);
+}
+
+function openSportsJournalAbout(options = {}) {
+  const modal = document.getElementById("aboutModal");
+  if (modal.classList.contains("open")) {
+    setSportsJournalAboutMetadata();
+    return;
+  }
+  closeSportsJournalPublicAuthor({ syncUrl: false });
+  closeReader({ syncUrl: false });
+  closeSideMenu();
+  if (options.syncUrl !== false) {
+    const url = new URL(location.href);
+    url.search = "";
+    url.hash = "";
+    url.searchParams.set("page", "about");
+    history.pushState({ sportsJournalAboutFromNavigation: true }, "", url.toString());
+  }
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+  const panel = modal.querySelector('[role="dialog"]');
+  panel.scrollTop = 0;
+  panel.focus();
+  syncBodyScrollState();
+  setSportsJournalAboutMetadata();
+}
+
+function closeSportsJournalAbout(options = {}) {
+  const modal = document.getElementById("aboutModal");
+  if (!modal?.classList.contains("open")) return;
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+  resetSportsJournalDocumentTitle();
+  syncBodyScrollState();
+  if (options.syncUrl === false) return;
+  if (history.state?.sportsJournalAboutFromNavigation) {
+    history.back();
+  } else {
+    const url = new URL(location.href);
+    url.searchParams.delete("page");
+    history.replaceState({}, "", url.toString());
+    document.getElementById("menuButton").focus();
+  }
+}
+
+function syncSportsJournalAboutRoute() {
+  const url = new URL(location.href);
+  if (url.searchParams.get("page") !== "about") return false;
+  if (url.searchParams.has("story") || url.searchParams.has("author")) {
+    url.searchParams.delete("page");
+    history.replaceState(history.state, "", url.toString());
+    return false;
+  }
+  openSportsJournalAbout({ syncUrl: false });
+  return true;
+}
+
+document.getElementById("aboutMenuButton").addEventListener("click", () => openSportsJournalAbout());
+["aboutBack", "aboutClose"].forEach(id => document.getElementById(id).addEventListener("click", () => closeSportsJournalAbout()));
+document.getElementById("aboutModal").addEventListener("keydown", event => {
+  if (event.key === "Escape") {
+    event.preventDefault();
+    event.stopPropagation();
+    closeSportsJournalAbout();
+  } else if (event.key === "Tab") {
+    const items = getSportsJournalModalFocusables(event.currentTarget.querySelector('[role="dialog"]'));
+    if (!items.includes(document.activeElement) || (!event.shiftKey && document.activeElement === items.at(-1)) || (event.shiftKey && document.activeElement === items[0])) {
+      event.preventDefault();
+      (event.shiftKey ? items.at(-1) : items[0])?.focus();
     }
   }
 });

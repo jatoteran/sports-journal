@@ -23,7 +23,7 @@
   type="image/svg+xml"
   href="./favicon.svg"
   git/>
-  <link rel="stylesheet" href="style.css?v=2026-10-08.2" />
+  <link rel="stylesheet" href="style.css?v=2026-10-08.3" />
 </head>
 
 <body>
@@ -376,6 +376,10 @@
         >
           <span>ESCRIBIR NOTICIA</span>
           <span>+</span>
+        </button>
+
+        <button class="journal-menu-button" id="aboutMenuButton" type="button">
+          <span>SOBRE SPORTS JOURNAL</span><span>→</span>
         </button>
 
       </div>
@@ -1748,9 +1752,30 @@
     </section>
   </div>
 
+  <div class="modal about-modal" id="aboutModal" aria-hidden="true">
+    <section class="reader-panel about-panel" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" tabindex="-1">
+      <div class="reader-topbar">
+        <button class="reader-back" id="aboutBack" type="button">← VOLVER</button>
+        <div class="reader-topbar-brand">SPORTS JOURNAL</div>
+        <button class="close-button reader-close" id="aboutClose" type="button" aria-label="Cerrar Sobre Sports Journal">×</button>
+      </div>
+      <div class="about-content">
+        <p class="reader-kicker">LA PUBLICACIÓN</p>
+        <h1 id="aboutTitle">SOBRE<br>SPORTS JOURNAL</h1>
+        <p>Sports Journal es una publicación deportiva de noticias y análisis sobre fútbol, tenis, béisbol y baloncesto.</p>
+        <div class="about-sports" aria-label="Deportes que cubrimos">
+          <span>FÚTBOL</span><span>TENIS</span><span>BÉISBOL</span><span>BALONCESTO</span>
+        </div>
+        <p>Seguimos la actualidad de los cuatro deportes: sus partidos, torneos y protagonistas.</p>
+        <p>El análisis acompaña a la noticia para aportar contexto a lo que ocurre dentro y fuera de la competición.</p>
+        <p class="about-signoff">EL DEPORTE, CONTADO Y ANALIZADO.</p>
+      </div>
+    </section>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
-  <script src="script.js?v=2026-10-08.2"></script>
+  <script src="script.js?v=2026-10-08.3"></script>
 
 </body>
 </html>
