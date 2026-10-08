@@ -8837,6 +8837,11 @@ body.sj-role-admin #newsroomMenuButton {
 
 @media (max-width: 1000px) {
 
+  .newsroom-member > div {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
   .newsroom-member {
     grid-template-columns:
       45px
@@ -9342,4 +9347,347 @@ body.sj-role-admin #newsroomMenuButton {
       16px;
   }
 
+  /* Mobile editorial panels: compact context, accessible lists and actions. */
+  .admin-dashboard-header,
+  .article-manager-header,
+  .drafts-header,
+  .review-manager-header,
+  .archive-manager-header,
+  .journalist-dashboard-header,
+  .newsroom-header {
+    min-height: 80px;
+    padding: 12px 14px;
+    gap: 12px;
+  }
+
+  .admin-dashboard-header h2,
+  .article-manager-header h2,
+  .drafts-header h2,
+  .review-manager-header h2,
+  .archive-manager-header h2,
+  .journalist-dashboard-header h2,
+  .newsroom-header h2 {
+    font-size: 32px;
+    overflow-wrap: anywhere;
+  }
+
+  .drafts-header > div,
+  .review-manager-header > div,
+  .archive-manager-header > div {
+    min-width: 0;
+  }
+
+  .admin-dashboard-header .close-button,
+  .article-manager-header .close-button,
+  .drafts-header .close-button,
+  .review-manager-header .close-button,
+  .archive-manager-header .close-button,
+  .journalist-dashboard-header .close-button,
+  .newsroom-header .close-button {
+    flex-shrink: 0;
+  }
+
+  .admin-dashboard-body,
+  .article-manager-body,
+  .journalist-dashboard-body,
+  .newsroom-body {
+    padding: 18px 14px 40px;
+  }
+
+  .admin-dashboard-intro,
+  .article-manager-intro,
+  .journalist-dashboard-profile,
+  .newsroom-intro {
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .admin-dashboard-intro h3,
+  .article-manager-intro h3,
+  .journalist-dashboard-name,
+  .newsroom-intro h3 {
+    font-size: 32px;
+    line-height: 1;
+    overflow-wrap: anywhere;
+  }
+
+  .admin-dashboard-date,
+  .article-manager-total,
+  .newsroom-member-total {
+    padding: 8px 10px;
+  }
+
+  .journalist-dashboard-role {
+    margin-top: 10px;
+  }
+
+  .admin-stats-grid,
+  .admin-quick-actions,
+  .admin-sports-grid,
+  .journalist-stats-grid,
+  .newsroom-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-stats-grid,
+  .journalist-stats-grid,
+  .newsroom-stats {
+    margin-bottom: 20px;
+  }
+
+  .admin-stat-card,
+  .journalist-stat-card,
+  .newsroom-stat {
+    min-width: 0;
+    min-height: 100px;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .admin-stat-card strong,
+  .journalist-stat-card strong,
+  .newsroom-stat strong {
+    font-size: 40px;
+  }
+
+  .admin-stat-card:nth-child(even),
+  .admin-quick-action:nth-child(even),
+  .journalist-stat-card:nth-child(even),
+  .newsroom-stat:nth-child(even) {
+    border-left: 3px solid var(--black);
+  }
+
+  .admin-stat-card:nth-child(2),
+  .admin-quick-action:nth-child(2),
+  .newsroom-stat:nth-child(2) {
+    border-top: 0;
+  }
+
+  .journalist-stat-card:last-child,
+  .newsroom-stat:last-child {
+    grid-column: 1 / -1;
+    border-left: 0;
+  }
+
+  .admin-dashboard-section {
+    margin-top: 24px;
+  }
+
+  .admin-dashboard-section-heading,
+  .journalist-dashboard-section-heading {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .admin-quick-action {
+    min-width: 0;
+    min-height: 90px;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .admin-sports-grid {
+    gap: 8px;
+  }
+
+  .admin-sport-card {
+    min-width: 0;
+    min-height: 110px;
+    padding: 12px;
+  }
+
+  .admin-sport-card-name {
+    font-size: 24px;
+    margin-bottom: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .admin-manager-launch,
+  .newsroom-invite-launch {
+    padding: 12px;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .admin-manager-launch-copy strong,
+  .newsroom-invite-launch strong {
+    font-size: 26px;
+  }
+
+  .article-manager-toolbar,
+  .newsroom-toolbar {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 155px), 1fr));
+    gap: 2px;
+    background: var(--black);
+    margin-bottom: 12px;
+  }
+
+  .article-manager-field,
+  .article-manager-field:nth-child(even),
+  .article-manager-field:nth-child(4),
+  .newsroom-field {
+    min-width: 0;
+    padding: 8px;
+    border: 0;
+    background: var(--paper);
+  }
+
+  .article-manager-field:first-child,
+  .newsroom-field:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .article-manager-field input,
+  .article-manager-field select,
+  .newsroom-field input,
+  .newsroom-field select,
+  .newsroom-role-select {
+    min-height: 44px;
+    font-size: 12px;
+  }
+
+  .article-manager-clear,
+  .newsroom-clear {
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 10px;
+  }
+
+  .article-manager-clear {
+    grid-column: auto;
+  }
+
+  .article-manager-summary {
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+
+  .journalist-dashboard-tools {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .drafts-list,
+  .review-manager-list,
+  .archive-manager-list {
+    padding: 14px;
+  }
+
+  .admin-recent-story,
+  .draft-card,
+  .review-story-card,
+  .archived-story-card,
+  .newsroom-member {
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 8px 10px;
+    padding: 14px 0;
+  }
+
+  .article-manager-row,
+  .journalist-article-row {
+    grid-template-columns: 28px max-content minmax(0, 1fr);
+    gap: 8px 10px;
+    padding: 14px 0;
+  }
+
+  .article-manager-status,
+  .journalist-article-status {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .article-manager-sport,
+  .journalist-article-sport {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .article-manager-copy,
+  .journalist-article-copy {
+    grid-column: 2 / -1;
+    grid-row: 2;
+  }
+
+  .article-manager-author {
+    grid-column: 2 / -1;
+  }
+
+  .admin-recent-actions,
+  .draft-card-actions,
+  .article-manager-actions,
+  .review-story-actions,
+  .archived-story-actions,
+  .journalist-article-actions {
+    grid-column: 1 / -1;
+    min-width: 0;
+    gap: 6px;
+    margin-top: 0;
+  }
+
+  .admin-recent-number,
+  .draft-card-number,
+  .article-manager-number,
+  .review-story-number,
+  .archived-story-number,
+  .journalist-article-number,
+  .newsroom-member-number {
+    font-size: 26px;
+  }
+
+  .draft-card-title,
+  .review-story-title,
+  .archived-story-title,
+  .journalist-article-title {
+    font-size: 24px;
+    line-height: 1;
+  }
+
+  .article-manager-title,
+  .admin-recent-title,
+  .newsroom-member-name {
+    line-height: 1;
+  }
+
+  .article-manager-copy,
+  .article-manager-author,
+  .review-story-copy,
+  .archived-story-copy,
+  .journalist-article-copy,
+  .newsroom-member > div {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .review-story-state,
+  .review-story-sport,
+  .archived-story-state,
+  .archived-story-sport {
+    margin-bottom: 6px;
+  }
+
+  .review-story-summary,
+  .review-story-meta,
+  .archived-story-meta,
+  .journalist-article-summary,
+  .journalist-article-tags,
+  .journalist-article-meta {
+    margin-top: 8px;
+  }
+
+  .admin-recent-action,
+  .draft-card-actions button,
+  .article-manager-action,
+  .review-action-button,
+  .archive-action-button,
+  .journalist-article-action {
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px 10px;
+    overflow-wrap: anywhere;
+  }
+
+  .newsroom-member-articles,
+  .newsroom-member-role {
+    margin-top: 0;
+  }
 }
