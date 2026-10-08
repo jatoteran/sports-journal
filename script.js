@@ -14965,7 +14965,21 @@ function syncSportsJournalCloudArticleContext() {
 
   sportsJournalCloudArticleContextVersion += 1;
   sportsJournalCloudArticleContext = context;
+  const readerArticle = findArticle(currentReaderArticleId);
   articles = loadSportsJournalCloudFallback(context);
+
+  // Keep only the open public story available during the context reload.
+  if (
+    readerModal?.classList.contains("open") &&
+    readerArticle?.status === "published" &&
+    (readerArticle.workflowStatus || readerArticle.status) === "published" &&
+    !readerArticle.archivedAt &&
+    !findArticle(readerArticle.id)
+  ) {
+
+    articles.push(readerArticle);
+
+  }
 
   refreshSportsJournalCloudViews();
 
@@ -14979,6 +14993,23 @@ function syncSportsJournalCloudArticleContext() {
 ========================================================= */
 
 function refreshSportsJournalCloudViews() {
+
+  if (readerModal?.classList.contains("open")) {
+
+    const readerArticle = findArticle(currentReaderArticleId);
+
+    if (!readerArticle) {
+
+      closeReader();
+
+    } else {
+
+      renderReaderRelatedStories(readerArticle);
+      renderReaderNavigation(readerArticle);
+
+    }
+
+  }
 
   renderCurrentView();
 
@@ -24132,6 +24163,8 @@ function syncSportsJournalStoryFromUrl(
 
   if (!article) {
 
+    closeReader();
+
     if (
       showNotFound
     ) {
@@ -24239,6 +24272,10 @@ window.addEventListener(
         setSportsJournalArticleDocumentTitle(
           article
         );
+
+      } else {
+
+        closeReader();
 
       }
 
