@@ -3403,7 +3403,19 @@ main {
   .reader-topbar {
     grid-template-columns: 1fr auto;
 
-    padding: 7px 14px;
+    min-height: 59px;
+    padding: 4px 14px;
+  }
+
+  .reader-back {
+    min-height: 44px;
+    padding: 0 8px;
+  }
+
+  .reader-back:focus-visible,
+  .reader-close:focus-visible {
+    outline: 2px solid var(--black);
+    outline-offset: -4px;
   }
 
 
@@ -3413,22 +3425,92 @@ main {
 
 
   .reader-header {
-    padding: 38px 18px;
+    padding: 24px 18px;
+  }
+
+  .reader-kicker {
+    margin-bottom: 18px;
   }
 
 
   .reader-header h1 {
-    font-size: clamp(45px, 15vw, 72px);
+    font-size: clamp(42px, 11vw, 56px);
+    line-height: 0.95;
+    overflow-wrap: anywhere;
   }
 
 
   .reader-summary {
+    margin: 20px 0;
     font-size: 18px;
+  }
+
+  .reader-meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .reader-meta-item {
+    min-width: 0;
+    min-height: 58px;
+    padding: 10px 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .reader-meta-item + .reader-meta-item {
+    border-top: 0;
+  }
+
+  .reader-meta-item:nth-child(2) {
+    border-left: 2px solid var(--black);
+  }
+
+  .reader-meta-item span {
+    margin-bottom: 4px;
+    font-size: 10px;
+  }
+
+  .reader-meta-item strong {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  #readerUpdatedBlock {
+    grid-column: 1 / -1;
+    min-height: 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px 10px;
+    border-top: 2px solid var(--black);
+    padding: 8px 12px;
+  }
+
+  #readerUpdatedBlock span {
+    margin-bottom: 0;
   }
 
 
   .reader-topics {
-    margin-top: 22px;
+    margin-top: 14px;
+    padding-top: 10px;
+  }
+
+  .reader-topics-label {
+    margin-bottom: 6px;
+    font-size: 10px;
+  }
+
+  .reader-topics-list {
+    gap: 6px;
+  }
+
+  .reader-topics .topic-chip {
+    min-height: 44px;
+    max-width: 100%;
+    padding: 6px 9px;
+    font-size: 10px;
+    overflow-wrap: anywhere;
   }
 
 
@@ -3441,9 +3523,9 @@ main {
 
   .reader-image {
     padding:
-      28px
       16px
-      45px;
+      16px
+      24px;
   }
 
 
@@ -3454,24 +3536,47 @@ main {
       68px;
 
     font-size: 18px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+  }
+
+  .reader-body p {
+    margin-bottom: 1.1em;
   }
 
 
   .reader-body h2 {
+    margin: 1.5em 0 0.6em;
     font-size: 36px;
+  }
+
+  .reader-body h3 {
+    margin: 1.4em 0 0.6em;
   }
 
 
   .reader-body blockquote {
     margin:
-      2em
+      1.5em
       -4px;
 
     padding:
-      22px
-      20px;
+      18px
+      16px;
 
     font-size: 28px;
+  }
+
+  .reader-body ul {
+    margin: 1.1em 0 1.4em;
+  }
+
+  .reader-body li {
+    margin-bottom: 0.45em;
+  }
+
+  .reader-body hr {
+    margin: 2em 0;
   }
 
 
