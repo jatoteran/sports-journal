@@ -14766,7 +14766,23 @@ function refreshSportsJournalCloudViews() {
    REQUIRE AUTHENTICATION
 ========================================================= */
 
+function hasSportsJournalCurrentProfile(
+  userId = sportsJournalAuth.session?.user?.id
+) {
+
+  return Boolean(
+    userId &&
+    sportsJournalAuth.session?.user?.id === userId &&
+    sportsJournalAuth.profile?.id === userId &&
+    ["admin", "editor", "journalist"].includes(sportsJournalAuth.profile.role)
+  );
+
+}
+
 async function requireSportsJournalCloudUser() {
+
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+  const expectedUserId = sportsJournalAuth.session?.user?.id;
 
   const {
     data,
@@ -14776,6 +14792,17 @@ async function requireSportsJournalCloudUser() {
       .sportsJournalDb
       .auth
       .getSession();
+
+  // Never resume an action using a session that changed during getSession().
+  if (
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    expectedUserId !== sportsJournalAuth.session?.user?.id ||
+    (data?.session && expectedUserId && data.session.user?.id !== expectedUserId)
+  ) {
+
+    return null;
+
+  }
 
 
   if (
@@ -14806,9 +14833,11 @@ async function requireSportsJournalCloudUser() {
 
   setSportsJournalAuthSession(data.session);
 
+  const resolvedSessionVersion = sportsJournalProfileSessionVersion;
+
 
   if (
-    !sportsJournalAuth.profile
+    !hasSportsJournalCurrentProfile(data.session.user.id)
   ) {
 
     if (await loadSportsJournalProfile() === false) {
@@ -14816,6 +14845,16 @@ async function requireSportsJournalCloudUser() {
       return null;
 
     }
+
+  }
+
+
+  if (
+    resolvedSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(data.session.user.id)
+  ) {
+
+    return null;
 
   }
 
@@ -14867,11 +14906,32 @@ function showSportsJournalCloudError(
 
 saveArticle =
   async function (
-    targetStatus
+    targetStatus,
+    resolvedUser = null
   ) {
 
+    const profileSessionVersion = sportsJournalProfileSessionVersion;
+    const user = resolvedUser || await requireSportsJournalCloudUser();
+
     if (
-      targetStatus === "published" &&
+      !user ||
+      profileSessionVersion !== sportsJournalProfileSessionVersion ||
+      !hasSportsJournalCurrentProfile(user.id)
+    ) {
+
+      return;
+
+    }
+
+    // Also protect direct calls to this Cloud implementation.
+    if (isSportsJournalJournalist() && targetStatus === "published") {
+
+      targetStatus = "review";
+
+    }
+
+    if (
+      (targetStatus === "published" || targetStatus === "review") &&
       !articleForm.reportValidity()
     ) {
 
@@ -14888,17 +14948,6 @@ saveArticle =
     if (
       !validateTagsInput()
     ) {
-
-      return;
-
-    }
-
-
-    const user =
-      await requireSportsJournalCloudUser();
-
-
-    if (!user) {
 
       return;
 
@@ -18361,6 +18410,19 @@ saveArticle =
     requestedStatus
   ) {
 
+    const profileSessionVersion = sportsJournalProfileSessionVersion;
+    const user = await requireSportsJournalCloudUser();
+
+    if (
+      !user ||
+      profileSessionVersion !== sportsJournalProfileSessionVersion ||
+      !hasSportsJournalCurrentProfile(user.id)
+    ) {
+
+      return;
+
+    }
+
     let targetStatus =
       requestedStatus;
 
@@ -18424,7 +18486,8 @@ saveArticle =
 
 
     return step132BaseSaveArticle(
-      targetStatus
+      targetStatus,
+      user
     );
 
   };
@@ -18556,9 +18619,22 @@ const step132BaseOpenEditor =
 
 
 openEditor =
-  function (
+  async function (
     articleId = null
   ) {
+
+    const profileSessionVersion = sportsJournalProfileSessionVersion;
+    const user = await requireSportsJournalCloudUser();
+
+    if (
+      !user ||
+      profileSessionVersion !== sportsJournalProfileSessionVersion ||
+      !hasSportsJournalCurrentProfile(user.id)
+    ) {
+
+      return;
+
+    }
 
     const role =
       getSportsJournalRole();
