@@ -13656,9 +13656,18 @@ async function handleSportsJournalPasswordSetup(
   errorBox.hidden =
     true;
 
+  const initialUserId = sportsJournalAuth.session?.user?.id;
+  const initialSessionVersion = sportsJournalProfileSessionVersion;
+
+  const isCurrentSetupContext = () => Boolean(
+    initialUserId &&
+    sportsJournalAuth.session?.user?.id === initialUserId &&
+    sportsJournalProfileSessionVersion === initialSessionVersion &&
+    (!sportsJournalAuth.profile || sportsJournalAuth.profile.id === initialUserId)
+  );
 
   if (
-    !sportsJournalAuth.session
+    !isCurrentSetupContext()
   ) {
 
     errorBox.textContent =
@@ -13710,6 +13719,7 @@ async function handleSportsJournalPasswordSetup(
 
 
   const {
+    data: passwordData,
     error: passwordError
   } =
     await window.sportsJournalDb
@@ -13718,6 +13728,14 @@ async function handleSportsJournalPasswordSetup(
         password
       });
 
+  if (
+    !isCurrentSetupContext() ||
+    (passwordData?.user && passwordData.user.id !== initialUserId)
+  ) {
+
+    return;
+
+  }
 
   if (
     passwordError
@@ -13740,12 +13758,11 @@ async function handleSportsJournalPasswordSetup(
     displayName
   ) {
 
-    const userId =
-      sportsJournalAuth
-        .session
-        .user
-        .id;
+    if (!isCurrentSetupContext()) {
 
+      return;
+
+    }
 
     const {
       error: profileError
@@ -13760,9 +13777,14 @@ async function handleSportsJournalPasswordSetup(
         })
         .eq(
           "id",
-          userId
+          initialUserId
         );
 
+    if (!isCurrentSetupContext()) {
+
+      return;
+
+    }
 
     if (
       profileError
@@ -13778,7 +13800,9 @@ async function handleSportsJournalPasswordSetup(
   }
 
 
-  if (await loadSportsJournalProfile() === false) {
+  const profileLoaded = await loadSportsJournalProfile();
+
+  if (!isCurrentSetupContext() || profileLoaded === false) {
 
     return;
 
