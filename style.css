@@ -2846,21 +2846,22 @@ main {
 
 
   .header-top {
-    min-height: 112px;
+    min-height: 92px;
 
     grid-template-columns:
-      42px
+      92px
       minmax(0, 1fr)
       92px;
 
-    column-gap: 14px;
+    column-gap: 8px;
 
-    padding: 14px;
+    padding: 10px 12px;
   }
 
 
   .menu-button {
-    width: 42px;
+    width: 44px;
+    min-height: 44px;
 
     padding: 0;
 
@@ -2887,7 +2888,7 @@ main {
 
   .write-button {
     width: 92px;
-    min-height: 40px;
+    min-height: 44px;
 
     padding: 8px 6px;
 
@@ -2912,7 +2913,12 @@ main {
 
 
   .header-bottom {
-    justify-content: flex-end;
+    min-height: 32px;
+    justify-content: center;
+
+    padding: 6px 12px;
+
+    text-align: center;
   }
 
 
@@ -2922,11 +2928,19 @@ main {
 
 
   .sport-filter {
-    min-width: 118px;
+    min-width: 88px;
+    min-height: 44px;
 
-    padding: 16px 18px;
+    padding: 14px 12px;
 
     scroll-snap-align: center;
+  }
+
+  .menu-button:focus-visible,
+  .write-button:focus-visible,
+  .sport-filter:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -4px;
   }
 
 
@@ -3393,20 +3407,14 @@ main {
 
   .header-top {
     grid-template-columns:
-      36px
+      84px
       minmax(0, 1fr)
       84px;
 
-    column-gap: 10px;
-
-    padding-left: 12px;
-    padding-right: 12px;
   }
 
 
   .menu-button {
-    width: 36px;
-
     font-size: 25px;
   }
 
@@ -3418,7 +3426,6 @@ main {
 
   .write-button {
     width: 84px;
-    min-height: 38px;
   }
 
 
@@ -3451,8 +3458,6 @@ main {
 
 
   .sport-filter {
-    min-width: 110px;
-
     font-size: 10px;
   }
 
