@@ -14961,13 +14961,6 @@ saveArticle =
 
     }
 
-    // Also protect direct calls to this Cloud implementation.
-    if (isSportsJournalJournalist() && targetStatus === "published") {
-
-      targetStatus = "review";
-
-    }
-
     if (
       (targetStatus === "published" || targetStatus === "review") &&
       !articleForm.reportValidity()
@@ -15004,6 +14997,29 @@ saveArticle =
             existingId
           )
         : null;
+
+    if (isSportsJournalJournalist()) {
+
+      const editorialState =
+        existingArticle?.workflowStatus || existingArticle?.status;
+
+      if (
+        !["draft", "review"].includes(targetStatus) ||
+        (existingId && (
+          !existingArticle ||
+          existingArticle.authorId !== user.id ||
+          existingArticle.archivedAt ||
+          existingArticle.status === "published" ||
+          !["draft", "review"].includes(editorialState)
+        ))
+      ) {
+
+        showToast("NO PUEDES MODIFICAR ESTA NOTICIA.");
+        return;
+
+      }
+
+    }
 
 
     const now =
@@ -15070,7 +15086,9 @@ saveArticle =
 
 
     const authorName =
-      authorInput
+      isSportsJournalJournalist()
+        ? (sportsJournalAuth.profile.display_name || "SPORTS JOURNAL")
+        : authorInput
         .value
         .trim() ||
       sportsJournalAuth
@@ -18312,11 +18330,17 @@ async function returnSportsJournalReviewToDraft(
   articleId
 ) {
 
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+
   const user =
     await requireSportsJournalCloudUser();
 
 
-  if (!user) {
+  if (
+    !user ||
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(user.id)
+  ) {
 
     return;
 
@@ -18348,11 +18372,10 @@ async function returnSportsJournalReviewToDraft(
 
   if (
     isSportsJournalJournalist() &&
-    String(
-      article.authorId
-    ) !==
-    String(
-      user.id
+    (
+      article.authorId !== user.id ||
+      article.archivedAt ||
+      article.status === "published"
     )
   ) {
 
