@@ -1,6 +1,9 @@
 const STORAGE_KEY =
   "sportsJournalArticles";
 
+const CLOUD_SNAPSHOT_KEY =
+  "sportsJournalCloudSnapshot";
+
 const BACKUPS_KEY =
   "sportsJournalAutomaticBackups";
 
@@ -51,8 +54,12 @@ const SPORT_DESCRIPTIONS = {
    STATE
 ========================================================= */
 
-let articles =
-  loadArticles();
+// Unowned legacy/local arrays must not become the active Cloud dataset.
+let articles = [];
+
+let sportsJournalCloudArticleContext = null;
+let sportsJournalCloudArticleContextVersion = 0;
+let sportsJournalCloudAuthReady = false;
 
 let activeSport =
   "all";
@@ -12533,6 +12540,8 @@ const sportsJournalAuth = {
 
 
 let sportsJournalProfileSessionVersion = 0;
+let sportsJournalProfileLoadSequence = 0;
+let sportsJournalProfileAppliedLoadSequence = 0;
 
 
 function setSportsJournalAuthSession(session) {
@@ -12550,6 +12559,10 @@ function setSportsJournalAuthSession(session) {
 
 
   sportsJournalAuth.session = session;
+
+  sportsJournalCloudAuthReady = true;
+
+  syncSportsJournalCloudArticleContext();
 
 }
 
@@ -13584,6 +13597,8 @@ async function handleSportsJournalLogout() {
 
 async function loadSportsJournalProfile() {
 
+  const profileLoadSequence = ++sportsJournalProfileLoadSequence;
+
   const profileSessionVersion =
     sportsJournalProfileSessionVersion;
 
@@ -13598,6 +13613,8 @@ async function loadSportsJournalProfile() {
 
     sportsJournalAuth.profile =
       null;
+
+    syncSportsJournalCloudArticleContext();
 
 
     return;
@@ -13636,6 +13653,22 @@ async function loadSportsJournalProfile() {
 
   }
 
+  // A superseded response must not revert a role already established by
+  // another load. Same-role duplicate loads keep their existing behavior.
+  if (
+    profileLoadSequence < sportsJournalProfileAppliedLoadSequence &&
+    (error || data?.role !== sportsJournalAuth.profile?.role)
+  ) {
+
+    return false;
+
+  }
+
+  sportsJournalProfileAppliedLoadSequence = Math.max(
+    sportsJournalProfileAppliedLoadSequence,
+    profileLoadSequence
+  );
+
 
   if (error) {
 
@@ -13648,6 +13681,8 @@ async function loadSportsJournalProfile() {
     sportsJournalAuth.profile =
       null;
 
+    syncSportsJournalCloudArticleContext();
+
 
     return;
 
@@ -13656,6 +13691,16 @@ async function loadSportsJournalProfile() {
 
   sportsJournalAuth.profile =
     data;
+
+  if (
+    syncSportsJournalCloudArticleContext() &&
+    getSportsJournalCloudArticleContext().role
+  ) {
+
+    // Existing timers may have run before the profile established its role.
+    loadSportsJournalArticlesFromCloud({ silent: true });
+
+  }
 
 }
 
@@ -14360,6 +14405,16 @@ async function loadSportsJournalArticlesFromCloud(
   }
 
 
+  const expectedContext = getSportsJournalCloudArticleContext();
+
+  if (!sportsJournalCloudAuthReady || !expectedContext.role) {
+
+    return false;
+
+  }
+
+  const contextVersion = sportsJournalCloudArticleContextVersion;
+
   const currentSequence =
     ++sportsJournalCloudLoadSequence;
 
@@ -14409,7 +14464,8 @@ async function loadSportsJournalArticlesFromCloud(
 
   if (
     currentSequence !==
-    sportsJournalCloudLoadSequence
+    sportsJournalCloudLoadSequence ||
+    contextVersion !== sportsJournalCloudArticleContextVersion
   ) {
 
     return false;
@@ -14425,18 +14481,14 @@ async function loadSportsJournalArticlesFromCloud(
     );
 
 
-    /*
-      IMPORTANT:
-      We do NOT empty articles.
-
-      Current localStorage data remains available
-      as an emergency fallback.
-    */
+    // Only the dataset retained for this exact user/role remains active.
 
     if (!silent) {
 
       showToast(
-        "USANDO RESPALDO LOCAL · SUPABASE NO RESPONDIÓ."
+        articles.length
+          ? "USANDO RESPALDO LOCAL · SUPABASE NO RESPONDIÓ."
+          : "SUPABASE NO RESPONDIÓ · SIN RESPALDO PARA ESTA CUENTA."
       );
 
     }
@@ -14498,10 +14550,8 @@ function cacheSportsJournalCloudSnapshot() {
     to overwrite a more complete local backup.
   */
 
-  const role =
-    sportsJournalAuth
-      ?.profile
-      ?.role;
+  const context = getSportsJournalCloudArticleContext();
+  const role = context.role;
 
 
   if (
@@ -14514,7 +14564,107 @@ function cacheSportsJournalCloudSnapshot() {
   }
 
 
-  persistArticles();
+  if (!persistArticles()) {
+
+    return;
+
+  }
+
+  try {
+
+    localStorage.setItem(
+      CLOUD_SNAPSHOT_KEY,
+      JSON.stringify({
+        version: 1,
+        userId: context.userId,
+        role: context.role,
+        articles
+      })
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+}
+
+
+function getSportsJournalCloudArticleContext() {
+
+  const userId = sportsJournalAuth.session?.user?.id || null;
+  const profile = sportsJournalAuth.profile;
+
+  return {
+    userId,
+    role: !sportsJournalCloudAuthReady
+      ? null
+      : !userId
+        ? "guest"
+        : profile?.id === userId &&
+          ["admin", "editor", "journalist"].includes(profile.role)
+          ? profile.role
+          : null
+  };
+
+}
+
+
+function loadSportsJournalCloudFallback(context) {
+
+  if (context.role !== "admin" && context.role !== "editor") {
+
+    return [];
+
+  }
+
+  try {
+
+    const snapshot = JSON.parse(localStorage.getItem(CLOUD_SNAPSHOT_KEY));
+
+    if (
+      snapshot?.version === 1 &&
+      snapshot.userId === context.userId &&
+      snapshot.role === context.role &&
+      Array.isArray(snapshot.articles)
+    ) {
+
+      return snapshot.articles;
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+  return [];
+
+}
+
+
+function syncSportsJournalCloudArticleContext() {
+
+  const context = getSportsJournalCloudArticleContext();
+
+  if (
+    sportsJournalCloudArticleContext?.userId === context.userId &&
+    sportsJournalCloudArticleContext?.role === context.role
+  ) {
+
+    return false;
+
+  }
+
+  sportsJournalCloudArticleContextVersion += 1;
+  sportsJournalCloudArticleContext = context;
+  articles = loadSportsJournalCloudFallback(context);
+
+  refreshSportsJournalCloudViews();
+
+  return true;
 
 }
 
@@ -14530,6 +14680,14 @@ function refreshSportsJournalCloudViews() {
   updateManagementCounts();
 
   updateBackupStatus();
+
+  const reviewManager = document.getElementById("reviewManagerModal");
+
+  if (reviewManager?.classList.contains("open")) {
+
+    renderSportsJournalReviewManager();
+
+  }
 
 
   if (
