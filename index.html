@@ -23,7 +23,7 @@
   type="image/svg+xml"
   href="./favicon.svg"
   git/>
-  <link rel="stylesheet" href="style.css?v=2026-10-08.1" />
+  <link rel="stylesheet" href="style.css?v=2026-10-08.4" />
 </head>
 
 <body>
@@ -376,6 +376,13 @@
         >
           <span>ESCRIBIR NOTICIA</span>
           <span>+</span>
+        </button>
+
+        <button class="journal-menu-button" id="aboutMenuButton" type="button">
+          <span>SOBRE SPORTS JOURNAL</span><span>→</span>
+        </button>
+        <button class="journal-menu-button" id="contactMenuButton" type="button">
+          <span>CONTACTO</span><span>→</span>
         </button>
 
       </div>
@@ -1724,9 +1731,79 @@
     aria-live="polite"
   ></div>
 
+  <div class="modal public-author-modal" id="publicAuthorModal" aria-hidden="true">
+    <section class="reader-panel public-author-panel" role="dialog" aria-modal="true" aria-labelledby="publicAuthorName" tabindex="-1">
+      <div class="reader-topbar">
+        <button type="button" class="reader-back" id="publicAuthorBack">← VOLVER</button>
+        <div class="reader-topbar-brand">SPORTS JOURNAL</div>
+        <button type="button" class="close-button reader-close" id="publicAuthorClose" aria-label="Cerrar perfil de autor">×</button>
+      </div>
+      <header class="public-author-header">
+        <p class="reader-kicker">AUTOR</p>
+        <div class="public-author-identity">
+          <div class="public-author-avatar"><span id="publicAuthorPlaceholder" aria-hidden="true">SJ</span><img id="publicAuthorAvatar" alt="" hidden></div>
+          <h1 id="publicAuthorName">CARGANDO AUTOR…</h1>
+        </div>
+        <p id="publicAuthorBio" hidden></p>
+        <p id="publicAuthorMessage" role="status"></p>
+      </header>
+      <section class="public-author-publications" aria-labelledby="publicAuthorArticlesHeading" hidden>
+        <h2 id="publicAuthorArticlesHeading">ARTÍCULOS PUBLICADOS</h2>
+        <p id="publicAuthorCount"></p>
+        <div id="publicAuthorArticles"></div>
+      </section>
+    </section>
+  </div>
+
+  <div class="modal about-modal" id="aboutModal" aria-hidden="true">
+    <section class="reader-panel about-panel" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" tabindex="-1">
+      <div class="reader-topbar">
+        <button class="reader-back" id="aboutBack" type="button">← VOLVER</button>
+        <div class="reader-topbar-brand">SPORTS JOURNAL</div>
+        <button class="close-button reader-close" id="aboutClose" type="button" aria-label="Cerrar Sobre Sports Journal">×</button>
+      </div>
+      <div class="about-content">
+        <p class="reader-kicker">LA PUBLICACIÓN</p>
+        <h1 id="aboutTitle">SOBRE<br>SPORTS JOURNAL</h1>
+        <p>Sports Journal es una publicación deportiva de noticias y análisis sobre fútbol, tenis, béisbol y baloncesto.</p>
+        <div class="about-sports" aria-label="Deportes que cubrimos">
+          <span>FÚTBOL</span><span>TENIS</span><span>BÉISBOL</span><span>BALONCESTO</span>
+        </div>
+        <p>Seguimos la actualidad de los cuatro deportes: sus partidos, torneos y protagonistas.</p>
+        <p>El análisis acompaña a la noticia para aportar contexto a lo que ocurre dentro y fuera de la competición.</p>
+        <p class="about-signoff">EL DEPORTE, CONTADO Y ANALIZADO.</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal about-modal" id="contactModal" aria-hidden="true">
+    <section class="reader-panel about-panel contact-panel" role="dialog" aria-modal="true" aria-labelledby="contactTitle" tabindex="-1">
+      <div class="reader-topbar">
+        <button class="reader-back" id="contactBack" type="button">← VOLVER</button>
+        <div class="reader-topbar-brand">SPORTS JOURNAL</div>
+        <button class="close-button reader-close" id="contactClose" type="button" aria-label="Cerrar Contacto">×</button>
+      </div>
+      <div class="about-content contact-content">
+        <p class="reader-kicker">SPORTS JOURNAL</p>
+        <h1 id="contactTitle">CONTACTO</h1>
+        <h2>¿TIENES UNA HISTORIA, CORRECCIÓN O PROPUESTA?</h2>
+        <p>Puedes escribir a SPORTS JOURNAL para consultas editoriales, correcciones, propuestas de colaboración o información relacionada con nuestras historias.</p>
+        <p class="contact-email">sportsjournal.cont@gmail.com</p>
+        <div class="contact-actions">
+          <a href="mailto:sportsjournal.cont@gmail.com?subject=Contacto%20%E2%80%94%20Sports%20Journal">ESCRIBIR A SPORTS JOURNAL</a>
+          <button id="contactCopyEmail" type="button">COPIAR CORREO</button>
+        </div>
+        <div id="contactCopyManual" hidden>
+          <label for="contactEmailInput">COPIA EL CORREO SELECCIONADO:</label>
+          <input id="contactEmailInput" type="text" value="sportsjournal.cont@gmail.com" readonly />
+        </div>
+      </div>
+    </section>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
-  <script src="script.js?v=2026-10-08.1"></script>
+  <script src="script.js?v=2026-10-08.4"></script>
 
 </body>
 </html>
