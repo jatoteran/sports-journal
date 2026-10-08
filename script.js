@@ -12651,6 +12651,8 @@ function setSportsJournalAuthSession(session) {
 
     sportsJournalProfileSessionVersion += 1;
 
+    invalidateSportsJournalPendingDestructiveActions();
+
     sportsJournalAuth.profile = null;
 
   }
@@ -12661,6 +12663,26 @@ function setSportsJournalAuthSession(session) {
   sportsJournalCloudAuthReady = true;
 
   syncSportsJournalCloudArticleContext();
+
+}
+
+
+function invalidateSportsJournalPendingDestructiveActions() {
+
+  pendingDeleteArticleId = null;
+  pendingArchiveArticleId = null;
+
+  if (confirmModal?.classList.contains("open")) {
+
+    closeConfirmModal();
+
+  }
+
+  if (document.getElementById("archiveConfirmModal")?.classList.contains("open")) {
+
+    closeArchiveConfirmation();
+
+  }
 
 }
 
@@ -13775,6 +13797,8 @@ async function loadSportsJournalProfile() {
       error
     );
 
+    invalidateSportsJournalPendingDestructiveActions();
+
 
     sportsJournalAuth.profile =
       null;
@@ -13786,6 +13810,12 @@ async function loadSportsJournalProfile() {
 
   }
 
+
+  if (sportsJournalAuth.profile?.role !== data?.role) {
+
+    invalidateSportsJournalPendingDestructiveActions();
+
+  }
 
   sportsJournalAuth.profile =
     data;
