@@ -23,7 +23,7 @@
   type="image/svg+xml"
   href="./favicon.svg"
   git/>
-  <link rel="stylesheet" href="style.css?v=2026-10-08.3" />
+  <link rel="stylesheet" href="style.css?v=2026-10-08.4" />
 </head>
 
 <body>
@@ -380,6 +380,9 @@
 
         <button class="journal-menu-button" id="aboutMenuButton" type="button">
           <span>SOBRE SPORTS JOURNAL</span><span>→</span>
+        </button>
+        <button class="journal-menu-button" id="contactMenuButton" type="button">
+          <span>CONTACTO</span><span>→</span>
         </button>
 
       </div>
@@ -1773,9 +1776,34 @@
     </section>
   </div>
 
+  <div class="modal about-modal" id="contactModal" aria-hidden="true">
+    <section class="reader-panel about-panel contact-panel" role="dialog" aria-modal="true" aria-labelledby="contactTitle" tabindex="-1">
+      <div class="reader-topbar">
+        <button class="reader-back" id="contactBack" type="button">← VOLVER</button>
+        <div class="reader-topbar-brand">SPORTS JOURNAL</div>
+        <button class="close-button reader-close" id="contactClose" type="button" aria-label="Cerrar Contacto">×</button>
+      </div>
+      <div class="about-content contact-content">
+        <p class="reader-kicker">SPORTS JOURNAL</p>
+        <h1 id="contactTitle">CONTACTO</h1>
+        <h2>¿TIENES UNA HISTORIA, CORRECCIÓN O PROPUESTA?</h2>
+        <p>Puedes escribir a SPORTS JOURNAL para consultas editoriales, correcciones, propuestas de colaboración o información relacionada con nuestras historias.</p>
+        <p class="contact-email">sportsjournal.cont@gmail.com</p>
+        <div class="contact-actions">
+          <a href="mailto:sportsjournal.cont@gmail.com?subject=Contacto%20%E2%80%94%20Sports%20Journal">ESCRIBIR A SPORTS JOURNAL</a>
+          <button id="contactCopyEmail" type="button">COPIAR CORREO</button>
+        </div>
+        <div id="contactCopyManual" hidden>
+          <label for="contactEmailInput">COPIA EL CORREO SELECCIONADO:</label>
+          <input id="contactEmailInput" type="text" value="sportsjournal.cont@gmail.com" readonly />
+        </div>
+      </div>
+    </section>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
-  <script src="script.js?v=2026-10-08.3"></script>
+  <script src="script.js?v=2026-10-08.4"></script>
 
 </body>
 </html>

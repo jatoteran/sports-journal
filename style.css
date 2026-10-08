@@ -2244,6 +2244,15 @@ main {
 .about-content .about-signoff { border-top: var(--border); padding-top: 18px; font-weight: 900; }
 .about-panel button:focus-visible { outline: 2px solid var(--black); outline-offset: 2px; }
 
+.contact-content h2 { font: clamp(24px, 4vw, 38px)/1.15 Impact, "Arial Black", sans-serif; }
+.contact-content .contact-email { overflow-wrap: anywhere; font-weight: 900; border-top: var(--border); padding-top: 18px; }
+.contact-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 24px 0; }
+.contact-actions a, .contact-actions button { min-height: 44px; max-width: 100%; padding: 14px 16px; border: var(--border); color: var(--black); background: var(--yellow); font: 900 12px/1.4 Arial, sans-serif; text-decoration: none; text-align: center; cursor: pointer; }
+.contact-actions button { background: var(--cream); }
+.contact-panel a:focus-visible, .contact-panel input:focus-visible { outline: 2px solid var(--black); outline-offset: 2px; }
+#contactCopyManual label { display: block; font-size: 12px; font-weight: 900; margin-bottom: 8px; }
+#contactEmailInput { width: 100%; min-width: 0; min-height: 44px; padding: 10px; border: var(--border); background: var(--cream); color: var(--black); font: 16px Georgia, serif; }
+
 .public-author-modal { z-index: 1500; }
 .public-author-panel .reader-back { min-height: 44px; padding: 0 8px; }
 .public-author-header, .public-author-publications { padding: 28px clamp(18px, 4vw, 48px); }

@@ -4786,6 +4786,8 @@ function openReader(
 
   closeSportsJournalAbout({ syncUrl: false });
 
+  closeSportsJournalContact({ syncUrl: false });
+
 
   readerSport.textContent =
     getSportLabel(
@@ -6599,7 +6601,8 @@ function syncBodyScrollState() {
   document.body.classList.toggle(
     "modal-open",
     open || document.getElementById("publicAuthorModal")?.classList.contains("open") ||
-      document.getElementById("aboutModal")?.classList.contains("open")
+      document.getElementById("aboutModal")?.classList.contains("open") ||
+      document.getElementById("contactModal")?.classList.contains("open")
   );
 
 }
@@ -24697,6 +24700,7 @@ function setSportsJournalPublicAuthorMetadata(profile) {
 }
 
 async function openSportsJournalPublicAuthor(profileId, options = {}) {
+  closeSportsJournalContact({ syncUrl: false });
   closeSportsJournalAbout({ syncUrl: false });
   const modal = document.getElementById("publicAuthorModal");
   const sequence = ++sportsJournalPublicAuthorSequence;
@@ -24781,6 +24785,8 @@ function closeSportsJournalPublicAuthor(options = {}) {
 }
 
 function syncSportsJournalPublicAuthorRoute() {
+  if (syncSportsJournalContactRoute()) return true;
+  closeSportsJournalContact({ syncUrl: false });
   if (syncSportsJournalAboutRoute()) return true;
   closeSportsJournalAbout({ syncUrl: false });
   const url = new URL(location.href);
@@ -24835,6 +24841,7 @@ function setSportsJournalAboutMetadata() {
 }
 
 function openSportsJournalAbout(options = {}) {
+  closeSportsJournalContact({ syncUrl: false });
   const modal = document.getElementById("aboutModal");
   if (modal.classList.contains("open")) {
     setSportsJournalAboutMetadata();
@@ -24896,6 +24903,113 @@ document.getElementById("aboutModal").addEventListener("keydown", event => {
     event.preventDefault();
     event.stopPropagation();
     closeSportsJournalAbout();
+  } else if (event.key === "Tab") {
+    const items = getSportsJournalModalFocusables(event.currentTarget.querySelector('[role="dialog"]'));
+    if (!items.includes(document.activeElement) || (!event.shiftKey && document.activeElement === items.at(-1)) || (event.shiftKey && document.activeElement === items[0])) {
+      event.preventDefault();
+      (event.shiftKey ? items.at(-1) : items[0])?.focus();
+    }
+  }
+});
+
+function setSportsJournalContactMetadata() {
+  resetSportsJournalDocumentTitle();
+  const canonical = document.querySelector('link[rel="canonical"]');
+  const url = new URL(canonical.href);
+  url.searchParams.set("page", "contact");
+  canonical.href = url.toString();
+  const title = "Contacto | Sports Journal";
+  const description = "Contacta con Sports Journal para consultas editoriales, correcciones, propuestas de colaboración e información sobre nuestras historias.";
+  document.title = title;
+  setSportsJournalSeoMeta("name", "description", description);
+  setSportsJournalSeoMeta("property", "og:title", title);
+  setSportsJournalSeoMeta("property", "og:description", description);
+  setSportsJournalSeoMeta("property", "og:url", url.toString());
+  setSportsJournalSeoMeta("name", "twitter:title", title);
+  setSportsJournalSeoMeta("name", "twitter:description", description);
+}
+
+function openSportsJournalContact(options = {}) {
+  const modal = document.getElementById("contactModal");
+  if (modal.classList.contains("open")) {
+    setSportsJournalContactMetadata();
+    return;
+  }
+  closeSportsJournalAbout({ syncUrl: false });
+  closeSportsJournalPublicAuthor({ syncUrl: false });
+  closeReader({ syncUrl: false });
+  closeSideMenu();
+  if (options.syncUrl !== false) {
+    const url = new URL(location.href);
+    url.search = "";
+    url.hash = "";
+    url.searchParams.set("page", "contact");
+    history.pushState({ sportsJournalContactFromNavigation: true }, "", url.toString());
+  }
+  document.getElementById("contactCopyManual").hidden = true;
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+  const panel = modal.querySelector('[role="dialog"]');
+  panel.scrollTop = 0;
+  panel.focus();
+  syncBodyScrollState();
+  setSportsJournalContactMetadata();
+}
+
+function closeSportsJournalContact(options = {}) {
+  const modal = document.getElementById("contactModal");
+  if (!modal?.classList.contains("open")) return;
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+  resetSportsJournalDocumentTitle();
+  syncBodyScrollState();
+  if (options.syncUrl === false) return;
+  if (history.state?.sportsJournalContactFromNavigation) {
+    history.back();
+  } else {
+    const url = new URL(location.href);
+    url.searchParams.delete("page");
+    history.replaceState({}, "", url.toString());
+    document.getElementById("menuButton").focus();
+  }
+}
+
+function syncSportsJournalContactRoute() {
+  const url = new URL(location.href);
+  if (url.searchParams.get("page") !== "contact") return false;
+  if (url.searchParams.has("story") || url.searchParams.has("author")) {
+    url.searchParams.delete("page");
+    history.replaceState(history.state, "", url.toString());
+    return false;
+  }
+  openSportsJournalContact({ syncUrl: false });
+  return true;
+}
+
+async function copySportsJournalContactEmail() {
+  const modal = document.getElementById("contactModal");
+  if (!modal.classList.contains("open")) return;
+  const email = document.getElementById("contactEmailInput").value;
+  try {
+    await navigator.clipboard.writeText(email);
+    if (modal.classList.contains("open")) showToast("CORREO COPIADO ✓");
+  } catch {
+    if (!modal.classList.contains("open")) return;
+    document.getElementById("contactCopyManual").hidden = false;
+    const input = document.getElementById("contactEmailInput");
+    input.focus();
+    input.select();
+  }
+}
+
+document.getElementById("contactMenuButton").addEventListener("click", () => openSportsJournalContact());
+document.getElementById("contactCopyEmail").addEventListener("click", copySportsJournalContactEmail);
+["contactBack", "contactClose"].forEach(id => document.getElementById(id).addEventListener("click", () => closeSportsJournalContact()));
+document.getElementById("contactModal").addEventListener("keydown", event => {
+  if (event.key === "Escape") {
+    event.preventDefault();
+    event.stopPropagation();
+    closeSportsJournalContact();
   } else if (event.key === "Tab") {
     const items = getSportsJournalModalFocusables(event.currentTarget.querySelector('[role="dialog"]'));
     if (!items.includes(document.activeElement) || (!event.shiftKey && document.activeElement === items.at(-1)) || (event.shiftKey && document.activeElement === items[0])) {
