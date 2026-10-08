@@ -24046,7 +24046,11 @@ openReader =
       );
 
 
-    if (!article) {
+    if (
+      !article ||
+      !readerModal.classList.contains("open") ||
+      String(currentReaderArticleId) !== String(article.id)
+    ) {
 
       return result;
 
