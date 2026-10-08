@@ -2169,6 +2169,18 @@ main {
   margin-top: 28px;
 }
 
+#confirmModal .confirm-panel,
+#archiveConfirmModal .archive-confirm-panel,
+#restoreModal .restore-panel,
+#cloudRestoreModal .restore-panel {
+  --confirmation-inset: max(16px, env(safe-area-inset-top, 0px), env(safe-area-inset-bottom, 0px));
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - var(--confirmation-inset) - var(--confirmation-inset));
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  overflow-wrap: anywhere;
+}
+
 .restore-file-card {
   border: var(--border);
 
@@ -2839,6 +2851,13 @@ main {
 ========================================================= */
 
 @media (max-width: 650px) {
+
+  #confirmModal .confirm-panel,
+  #archiveConfirmModal .archive-confirm-panel,
+  #restoreModal .restore-panel,
+  #cloudRestoreModal .restore-panel {
+    padding: 24px;
+  }
 
   .site-header {
     border-top-width: 6px;
