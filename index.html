@@ -23,7 +23,7 @@
   type="image/svg+xml"
   href="./favicon.svg"
   git/>
-  <link rel="stylesheet" href="style.css?v=2026-10-08.1" />
+  <link rel="stylesheet" href="style.css?v=2026-10-08.2" />
 </head>
 
 <body>
@@ -1724,9 +1724,33 @@
     aria-live="polite"
   ></div>
 
+  <div class="modal public-author-modal" id="publicAuthorModal" aria-hidden="true">
+    <section class="reader-panel public-author-panel" role="dialog" aria-modal="true" aria-labelledby="publicAuthorName" tabindex="-1">
+      <div class="reader-topbar">
+        <button type="button" class="reader-back" id="publicAuthorBack">← VOLVER</button>
+        <div class="reader-topbar-brand">SPORTS JOURNAL</div>
+        <button type="button" class="close-button reader-close" id="publicAuthorClose" aria-label="Cerrar perfil de autor">×</button>
+      </div>
+      <header class="public-author-header">
+        <p class="reader-kicker">AUTOR</p>
+        <div class="public-author-identity">
+          <div class="public-author-avatar"><span id="publicAuthorPlaceholder" aria-hidden="true">SJ</span><img id="publicAuthorAvatar" alt="" hidden></div>
+          <h1 id="publicAuthorName">CARGANDO AUTOR…</h1>
+        </div>
+        <p id="publicAuthorBio" hidden></p>
+        <p id="publicAuthorMessage" role="status"></p>
+      </header>
+      <section class="public-author-publications" aria-labelledby="publicAuthorArticlesHeading" hidden>
+        <h2 id="publicAuthorArticlesHeading">ARTÍCULOS PUBLICADOS</h2>
+        <p id="publicAuthorCount"></p>
+        <div id="publicAuthorArticles"></div>
+      </section>
+    </section>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
-  <script src="script.js?v=2026-10-08.1"></script>
+  <script src="script.js?v=2026-10-08.2"></script>
 
 </body>
 </html>

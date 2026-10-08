@@ -4782,6 +4782,8 @@ function openReader(
   currentReaderArticleId =
     article.id;
 
+  closeSportsJournalPublicAuthor({ syncUrl: false });
+
 
   readerSport.textContent =
     getSportLabel(
@@ -4806,6 +4808,8 @@ function openReader(
 
   readerAuthor.textContent =
     article.author;
+
+  syncSportsJournalReaderAuthor(article);
 
 
   readerReadTime.textContent =
@@ -6592,7 +6596,7 @@ function syncBodyScrollState() {
 
   document.body.classList.toggle(
     "modal-open",
-    open
+    open || document.getElementById("publicAuthorModal")?.classList.contains("open")
   );
 
 }
@@ -15020,6 +15024,11 @@ function syncSportsJournalCloudArticleContext() {
 ========================================================= */
 
 function refreshSportsJournalCloudViews() {
+
+  if (sportsJournalPublicAuthorProfile && document.getElementById("publicAuthorModal").classList.contains("open")) {
+    renderSportsJournalPublicAuthorArticles();
+    setSportsJournalPublicAuthorMetadata(sportsJournalPublicAuthorProfile);
+  }
 
   if (readerModal?.classList.contains("open")) {
 
@@ -23971,6 +23980,9 @@ function setSportsJournalStoryUrl(
 
   }
 
+  const storyUrl = new URL(url);
+  storyUrl.searchParams.delete("author");
+
 
   const state = {
 
@@ -23992,7 +24004,7 @@ function setSportsJournalStoryUrl(
     window.history.replaceState(
       state,
       "",
-      url
+      storyUrl.toString()
     );
 
   } else {
@@ -24000,7 +24012,7 @@ function setSportsJournalStoryUrl(
     window.history.pushState(
       state,
       "",
-      url
+      storyUrl.toString()
     );
 
   }
@@ -24229,6 +24241,9 @@ function syncSportsJournalStoryFromUrl(
   options = {}
 ) {
 
+  if (syncSportsJournalPublicAuthorRoute()) return true;
+  closeSportsJournalPublicAuthor({ syncUrl: false });
+
   const {
     showNotFound = false
   } = options;
@@ -24367,6 +24382,9 @@ loadSportsJournalArticlesFromCloud =
 window.addEventListener(
   "popstate",
   () => {
+
+    if (syncSportsJournalPublicAuthorRoute()) return;
+    closeSportsJournalPublicAuthor({ syncUrl: false });
 
     const slug =
       getSportsJournalStorySlugFromUrl();
@@ -24624,4 +24642,173 @@ document.getElementById("readerShareOptions").addEventListener("keydown", event 
   document.getElementById("readerShareButton").focus();
 });
 
+let sportsJournalPublicAuthorId = null;
+let sportsJournalPublicAuthorProfile = null;
+let sportsJournalPublicAuthorSequence = 0;
+
+function isSportsJournalProfileId(id) {
+  return typeof id === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+}
+
+function syncSportsJournalReaderAuthor(article) {
+  if (!isSportsJournalPublicShareArticle(article) || !isSportsJournalProfileId(article.authorId)) return;
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "reader-author-button";
+  button.textContent = `${article.author} →`;
+  button.addEventListener("click", () => {
+    if (currentReaderArticleId !== article.id || !getSportsJournalReaderShareData()) return;
+    openSportsJournalPublicAuthor(article.authorId, { fromStory: true });
+  });
+  readerAuthor.replaceChildren(button);
+}
+
+function renderSportsJournalPublicAuthorArticles() {
+  const profile = sportsJournalPublicAuthorProfile;
+  if (!profile) return;
+  const items = articles.filter(article => article.authorId === profile.id &&
+    isSportsJournalPublicShareArticle(article)).sort(sortArticlesNewestFirst);
+  const list = document.getElementById("publicAuthorArticles");
+  list.replaceChildren(...items.map((article, index) => createEditorialListRow(article, index + 1, true)));
+  document.querySelector(".public-author-publications").hidden = false;
+  document.getElementById("publicAuthorCount").textContent = `${items.length} ${items.length === 1 ? "PUBLICACIÓN" : "PUBLICACIONES"}`;
+  document.getElementById("publicAuthorMessage").textContent = items.length ? "" : "TODAVÍA NO HAY ARTÍCULOS PUBLICADOS";
+}
+
+function setSportsJournalPublicAuthorMetadata(profile) {
+  resetSportsJournalDocumentTitle();
+  const canonical = document.querySelector('link[rel="canonical"]');
+  const url = new URL(canonical.href);
+  url.searchParams.set("author", profile.id);
+  canonical.href = url.toString();
+  const title = `${profile.display_name || "Sports Journal"} | Autor — Sports Journal`;
+  const description = profile.bio?.trim().slice(0, 220) || `Artículos publicados de ${profile.display_name || "este autor"} en Sports Journal.`;
+  document.title = title;
+  setSportsJournalSeoMeta("name", "description", description);
+  setSportsJournalSeoMeta("property", "og:title", title);
+  setSportsJournalSeoMeta("property", "og:description", description);
+  setSportsJournalSeoMeta("property", "og:url", url.toString());
+  setSportsJournalSeoMeta("name", "twitter:title", title);
+  setSportsJournalSeoMeta("name", "twitter:description", description);
+}
+
+async function openSportsJournalPublicAuthor(profileId, options = {}) {
+  const modal = document.getElementById("publicAuthorModal");
+  const sequence = ++sportsJournalPublicAuthorSequence;
+  sportsJournalPublicAuthorId = profileId;
+  sportsJournalPublicAuthorProfile = null;
+  closeReader({ syncUrl: false });
+  if (options.syncUrl !== false) {
+    const url = new URL(location.href);
+    url.search = "";
+    url.hash = "";
+    url.searchParams.set("author", profileId);
+    history.pushState({ sportsJournalAuthorFromStory: Boolean(options.fromStory) }, "", url.toString());
+  }
+  resetSportsJournalDocumentTitle();
+  document.getElementById("publicAuthorName").textContent = "CARGANDO AUTOR…";
+  document.getElementById("publicAuthorBio").hidden = true;
+  document.getElementById("publicAuthorAvatar").hidden = true;
+  document.getElementById("publicAuthorAvatar").removeAttribute("src");
+  document.getElementById("publicAuthorPlaceholder").hidden = false;
+  document.querySelector(".public-author-publications").hidden = true;
+  document.getElementById("publicAuthorArticles").replaceChildren();
+  document.getElementById("publicAuthorMessage").textContent = "";
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+  modal.querySelector(".public-author-panel").scrollTop = 0;
+  modal.querySelector(".public-author-panel").focus();
+  syncBodyScrollState();
+  try {
+    if (!isSportsJournalProfileId(profileId)) throw new Error("Invalid profile id");
+    const { data, error } = await window.sportsJournalDb.from("profiles")
+      .select("id, display_name, avatar_url, bio").eq("id", profileId).maybeSingle();
+    if (sequence !== sportsJournalPublicAuthorSequence || !modal.classList.contains("open")) return;
+    if (error || !data || data.id !== profileId) throw new Error("Unavailable profile");
+    // Retain only the public fields, independently of the editorial session.
+    sportsJournalPublicAuthorProfile = {
+      id: data.id, display_name: data.display_name || "Sports Journal",
+      avatar_url: data.avatar_url || "", bio: data.bio || ""
+    };
+    const profile = sportsJournalPublicAuthorProfile;
+    document.getElementById("publicAuthorName").textContent = profile.display_name;
+    const bio = document.getElementById("publicAuthorBio");
+    bio.textContent = profile.bio;
+    bio.hidden = !profile.bio.trim();
+    const avatar = document.getElementById("publicAuthorAvatar");
+    const image = getSportsJournalSeoImage(profile.avatar_url);
+    if (image) {
+      avatar.src = image;
+      avatar.hidden = false;
+      document.getElementById("publicAuthorPlaceholder").hidden = true;
+    }
+    renderSportsJournalPublicAuthorArticles();
+    setSportsJournalPublicAuthorMetadata(profile);
+  } catch {
+    if (sequence !== sportsJournalPublicAuthorSequence || !modal.classList.contains("open")) return;
+    document.getElementById("publicAuthorName").textContent = "AUTOR NO DISPONIBLE";
+    document.getElementById("publicAuthorMessage").textContent = "NO SE PUDO CARGAR ESTE PERFIL PÚBLICO.";
+    resetSportsJournalDocumentTitle();
+  }
+}
+
+function closeSportsJournalPublicAuthor(options = {}) {
+  const modal = document.getElementById("publicAuthorModal");
+  if (!modal) return;
+  sportsJournalPublicAuthorSequence += 1;
+  sportsJournalPublicAuthorId = null;
+  sportsJournalPublicAuthorProfile = null;
+  const wasOpen = modal.classList.contains("open");
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+  if (!wasOpen) return;
+  resetSportsJournalDocumentTitle();
+  syncBodyScrollState();
+  if (options.syncUrl === false) return;
+  if (history.state?.sportsJournalAuthorFromStory) {
+    history.back();
+  } else {
+    const url = new URL(location.href);
+    url.searchParams.delete("author");
+    history.replaceState({}, "", url.toString());
+    document.getElementById("menuButton").focus();
+  }
+}
+
+function syncSportsJournalPublicAuthorRoute() {
+  const url = new URL(location.href);
+  const id = url.searchParams.get("author");
+  if (!id) return false;
+  if (url.searchParams.has("story")) {
+    url.searchParams.delete("author");
+    history.replaceState(history.state, "", url.toString());
+    return false;
+  }
+  if (sportsJournalPublicAuthorId !== id || !document.getElementById("publicAuthorModal").classList.contains("open")) {
+    openSportsJournalPublicAuthor(id, { syncUrl: false });
+  }
+  return true;
+}
+
+["publicAuthorBack", "publicAuthorClose"].forEach(id => document.getElementById(id).addEventListener("click", () => closeSportsJournalPublicAuthor()));
+document.getElementById("publicAuthorAvatar").addEventListener("error", event => {
+  event.target.hidden = true;
+  document.getElementById("publicAuthorPlaceholder").hidden = false;
+});
+document.getElementById("publicAuthorModal").addEventListener("keydown", event => {
+  if (event.key === "Escape") {
+    event.preventDefault();
+    event.stopPropagation();
+    closeSportsJournalPublicAuthor();
+  } else if (event.key === "Tab") {
+    const items = getSportsJournalModalFocusables(event.currentTarget.querySelector('[role="dialog"]'));
+    const first = items[0], last = items.at(-1);
+    if ((!event.shiftKey && document.activeElement === last) || (event.shiftKey && document.activeElement === first) || !items.includes(document.activeElement)) {
+      event.preventDefault();
+      (event.shiftKey ? last : first)?.focus();
+    }
+  }
+});
+
 installSportsJournalReaderCloseUrlFix();
+syncSportsJournalPublicAuthorRoute();
