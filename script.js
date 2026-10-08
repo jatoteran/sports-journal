@@ -14998,6 +14998,34 @@ saveArticle =
           )
         : null;
 
+    if (targetStatus === "published" && !canSportsJournalPublish()) {
+
+      showToast("TU CUENTA NO PUEDE PUBLICAR NOTICIAS.");
+      return;
+
+    }
+
+    if (
+      targetStatus === "draft" &&
+      existingArticle &&
+      !existingArticle.archivedAt &&
+      existingArticle.workflowStatus !== "archived" &&
+      (existingArticle.status === "published" || existingArticle.workflowStatus === "published")
+    ) {
+
+      if (
+        !canSportsJournalPublish() ||
+        existingArticle.status !== "published" ||
+        (existingArticle.workflowStatus || existingArticle.status) !== "published"
+      ) {
+
+        showToast("NO PUEDES MOVER ESTA NOTICIA A BORRADOR.");
+        return;
+
+      }
+
+    }
+
     if (isSportsJournalJournalist()) {
 
       const editorialState =
@@ -15665,6 +15693,26 @@ publishDraftFromArticleManager =
     articleId
   ) {
 
+    const profileSessionVersion = sportsJournalProfileSessionVersion;
+    const user = await requireSportsJournalCloudUser();
+
+    if (
+      !user ||
+      profileSessionVersion !== sportsJournalProfileSessionVersion ||
+      !hasSportsJournalCurrentProfile(user.id)
+    ) {
+
+      return;
+
+    }
+
+    if (!canSportsJournalPublish()) {
+
+      showToast("TU CUENTA NO PUEDE PUBLICAR NOTICIAS.");
+      return;
+
+    }
+
     const article =
       findArticle(
         articleId
@@ -15674,6 +15722,7 @@ publishDraftFromArticleManager =
     if (
       !article ||
       article.status !== "draft" ||
+      (article.workflowStatus || article.status) !== "draft" ||
       article.archivedAt
     ) {
 
@@ -15700,17 +15749,6 @@ publishDraftFromArticleManager =
         "COMPLETA LA NOTICIA ANTES DE PUBLICAR."
       );
 
-
-      return;
-
-    }
-
-
-    const user =
-      await requireSportsJournalCloudUser();
-
-
-    if (!user) {
 
       return;
 
@@ -18207,6 +18245,19 @@ async function publishSportsJournalReview(
   articleId
 ) {
 
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+  const user = await requireSportsJournalCloudUser();
+
+  if (
+    !user ||
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(user.id)
+  ) {
+
+    return;
+
+  }
+
   if (
     !canSportsJournalPublish()
   ) {
@@ -18221,17 +18272,6 @@ async function publishSportsJournalReview(
   }
 
 
-  const user =
-    await requireSportsJournalCloudUser();
-
-
-  if (!user) {
-
-    return;
-
-  }
-
-
   const article =
     findArticle(
       articleId
@@ -18240,6 +18280,8 @@ async function publishSportsJournalReview(
 
   if (
     !article ||
+    article.status !== "draft" ||
+    article.archivedAt ||
     article.workflowStatus !==
       "review"
   ) {
