@@ -2191,6 +2191,9 @@ function renderPrimaryLead(article) {
   title.className =
     "lead-title";
 
+  makeStoryInteractive(title, article.id);
+  makeStoryInteractive(imageFrame, article.id);
+
 
   title.textContent =
     article.title;
