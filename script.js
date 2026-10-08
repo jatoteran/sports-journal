@@ -12532,6 +12532,28 @@ const sportsJournalAuth = {
 };
 
 
+let sportsJournalProfileSessionVersion = 0;
+
+
+function setSportsJournalAuthSession(session) {
+
+  if (
+    sportsJournalAuth.session?.user?.id !==
+    session?.user?.id
+  ) {
+
+    sportsJournalProfileSessionVersion += 1;
+
+    sportsJournalAuth.profile = null;
+
+  }
+
+
+  sportsJournalAuth.session = session;
+
+}
+
+
 /* =========================================================
    CREATE AUTH UI
 ========================================================= */
@@ -13267,11 +13289,14 @@ async function handleSportsJournalLogin(
   }
 
 
-  sportsJournalAuth.session =
-    data.session;
+  setSportsJournalAuthSession(data.session);
 
 
-  await loadSportsJournalProfile();
+  if (await loadSportsJournalProfile() === false) {
+
+    return;
+
+  }
 
 
   syncSportsJournalAuthUi();
@@ -13454,7 +13479,11 @@ async function handleSportsJournalPasswordSetup(
   }
 
 
-  await loadSportsJournalProfile();
+  if (await loadSportsJournalProfile() === false) {
+
+    return;
+
+  }
 
 
   sportsJournalAuth.inviteLanding =
@@ -13529,8 +13558,7 @@ async function handleSportsJournalLogout() {
   }
 
 
-  sportsJournalAuth.session =
-    null;
+  setSportsJournalAuthSession(null);
 
 
   sportsJournalAuth.profile =
@@ -13556,6 +13584,10 @@ async function handleSportsJournalLogout() {
 
 async function loadSportsJournalProfile() {
 
+  const profileSessionVersion =
+    sportsJournalProfileSessionVersion;
+
+
   const user =
     sportsJournalAuth
       .session
@@ -13573,6 +13605,9 @@ async function loadSportsJournalProfile() {
   }
 
 
+  const expectedUserId = user.id;
+
+
   const {
     data,
     error
@@ -13586,9 +13621,20 @@ async function loadSportsJournalProfile() {
       )
       .eq(
         "id",
-        user.id
+        expectedUserId
       )
       .maybeSingle();
+
+
+  // A session change makes both successful and failed responses obsolete.
+  if (
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    sportsJournalAuth.session?.user?.id !== expectedUserId
+  ) {
+
+    return false;
+
+  }
 
 
   if (error) {
@@ -13763,15 +13809,18 @@ async function initializeSportsJournalAuth() {
   }
 
 
-  sportsJournalAuth.session =
-    data?.session || null;
+  setSportsJournalAuthSession(data?.session || null);
 
 
   if (
     sportsJournalAuth.session
   ) {
 
-    await loadSportsJournalProfile();
+    if (await loadSportsJournalProfile() === false) {
+
+      return;
+
+    }
 
   }
 
@@ -13809,16 +13858,32 @@ window
   .onAuthStateChange(
     (event, session) => {
 
-      sportsJournalAuth.session =
-        session;
+      setSportsJournalAuthSession(session);
+
+
+      const profileSessionVersion =
+        sportsJournalProfileSessionVersion;
 
 
       window.setTimeout(
         async () => {
 
+          if (
+            profileSessionVersion !== sportsJournalProfileSessionVersion
+          ) {
+
+            return;
+
+          }
+
+
           if (session) {
 
-            await loadSportsJournalProfile();
+            if (await loadSportsJournalProfile() === false) {
+
+              return;
+
+            }
 
           } else {
 
@@ -14058,14 +14123,30 @@ window
       }
 
 
-      sportsJournalAuth.session =
-        session;
+      setSportsJournalAuthSession(session);
+
+
+      const profileSessionVersion =
+        sportsJournalProfileSessionVersion;
 
 
       window.setTimeout(
         async () => {
 
-          await loadSportsJournalProfile();
+          if (
+            profileSessionVersion !== sportsJournalProfileSessionVersion
+          ) {
+
+            return;
+
+          }
+
+
+          if (await loadSportsJournalProfile() === false) {
+
+            return;
+
+          }
 
 
           syncSportsJournalAuthUi();
@@ -14565,15 +14646,18 @@ async function requireSportsJournalCloudUser() {
   }
 
 
-  sportsJournalAuth.session =
-    data.session;
+  setSportsJournalAuthSession(data.session);
 
 
   if (
     !sportsJournalAuth.profile
   ) {
 
-    await loadSportsJournalProfile();
+    if (await loadSportsJournalProfile() === false) {
+
+      return null;
+
+    }
 
   }
 
@@ -21867,7 +21951,11 @@ async function refreshSportsJournalCurrentProfile() {
       getSportsJournalRole();
 
 
-    await loadSportsJournalProfile();
+    if (await loadSportsJournalProfile() === false) {
+
+      return;
+
+    }
 
 
     const nextRole =
