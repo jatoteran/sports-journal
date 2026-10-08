@@ -1,6 +1,9 @@
 const STORAGE_KEY =
   "sportsJournalArticles";
 
+const CLOUD_SNAPSHOT_KEY =
+  "sportsJournalCloudSnapshot";
+
 const BACKUPS_KEY =
   "sportsJournalAutomaticBackups";
 
@@ -51,8 +54,12 @@ const SPORT_DESCRIPTIONS = {
    STATE
 ========================================================= */
 
-let articles =
-  loadArticles();
+// Unowned legacy/local arrays must not become the active Cloud dataset.
+let articles = [];
+
+let sportsJournalCloudArticleContext = null;
+let sportsJournalCloudArticleContextVersion = 0;
+let sportsJournalCloudAuthReady = false;
 
 let activeSport =
   "all";
@@ -1505,7 +1512,7 @@ function bindEvents() {
 
   confirmDeleteButton.addEventListener(
     "click",
-    permanentlyDeleteArticle
+    () => permanentlyDeleteArticle()
   );
 
 
@@ -2183,6 +2190,9 @@ function renderPrimaryLead(article) {
 
   title.className =
     "lead-title";
+
+  makeStoryInteractive(title, article.id);
+  makeStoryInteractive(imageFrame, article.id);
 
 
   title.textContent =
@@ -3190,7 +3200,22 @@ function createCustomEmptyState(
    DRAFT MANAGER
 ========================================================= */
 
-function openDraftsManager() {
+async function openDraftsManager() {
+
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+  const user = await requireSportsJournalCloudUser();
+
+  if (
+    !user ||
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(user.id) ||
+    (!isSportsJournalAdmin() && !isSportsJournalEditor())
+  ) {
+
+    return;
+
+  }
+
 
   renderDraftsManager();
 
@@ -5899,7 +5924,21 @@ function closeSideMenu() {
    EXPORT
 ========================================================= */
 
-function exportJournalBackup() {
+async function exportJournalBackup() {
+
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+  const user = await requireSportsJournalCloudUser();
+
+  if (
+    !user ||
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(user.id) ||
+    !isSportsJournalAdmin()
+  ) {
+
+    return;
+
+  }
 
   createInternalBackup(
     "Exportación manual JSON"
@@ -5995,6 +6034,26 @@ function exportJournalBackup() {
 }
 
 
+function syncSportsJournalBackupExportAccess() {
+
+  const canExport =
+    hasSportsJournalCurrentProfile() && isSportsJournalAdmin();
+
+  ["exportBackupButton", "adminBackupButton"].forEach((id) => {
+
+    const button = document.getElementById(id);
+
+    if (button) {
+
+      button.hidden = !canExport;
+      button.disabled = !canExport;
+
+    }
+
+  });
+
+}
+
 /* =========================================================
    RESTORE
 ========================================================= */
@@ -6002,6 +6061,8 @@ function exportJournalBackup() {
 async function handleBackupFileSelection(
   event
 ) {
+
+  const uiContext = sportsJournalPrivateUiContext;
 
   const file =
     event.target.files[0];
@@ -6020,6 +6081,8 @@ async function handleBackupFileSelection(
       JSON.parse(
         await file.text()
       );
+
+    if (!hasSportsJournalCurrentAdminUiContext(uiContext)) return;
 
 
     const imported =
@@ -6095,6 +6158,8 @@ async function handleBackupFileSelection(
     syncBodyScrollState();
 
   } catch (error) {
+
+    if (!hasSportsJournalCurrentAdminUiContext(uiContext)) return;
 
     console.error(error);
 
@@ -7967,7 +8032,7 @@ function createArchiveInterface() {
     )
     .addEventListener(
       "click",
-      confirmArchiveArticle
+      () => confirmArchiveArticle()
     );
 
 
@@ -8586,7 +8651,22 @@ function confirmArchiveArticle() {
    ARCHIVED MANAGER
 ========================================================= */
 
-function openArchivedManager() {
+async function openArchivedManager() {
+
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+  const user = await requireSportsJournalCloudUser();
+
+  if (
+    !user ||
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(user.id) ||
+    (!isSportsJournalAdmin() && !isSportsJournalEditor())
+  ) {
+
+    return;
+
+  }
+
 
   closeSideMenu();
 
@@ -9581,6 +9661,8 @@ function createAdminDashboardInterface() {
               class="admin-quick-action"
               id="adminBackupButton"
               type="button"
+              hidden
+              disabled
             >
 
               <span>
@@ -9826,7 +9908,22 @@ function bindAdminDashboardEvents() {
    OPEN / CLOSE
 ========================================================= */
 
-function openAdminDashboard() {
+async function openAdminDashboard() {
+
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+  const user = await requireSportsJournalCloudUser();
+
+  if (
+    !user ||
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(user.id) ||
+    (!isSportsJournalAdmin() && !isSportsJournalEditor())
+  ) {
+
+    return;
+
+  }
+
 
   closeSideMenu();
 
@@ -9892,6 +9989,8 @@ function closeAdminDashboard() {
 ========================================================= */
 
 function renderAdminDashboard() {
+
+  syncSportsJournalBackupExportAccess();
 
   renderAdminDashboardDate();
 
@@ -11270,7 +11369,22 @@ function bindAdminArticleManagerEvents() {
    OPEN / CLOSE
 ========================================================= */
 
-function openAdminArticleManager() {
+async function openAdminArticleManager() {
+
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+  const user = await requireSportsJournalCloudUser();
+
+  if (
+    !user ||
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(user.id) ||
+    (!isSportsJournalAdmin() && !isSportsJournalEditor())
+  ) {
+
+    return;
+
+  }
+
 
   closeSideMenu();
 
@@ -12512,73 +12626,6 @@ createAdminArticleManagerInterface();
 updateManagementCounts(); 
 
 /* =========================================================
-   PASO 12.2 — TEST SUPABASE
-========================================================= */
-
-async function testSportsJournalSupabaseConnection() {
-
-  console.log(
-    "SPORTS JOURNAL → Probando conexión con Supabase..."
-  );
-
-
-  if (!window.sportsJournalDb) {
-
-    console.error(
-      "SPORTS JOURNAL → Supabase no fue inicializado."
-    );
-
-    showToast(
-      "ERROR AL INICIAR SUPABASE."
-    );
-
-    return;
-
-  }
-
-
-  const {
-    data,
-    error
-  } =
-    await window.sportsJournalDb
-      .from("articles")
-      .select("id")
-      .limit(1);
-
-
-  if (error) {
-
-    console.error(
-      "SPORTS JOURNAL → Error de Supabase:",
-      error
-    );
-
-    showToast(
-      "NO SE PUDO CONECTAR CON SUPABASE."
-    );
-
-    return;
-
-  }
-
-
-  console.log(
-    "SPORTS JOURNAL → Supabase conectado correctamente.",
-    data
-  );
-
-
-  showToast(
-    "SUPABASE CONECTADO ✓"
-  );
-
-}
-
-
-testSportsJournalSupabaseConnection();
-
-/* =========================================================
    PASO 13.1 — SPORTS JOURNAL AUTH
 ========================================================= */
 
@@ -12599,9 +12646,205 @@ const sportsJournalAuth = {
 };
 
 
+let sportsJournalProfileSessionVersion = 0;
+let sportsJournalProfileLoadSequence = 0;
+let sportsJournalProfileAppliedLoadSequence = 0;
+let sportsJournalPrivateUiContext = null;
+let sportsJournalEditorContextDiscardSequence = 0;
+
+function syncSportsJournalPrivateUiForAuthContext() {
+  const userId = sportsJournalAuth.session?.user?.id || null;
+  const role = hasSportsJournalCurrentProfile(userId) ? getSportsJournalRole() : null;
+  const version = sportsJournalProfileSessionVersion;
+  const previous = sportsJournalPrivateUiContext;
+  const changedSession = Boolean(previous &&
+    (previous.version !== version || previous.userId !== userId));
+  const editorial = role === "admin" || role === "editor";
+  const admin = role === "admin";
+
+  // Hide invalid openers before a modal attempts to restore focus.
+  const accesses = {
+    adminDashboardMenuButton: editorial,
+    allArticlesMenuButton: editorial,
+    draftsMenuButton: editorial,
+    reviewMenuButton: editorial,
+    publishedMenuButton: editorial,
+    archivedMenuButton: editorial,
+    journalistDashboardMenuButton: role === "journalist",
+    newsroomMenuButton: admin,
+    newsroomInviteLaunch: admin,
+    restoreBackupButton: admin
+  };
+  Object.entries(accesses).forEach(([id, allowed]) => {
+    const control = document.getElementById(id);
+    if (control) control.hidden = !allowed;
+  });
+  const dataBlock = document.querySelector(".data-block");
+  if (dataBlock) dataBlock.hidden = !admin;
+  syncSportsJournalBackupExportAccess();
+
+  const surfaces = [
+    ["adminDashboardModal", editorial, closeAdminDashboard],
+    ["adminArticleManagerModal", editorial, closeAdminArticleManager],
+    ["draftsModal", editorial, closeDraftsManager],
+    ["reviewManagerModal", editorial, closeSportsJournalReviewManager],
+    ["archiveManagerModal", editorial, closeArchivedManager],
+    ["journalistDashboardModal", role === "journalist", closeJournalistDashboard],
+    ["newsroomModal", admin, closeSportsJournalNewsroom],
+    ["newsroomInviteModal", admin, closeSportsJournalInviteModal],
+    ["restoreModal", admin, closeRestoreModal],
+    ["cloudRestoreModal", admin, closeSportsJournalCloudRestore]
+  ];
+  surfaces.forEach(([id, allowed, close]) => {
+    if ((changedSession || !allowed) &&
+        document.getElementById(id)?.classList.contains("open")) close();
+  });
+
+  const changedEditorRole = previous && previous.role !== role &&
+    !(editorial && ["admin", "editor"].includes(previous.role));
+  if (changedSession || !role || changedEditorRole) {
+    const open = editorModal.classList.contains("open");
+    if (open) updateEditorDirtyState();
+    const lostChanges = open && editorHasUnsavedChanges;
+    if (unsavedModal.classList.contains("open")) closeUnsavedModal();
+    if (moveDraftModal.classList.contains("open")) closeMoveDraftModal();
+    if (open) closeEditorImmediately();
+    if (open || changedSession) resetEditor();
+    if (lostChanges) {
+      sportsJournalEditorContextDiscardSequence += 1;
+      showToast("LA SESIÓN O EL ROL CAMBIÓ. LOS CAMBIOS SIN GUARDAR NO PUDIERON GUARDARSE Y EL EDITOR SE CERRÓ.");
+    }
+  }
+  if (changedSession && sideMenu.classList.contains("open")) closeSideMenu();
+  if (changedSession &&
+      document.getElementById("sportsJournalAuthModal")?.classList.contains("open") &&
+      document.getElementById("sjAuthAccountView")?.hidden === false) closeSportsJournalAuthModal();
+  if (!previous || changedSession || previous.role !== role) {
+    sportsJournalPrivateUiContext = { userId, role, version };
+  }
+}
+
+function hasSportsJournalCurrentAdminUiContext(context) {
+  return context === sportsJournalPrivateUiContext &&
+    hasSportsJournalCurrentProfile() && isSportsJournalAdmin();
+}
+
+
+function setSportsJournalAuthSession(session) {
+
+  if (
+    sportsJournalAuth.session?.user?.id !==
+    session?.user?.id
+  ) {
+
+    sportsJournalProfileSessionVersion += 1;
+
+    invalidateSportsJournalPendingDestructiveActions();
+
+    sportsJournalAuth.profile = null;
+
+  }
+
+
+  sportsJournalAuth.session = session;
+
+  sportsJournalCloudAuthReady = true;
+
+  syncSportsJournalCloudArticleContext();
+
+  syncSportsJournalAuthUi();
+}
+
+
+function invalidateSportsJournalPendingDestructiveActions() {
+
+  pendingDeleteArticleId = null;
+  pendingArchiveArticleId = null;
+
+  if (confirmModal?.classList.contains("open")) {
+
+    closeConfirmModal();
+
+  }
+
+  if (document.getElementById("archiveConfirmModal")?.classList.contains("open")) {
+
+    closeArchiveConfirmation();
+
+  }
+
+}
+
+
 /* =========================================================
    CREATE AUTH UI
 ========================================================= */
+
+const sportsJournalModalFocus = new Map();
+
+function getSportsJournalModalFocusables(panel) {
+  return Array.from(panel.querySelectorAll(
+    'a[href], button, input:not([type="hidden"]), select, textarea, [tabindex]'
+  )).filter(element => element.tabIndex >= 0 &&
+    !element.matches(':disabled') &&
+    !element.closest('[hidden], [inert], [aria-hidden="true"]') &&
+    element.getClientRects().length > 0 &&
+    getComputedStyle(element).visibility === 'visible');
+}
+
+function startSportsJournalModalFocus(modal, initialSelector) {
+  const panel = modal.querySelector('[role="dialog"]');
+  if (!sportsJournalModalFocus.has(modal)) {
+    const opener = document.activeElement;
+    sportsJournalModalFocus.set(modal, {
+      opener: opener !== document.body && !modal.contains(opener) ? opener : null,
+      openerText: opener?.textContent
+    });
+  }
+  const focusables = getSportsJournalModalFocusables(panel);
+  const initial = panel.querySelector(initialSelector);
+  (focusables.includes(initial) ? initial : focusables[0] || panel).focus();
+}
+
+function stopSportsJournalModalFocus(modal) {
+  const saved = sportsJournalModalFocus.get(modal);
+  sportsJournalModalFocus.delete(modal);
+  const opener = saved?.opener;
+  if (opener?.isConnected && opener.textContent === saved.openerText &&
+      !opener.matches(':disabled') && opener.getClientRects().length &&
+      !opener.closest('[hidden], [inert], [aria-hidden="true"]') &&
+      getComputedStyle(opener).visibility === 'visible') {
+    opener.focus({ preventScroll: true });
+  }
+}
+
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Tab' && event.key !== 'Escape') return;
+  const modal = Array.from(sportsJournalModalFocus.keys())
+    .filter(element => element.classList.contains('open'))
+    .sort((a, b) => Number(getComputedStyle(b).zIndex) - Number(getComputedStyle(a).zIndex))[0];
+  if (!modal) return;
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    if (modal.id === 'newsroomInviteModal') closeSportsJournalInviteModal();
+    else if (document.getElementById('sjAuthSetupView').hidden) closeSportsJournalAuthModal();
+    return;
+  }
+  const panel = modal.querySelector('[role="dialog"]');
+  const focusables = getSportsJournalModalFocusables(panel);
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  if (!first) {
+    event.preventDefault();
+    panel.focus();
+  } else if (!focusables.includes(document.activeElement) ||
+      (event.shiftKey && document.activeElement === first) ||
+      (!event.shiftKey && document.activeElement === last)) {
+    event.preventDefault();
+    (event.shiftKey ? last : first).focus();
+  }
+}, true);
 
 function createSportsJournalAuthInterface() {
 
@@ -12644,7 +12887,10 @@ function createSportsJournalAuthInterface() {
 
     <section
       class="sj-auth-panel"
-      aria-label="Cuenta Sports Journal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="sjAuthHeading"
+      tabindex="-1"
     >
 
       <header
@@ -12689,6 +12935,7 @@ function createSportsJournalAuthInterface() {
 
           <p
             class="sj-auth-intro"
+            id="sjLoginIntro"
           >
             Accede a la redacción de Sports Journal.
           </p>
@@ -13242,6 +13489,12 @@ function openSportsJournalAuthModal(
 
   syncBodyScrollState();
 
+  const panel = modal.querySelector('[role="dialog"]');
+  if (mode === 'account') panel.removeAttribute('aria-describedby');
+  else panel.setAttribute('aria-describedby', mode === 'setup' ? 'sjSetupIntro' : 'sjLoginIntro');
+  startSportsJournalModalFocus(modal,
+    mode === 'login' ? '#sjLoginEmail' :
+      mode === 'setup' ? (firstSetup ? '#sjSetupName' : '#sjSetupPassword') : '#sjAuthCloseButton');
 }
 
 
@@ -13265,6 +13518,7 @@ function closeSportsJournalAuthModal() {
 
 
   syncBodyScrollState();
+  stopSportsJournalModalFocus(modal);
 
 }
 
@@ -13334,11 +13588,14 @@ async function handleSportsJournalLogin(
   }
 
 
-  sportsJournalAuth.session =
-    data.session;
+  setSportsJournalAuthSession(data.session);
 
 
-  await loadSportsJournalProfile();
+  if (await loadSportsJournalProfile() === false) {
+
+    return;
+
+  }
 
 
   syncSportsJournalAuthUi();
@@ -13399,9 +13656,18 @@ async function handleSportsJournalPasswordSetup(
   errorBox.hidden =
     true;
 
+  const initialUserId = sportsJournalAuth.session?.user?.id;
+  const initialSessionVersion = sportsJournalProfileSessionVersion;
+
+  const isCurrentSetupContext = () => Boolean(
+    initialUserId &&
+    sportsJournalAuth.session?.user?.id === initialUserId &&
+    sportsJournalProfileSessionVersion === initialSessionVersion &&
+    (!sportsJournalAuth.profile || sportsJournalAuth.profile.id === initialUserId)
+  );
 
   if (
-    !sportsJournalAuth.session
+    !isCurrentSetupContext()
   ) {
 
     errorBox.textContent =
@@ -13453,6 +13719,7 @@ async function handleSportsJournalPasswordSetup(
 
 
   const {
+    data: passwordData,
     error: passwordError
   } =
     await window.sportsJournalDb
@@ -13461,6 +13728,14 @@ async function handleSportsJournalPasswordSetup(
         password
       });
 
+  if (
+    !isCurrentSetupContext() ||
+    (passwordData?.user && passwordData.user.id !== initialUserId)
+  ) {
+
+    return;
+
+  }
 
   if (
     passwordError
@@ -13483,12 +13758,11 @@ async function handleSportsJournalPasswordSetup(
     displayName
   ) {
 
-    const userId =
-      sportsJournalAuth
-        .session
-        .user
-        .id;
+    if (!isCurrentSetupContext()) {
 
+      return;
+
+    }
 
     const {
       error: profileError
@@ -13503,9 +13777,14 @@ async function handleSportsJournalPasswordSetup(
         })
         .eq(
           "id",
-          userId
+          initialUserId
         );
 
+    if (!isCurrentSetupContext()) {
+
+      return;
+
+    }
 
     if (
       profileError
@@ -13521,7 +13800,13 @@ async function handleSportsJournalPasswordSetup(
   }
 
 
-  await loadSportsJournalProfile();
+  const profileLoaded = await loadSportsJournalProfile();
+
+  if (!isCurrentSetupContext() || profileLoaded === false) {
+
+    return;
+
+  }
 
 
   sportsJournalAuth.inviteLanding =
@@ -13576,6 +13861,13 @@ async function handleSportsJournalPasswordSetup(
 
 async function handleSportsJournalLogout() {
 
+  if (editorModal.classList.contains("open")) {
+    updateEditorDirtyState();
+    if (editorHasUnsavedChanges && !window.confirm(
+      "HAY CAMBIOS SIN GUARDAR. ¿CERRAR SESIÓN Y DESCARTARLOS?"
+    )) return;
+  }
+
   const {
     error
   } =
@@ -13596,8 +13888,7 @@ async function handleSportsJournalLogout() {
   }
 
 
-  sportsJournalAuth.session =
-    null;
+  setSportsJournalAuthSession(null);
 
 
   sportsJournalAuth.profile =
@@ -13623,6 +13914,12 @@ async function handleSportsJournalLogout() {
 
 async function loadSportsJournalProfile() {
 
+  const profileLoadSequence = ++sportsJournalProfileLoadSequence;
+
+  const profileSessionVersion =
+    sportsJournalProfileSessionVersion;
+
+
   const user =
     sportsJournalAuth
       .session
@@ -13634,10 +13931,16 @@ async function loadSportsJournalProfile() {
     sportsJournalAuth.profile =
       null;
 
+    syncSportsJournalCloudArticleContext();
+
+    syncSportsJournalAuthUi();
 
     return;
 
   }
+
+
+  const expectedUserId = user.id;
 
 
   const {
@@ -13653,9 +13956,36 @@ async function loadSportsJournalProfile() {
       )
       .eq(
         "id",
-        user.id
+        expectedUserId
       )
       .maybeSingle();
+
+
+  // A session change makes both successful and failed responses obsolete.
+  if (
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    sportsJournalAuth.session?.user?.id !== expectedUserId
+  ) {
+
+    return false;
+
+  }
+
+  // A superseded response must not revert a role already established by
+  // another load. Same-role duplicate loads keep their existing behavior.
+  if (
+    profileLoadSequence < sportsJournalProfileAppliedLoadSequence &&
+    (error || data?.role !== sportsJournalAuth.profile?.role)
+  ) {
+
+    return false;
+
+  }
+
+  sportsJournalProfileAppliedLoadSequence = Math.max(
+    sportsJournalProfileAppliedLoadSequence,
+    profileLoadSequence
+  );
 
 
   if (error) {
@@ -13665,18 +13995,41 @@ async function loadSportsJournalProfile() {
       error
     );
 
+    invalidateSportsJournalPendingDestructiveActions();
+
 
     sportsJournalAuth.profile =
       null;
 
+    syncSportsJournalCloudArticleContext();
+
+    syncSportsJournalAuthUi();
 
     return;
 
   }
 
 
+  if (sportsJournalAuth.profile?.role !== data?.role) {
+
+    invalidateSportsJournalPendingDestructiveActions();
+
+  }
+
   sportsJournalAuth.profile =
     data;
+
+  syncSportsJournalAuthUi();
+
+  if (
+    syncSportsJournalCloudArticleContext() &&
+    getSportsJournalCloudArticleContext().role
+  ) {
+
+    // Existing timers may have run before the profile established its role.
+    loadSportsJournalArticlesFromCloud({ silent: true });
+
+  }
 
 }
 
@@ -13830,15 +14183,18 @@ async function initializeSportsJournalAuth() {
   }
 
 
-  sportsJournalAuth.session =
-    data?.session || null;
+  setSportsJournalAuthSession(data?.session || null);
 
 
   if (
     sportsJournalAuth.session
   ) {
 
-    await loadSportsJournalProfile();
+    if (await loadSportsJournalProfile() === false) {
+
+      return;
+
+    }
 
   }
 
@@ -13876,16 +14232,32 @@ window
   .onAuthStateChange(
     (event, session) => {
 
-      sportsJournalAuth.session =
-        session;
+      setSportsJournalAuthSession(session);
+
+
+      const profileSessionVersion =
+        sportsJournalProfileSessionVersion;
 
 
       window.setTimeout(
         async () => {
 
+          if (
+            profileSessionVersion !== sportsJournalProfileSessionVersion
+          ) {
+
+            return;
+
+          }
+
+
           if (session) {
 
-            await loadSportsJournalProfile();
+            if (await loadSportsJournalProfile() === false) {
+
+              return;
+
+            }
 
           } else {
 
@@ -14125,14 +14497,30 @@ window
       }
 
 
-      sportsJournalAuth.session =
-        session;
+      setSportsJournalAuthSession(session);
+
+
+      const profileSessionVersion =
+        sportsJournalProfileSessionVersion;
 
 
       window.setTimeout(
         async () => {
 
-          await loadSportsJournalProfile();
+          if (
+            profileSessionVersion !== sportsJournalProfileSessionVersion
+          ) {
+
+            return;
+
+          }
+
+
+          if (await loadSportsJournalProfile() === false) {
+
+            return;
+
+          }
 
 
           syncSportsJournalAuthUi();
@@ -14164,770 +14552,6 @@ window
 ========================================================= */
 
 installSportsJournalPasswordRecovery();
-
-/* =========================================================
-   PASO 12.3 — MIGRAR LOCALSTORAGE → SUPABASE
-========================================================= */
-
-window.migrateSportsJournalLocalArticles =
-  async function () {
-
-    console.log(
-      "SPORTS JOURNAL → Iniciando migración..."
-    );
-
-
-    /* -----------------------------------------------------
-       CHECK DATABASE
-    ----------------------------------------------------- */
-
-    if (!window.sportsJournalDb) {
-
-      console.error(
-        "Supabase no está conectado."
-      );
-
-
-      showToast(
-        "SUPABASE NO ESTÁ CONECTADO."
-      );
-
-
-      return;
-
-    }
-
-
-    /* -----------------------------------------------------
-       CHECK SESSION
-    ----------------------------------------------------- */
-
-    const {
-      data: sessionData,
-      error: sessionError
-    } =
-      await window
-        .sportsJournalDb
-        .auth
-        .getSession();
-
-
-    if (
-      sessionError ||
-      !sessionData.session
-    ) {
-
-      console.error(
-        "No hay sesión activa.",
-        sessionError
-      );
-
-
-      showToast(
-        "INICIA SESIÓN ANTES DE MIGRAR."
-      );
-
-
-      return;
-
-    }
-
-
-    const user =
-      sessionData.session.user;
-
-
-    /* -----------------------------------------------------
-       CHECK PROFILE / ADMIN
-    ----------------------------------------------------- */
-
-    const {
-      data: profile,
-      error: profileError
-    } =
-      await window
-        .sportsJournalDb
-        .from("profiles")
-        .select(
-          "id, display_name, role"
-        )
-        .eq(
-          "id",
-          user.id
-        )
-        .single();
-
-
-    if (profileError) {
-
-      console.error(
-        "No se pudo leer el perfil:",
-        profileError
-      );
-
-
-      showToast(
-        "NO SE PUDO COMPROBAR TU CUENTA."
-      );
-
-
-      return;
-
-    }
-
-
-    if (
-      profile.role !== "admin"
-    ) {
-
-      console.warn(
-        "Migración bloqueada. Rol actual:",
-        profile.role
-      );
-
-
-      showToast(
-        "SOLO UN ADMIN PUEDE MIGRAR EL DIARIO."
-      );
-
-
-      return;
-
-    }
-
-
-    /* -----------------------------------------------------
-       CHECK LOCAL ARTICLES
-    ----------------------------------------------------- */
-
-    if (
-      !Array.isArray(articles) ||
-      articles.length === 0
-    ) {
-
-      showToast(
-        "NO HAY NOTICIAS LOCALES PARA MIGRAR."
-      );
-
-
-      return;
-
-    }
-
-
-    /* -----------------------------------------------------
-       CREATE DATABASE PAYLOAD
-    ----------------------------------------------------- */
-
-    const payload =
-      articles.map(
-        (article) => {
-
-          let databaseStatus =
-            article.status === "draft"
-              ? "draft"
-              : "published";
-
-
-          if (
-            article.archivedAt
-          ) {
-
-            databaseStatus =
-              "archived";
-
-          }
-
-
-          return {
-
-            legacy_local_id:
-              String(article.id),
-
-            title:
-              String(
-                article.title || ""
-              ),
-
-            sport:
-              article.sport,
-
-            author_id:
-              user.id,
-
-            author_name:
-              String(
-                article.author ||
-                profile.display_name ||
-                "Sports Journal"
-              ),
-
-            summary:
-              String(
-                article.summary || ""
-              ),
-
-            content:
-              String(
-                article.content || ""
-              ),
-
-            tags:
-              normalizeTags(
-                article.tags
-              ),
-
-            image_url:
-              String(
-                article.imageUrl || ""
-              ),
-
-            image_position:
-              String(
-                article.imagePosition ||
-                "50% 50%"
-              ),
-
-            image_zoom:
-              normalizeZoom(
-                article.imageZoom
-              ),
-
-            image_mode:
-              article.imageMode === "full"
-                ? "full"
-                : "crop",
-
-            status:
-              databaseStatus,
-
-            created_by:
-              user.id,
-
-            updated_by:
-              user.id,
-
-            created_at:
-              article.createdAt ||
-              new Date().toISOString(),
-
-            updated_at:
-              article.updatedAt ||
-              article.createdAt ||
-              new Date().toISOString(),
-
-            published_at:
-              databaseStatus === "draft"
-                ? null
-                : (
-                    article.publishedAt ||
-                    article.createdAt ||
-                    null
-                  ),
-
-            archived_at:
-              databaseStatus === "archived"
-                ? (
-                    article.archivedAt ||
-                    new Date().toISOString()
-                  )
-                : null
-
-          };
-
-        }
-      );
-
-
-    console.log(
-      `SPORTS JOURNAL → ${payload.length} artículos preparados.`
-    );
-
-
-    /* -----------------------------------------------------
-       UPSERT
-       legacy_local_id prevents duplicates
-    ----------------------------------------------------- */
-
-    const {
-      data,
-      error
-    } =
-      await window
-        .sportsJournalDb
-        .from("articles")
-        .upsert(
-          payload,
-          {
-            onConflict:
-              "legacy_local_id"
-          }
-        )
-        .select(
-          "id, legacy_local_id, title, status"
-        );
-
-
-    if (error) {
-
-      console.error(
-        "SPORTS JOURNAL → Error migrando artículos:",
-        error
-      );
-
-
-      showToast(
-        "ERROR DURANTE LA MIGRACIÓN."
-      );
-
-
-      return;
-
-    }
-
-
-    console.table(data);
-
-
-    console.log(
-      "SPORTS JOURNAL → Migración completada.",
-      data
-    );
-
-
-    showToast(
-      `${data.length} NOTICIAS MIGRADAS ✓`
-    );
-
-  };
-
-  /* =========================================================
-   PASO 12.4 — VERIFY LOCALSTORAGE → SUPABASE MIGRATION
-========================================================= */
-
-window.verifySportsJournalMigration =
-  async function () {
-
-    console.log(
-      "SPORTS JOURNAL → Verificando migración..."
-    );
-
-
-    /* -----------------------------------------------------
-       CHECK CONNECTION
-    ----------------------------------------------------- */
-
-    if (!window.sportsJournalDb) {
-
-      console.error(
-        "Supabase no está conectado."
-      );
-
-      showToast(
-        "SUPABASE NO ESTÁ CONECTADO."
-      );
-
-      return;
-    }
-
-
-    /* -----------------------------------------------------
-       READ CLOUD ARTICLES
-    ----------------------------------------------------- */
-
-    const {
-      data: cloudArticles,
-      error
-    } =
-      await window.sportsJournalDb
-        .from("articles")
-        .select(`
-          id,
-          legacy_local_id,
-          title,
-          sport,
-          author_name,
-          summary,
-          content,
-          tags,
-          image_url,
-          image_position,
-          image_zoom,
-          image_mode,
-          status,
-          created_at,
-          published_at,
-          archived_at
-        `);
-
-
-    if (error) {
-
-      console.error(
-        "SPORTS JOURNAL → No se pudo verificar Supabase:",
-        error
-      );
-
-      showToast(
-        "ERROR AL VERIFICAR LA MIGRACIÓN."
-      );
-
-      return;
-    }
-
-
-    /* -----------------------------------------------------
-       ONLY MIGRATED LEGACY ARTICLES
-    ----------------------------------------------------- */
-
-    const migratedCloudArticles =
-      cloudArticles.filter(
-        (article) =>
-          article.legacy_local_id
-      );
-
-
-    const cloudByLegacyId =
-      new Map(
-        migratedCloudArticles.map(
-          (article) => [
-            String(
-              article.legacy_local_id
-            ),
-            article
-          ]
-        )
-      );
-
-
-    /* -----------------------------------------------------
-       RESULTS
-    ----------------------------------------------------- */
-
-    const results =
-      [];
-
-
-    let passed =
-      0;
-
-
-    let failed =
-      0;
-
-
-    articles.forEach(
-      (localArticle) => {
-
-        const localId =
-          String(
-            localArticle.id
-          );
-
-
-        const cloudArticle =
-          cloudByLegacyId.get(
-            localId
-          );
-
-
-        if (!cloudArticle) {
-
-          failed += 1;
-
-
-          results.push({
-            title:
-              localArticle.title,
-
-            localId,
-
-            result:
-              "❌ NO EXISTE EN SUPABASE"
-          });
-
-
-          return;
-        }
-
-
-        const expectedStatus =
-          localArticle.archivedAt
-            ? "archived"
-            : (
-                localArticle.status ===
-                  "draft"
-                  ? "draft"
-                  : "published"
-              );
-
-
-        const localTags =
-          normalizeTags(
-            localArticle.tags
-          );
-
-
-        const cloudTags =
-          Array.isArray(
-            cloudArticle.tags
-          )
-            ? cloudArticle.tags
-            : [];
-
-
-        const checks = {
-
-          title:
-            String(
-              cloudArticle.title || ""
-            ) ===
-            String(
-              localArticle.title || ""
-            ),
-
-          sport:
-            cloudArticle.sport ===
-            localArticle.sport,
-
-          author:
-            String(
-              cloudArticle.author_name || ""
-            ) ===
-            String(
-              localArticle.author || ""
-            ),
-
-          summary:
-            String(
-              cloudArticle.summary || ""
-            ) ===
-            String(
-              localArticle.summary || ""
-            ),
-
-          content:
-            String(
-              cloudArticle.content || ""
-            ) ===
-            String(
-              localArticle.content || ""
-            ),
-
-          tags:
-            JSON.stringify(
-              cloudTags
-            ) ===
-            JSON.stringify(
-              localTags
-            ),
-
-          imageUrl:
-            String(
-              cloudArticle.image_url || ""
-            ) ===
-            String(
-              localArticle.imageUrl || ""
-            ),
-
-          imageMode:
-            cloudArticle.image_mode ===
-            (
-              localArticle.imageMode ===
-                "full"
-                ? "full"
-                : "crop"
-            ),
-
-          status:
-            cloudArticle.status ===
-            expectedStatus
-
-        };
-
-
-        const problems =
-          Object
-            .entries(checks)
-            .filter(
-              ([, correct]) =>
-                !correct
-            )
-            .map(
-              ([name]) =>
-                name
-            );
-
-
-        if (
-          problems.length === 0
-        ) {
-
-          passed += 1;
-
-
-          results.push({
-            title:
-              localArticle.title,
-
-            localId,
-
-            result:
-              "✅ CORRECTO"
-          });
-
-        } else {
-
-          failed += 1;
-
-
-          results.push({
-            title:
-              localArticle.title,
-
-            localId,
-
-            result:
-              `❌ DIFERENCIAS: ${problems.join(", ")}`
-          });
-
-        }
-
-      }
-    );
-
-
-    /* -----------------------------------------------------
-       CLOUD ARTICLES WITHOUT LOCAL MATCH
-    ----------------------------------------------------- */
-
-    const localIds =
-      new Set(
-        articles.map(
-          (article) =>
-            String(
-              article.id
-            )
-        )
-      );
-
-
-    const unexpected =
-      migratedCloudArticles.filter(
-        (article) =>
-          !localIds.has(
-            String(
-              article.legacy_local_id
-            )
-          )
-      );
-
-
-    /* -----------------------------------------------------
-       CONSOLE REPORT
-    ----------------------------------------------------- */
-
-    console.table(
-      results
-    );
-
-
-    console.log(
-      "SPORTS JOURNAL — MIGRATION REPORT"
-    );
-
-
-    console.log(
-      "Local:",
-      articles.length
-    );
-
-
-    console.log(
-      "Supabase migradas:",
-      migratedCloudArticles.length
-    );
-
-
-    console.log(
-      "Correctas:",
-      passed
-    );
-
-
-    console.log(
-      "Con problemas:",
-      failed
-    );
-
-
-    console.log(
-      "Filas extra:",
-      unexpected.length
-    );
-
-
-    if (
-      unexpected.length > 0
-    ) {
-
-      console.warn(
-        "Artículos de Supabase sin correspondencia local:",
-        unexpected
-      );
-
-    }
-
-
-    /* -----------------------------------------------------
-       FINAL RESULT
-    ----------------------------------------------------- */
-
-    const everythingCorrect =
-      failed === 0 &&
-      unexpected.length === 0 &&
-      articles.length ===
-        migratedCloudArticles.length;
-
-
-    if (everythingCorrect) {
-
-      console.log(
-        "✅ SPORTS JOURNAL → MIGRACIÓN VERIFICADA."
-      );
-
-
-      showToast(
-        `${passed} NOTICIAS VERIFICADAS ✓`
-      );
-
-    } else {
-
-      console.warn(
-        "⚠ SPORTS JOURNAL → La migración necesita revisión."
-      );
-
-
-      showToast(
-        "LA MIGRACIÓN TIENE DIFERENCIAS."
-      );
-
-    }
-
-
-    return {
-      everythingCorrect,
-      localCount:
-        articles.length,
-      cloudCount:
-        migratedCloudArticles.length,
-      passed,
-      failed,
-      unexpected,
-      results
-    };
-
-  };
 
   /* =========================================================
    PASO 12.5 — SPORTS JOURNAL CLOUD MODE
@@ -15110,6 +14734,16 @@ async function loadSportsJournalArticlesFromCloud(
   }
 
 
+  const expectedContext = getSportsJournalCloudArticleContext();
+
+  if (!sportsJournalCloudAuthReady || !expectedContext.role) {
+
+    return false;
+
+  }
+
+  const contextVersion = sportsJournalCloudArticleContextVersion;
+
   const currentSequence =
     ++sportsJournalCloudLoadSequence;
 
@@ -15159,7 +14793,8 @@ async function loadSportsJournalArticlesFromCloud(
 
   if (
     currentSequence !==
-    sportsJournalCloudLoadSequence
+    sportsJournalCloudLoadSequence ||
+    contextVersion !== sportsJournalCloudArticleContextVersion
   ) {
 
     return false;
@@ -15175,18 +14810,14 @@ async function loadSportsJournalArticlesFromCloud(
     );
 
 
-    /*
-      IMPORTANT:
-      We do NOT empty articles.
-
-      Current localStorage data remains available
-      as an emergency fallback.
-    */
+    // Only the dataset retained for this exact user/role remains active.
 
     if (!silent) {
 
       showToast(
-        "USANDO RESPALDO LOCAL · SUPABASE NO RESPONDIÓ."
+        articles.length
+          ? "USANDO RESPALDO LOCAL · SUPABASE NO RESPONDIÓ."
+          : "SUPABASE NO RESPONDIÓ · SIN RESPALDO PARA ESTA CUENTA."
       );
 
     }
@@ -15248,10 +14879,8 @@ function cacheSportsJournalCloudSnapshot() {
     to overwrite a more complete local backup.
   */
 
-  const role =
-    sportsJournalAuth
-      ?.profile
-      ?.role;
+  const context = getSportsJournalCloudArticleContext();
+  const role = context.role;
 
 
   if (
@@ -15264,7 +14893,121 @@ function cacheSportsJournalCloudSnapshot() {
   }
 
 
-  persistArticles();
+  if (!persistArticles()) {
+
+    return;
+
+  }
+
+  try {
+
+    localStorage.setItem(
+      CLOUD_SNAPSHOT_KEY,
+      JSON.stringify({
+        version: 1,
+        userId: context.userId,
+        role: context.role,
+        articles
+      })
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+}
+
+
+function getSportsJournalCloudArticleContext() {
+
+  const userId = sportsJournalAuth.session?.user?.id || null;
+  const profile = sportsJournalAuth.profile;
+
+  return {
+    userId,
+    role: !sportsJournalCloudAuthReady
+      ? null
+      : !userId
+        ? "guest"
+        : profile?.id === userId &&
+          ["admin", "editor", "journalist"].includes(profile.role)
+          ? profile.role
+          : null
+  };
+
+}
+
+
+function loadSportsJournalCloudFallback(context) {
+
+  if (context.role !== "admin" && context.role !== "editor") {
+
+    return [];
+
+  }
+
+  try {
+
+    const snapshot = JSON.parse(localStorage.getItem(CLOUD_SNAPSHOT_KEY));
+
+    if (
+      snapshot?.version === 1 &&
+      snapshot.userId === context.userId &&
+      snapshot.role === context.role &&
+      Array.isArray(snapshot.articles)
+    ) {
+
+      return snapshot.articles;
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+  return [];
+
+}
+
+
+function syncSportsJournalCloudArticleContext() {
+
+  const context = getSportsJournalCloudArticleContext();
+
+  if (
+    sportsJournalCloudArticleContext?.userId === context.userId &&
+    sportsJournalCloudArticleContext?.role === context.role
+  ) {
+
+    return false;
+
+  }
+
+  sportsJournalCloudArticleContextVersion += 1;
+  sportsJournalCloudArticleContext = context;
+  const readerArticle = findArticle(currentReaderArticleId);
+  articles = loadSportsJournalCloudFallback(context);
+
+  // Keep only the open public story available during the context reload.
+  if (
+    readerModal?.classList.contains("open") &&
+    readerArticle?.status === "published" &&
+    (readerArticle.workflowStatus || readerArticle.status) === "published" &&
+    !readerArticle.archivedAt &&
+    !findArticle(readerArticle.id)
+  ) {
+
+    articles.push(readerArticle);
+
+  }
+
+  refreshSportsJournalCloudViews();
+
+  return true;
 
 }
 
@@ -15275,11 +15018,36 @@ function cacheSportsJournalCloudSnapshot() {
 
 function refreshSportsJournalCloudViews() {
 
+  if (readerModal?.classList.contains("open")) {
+
+    const readerArticle = findArticle(currentReaderArticleId);
+
+    if (!readerArticle) {
+
+      closeReader();
+
+    } else {
+
+      renderReaderRelatedStories(readerArticle);
+      renderReaderNavigation(readerArticle);
+
+    }
+
+  }
+
   renderCurrentView();
 
   updateManagementCounts();
 
   updateBackupStatus();
+
+  const reviewManager = document.getElementById("reviewManagerModal");
+
+  if (reviewManager?.classList.contains("open")) {
+
+    renderSportsJournalReviewManager();
+
+  }
 
 
   if (
@@ -15358,7 +15126,23 @@ function refreshSportsJournalCloudViews() {
    REQUIRE AUTHENTICATION
 ========================================================= */
 
+function hasSportsJournalCurrentProfile(
+  userId = sportsJournalAuth.session?.user?.id
+) {
+
+  return Boolean(
+    userId &&
+    sportsJournalAuth.session?.user?.id === userId &&
+    sportsJournalAuth.profile?.id === userId &&
+    ["admin", "editor", "journalist"].includes(sportsJournalAuth.profile.role)
+  );
+
+}
+
 async function requireSportsJournalCloudUser() {
+
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+  const expectedUserId = sportsJournalAuth.session?.user?.id;
 
   const {
     data,
@@ -15368,6 +15152,17 @@ async function requireSportsJournalCloudUser() {
       .sportsJournalDb
       .auth
       .getSession();
+
+  // Never resume an action using a session that changed during getSession().
+  if (
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    expectedUserId !== sportsJournalAuth.session?.user?.id ||
+    (data?.session && expectedUserId && data.session.user?.id !== expectedUserId)
+  ) {
+
+    return null;
+
+  }
 
 
   if (
@@ -15396,15 +15191,30 @@ async function requireSportsJournalCloudUser() {
   }
 
 
-  sportsJournalAuth.session =
-    data.session;
+  setSportsJournalAuthSession(data.session);
+
+  const resolvedSessionVersion = sportsJournalProfileSessionVersion;
 
 
   if (
-    !sportsJournalAuth.profile
+    !hasSportsJournalCurrentProfile(data.session.user.id)
   ) {
 
-    await loadSportsJournalProfile();
+    if (await loadSportsJournalProfile() === false) {
+
+      return null;
+
+    }
+
+  }
+
+
+  if (
+    resolvedSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(data.session.user.id)
+  ) {
+
+    return null;
 
   }
 
@@ -15456,11 +15266,25 @@ function showSportsJournalCloudError(
 
 saveArticle =
   async function (
-    targetStatus
+    targetStatus,
+    resolvedUser = null
   ) {
 
+    const profileSessionVersion = sportsJournalProfileSessionVersion;
+    const user = resolvedUser || await requireSportsJournalCloudUser();
+
     if (
-      targetStatus === "published" &&
+      !user ||
+      profileSessionVersion !== sportsJournalProfileSessionVersion ||
+      !hasSportsJournalCurrentProfile(user.id)
+    ) {
+
+      return;
+
+    }
+
+    if (
+      (targetStatus === "published" || targetStatus === "review") &&
       !articleForm.reportValidity()
     ) {
 
@@ -15483,17 +15307,6 @@ saveArticle =
     }
 
 
-    const user =
-      await requireSportsJournalCloudUser();
-
-
-    if (!user) {
-
-      return;
-
-    }
-
-
     const existingId =
       articleIdInput
         .value
@@ -15506,6 +15319,57 @@ saveArticle =
             existingId
           )
         : null;
+
+    if (targetStatus === "published" && !canSportsJournalPublish()) {
+
+      showToast("TU CUENTA NO PUEDE PUBLICAR NOTICIAS.");
+      return;
+
+    }
+
+    if (
+      targetStatus === "draft" &&
+      existingArticle &&
+      !existingArticle.archivedAt &&
+      existingArticle.workflowStatus !== "archived" &&
+      (existingArticle.status === "published" || existingArticle.workflowStatus === "published")
+    ) {
+
+      if (
+        !canSportsJournalPublish() ||
+        existingArticle.status !== "published" ||
+        (existingArticle.workflowStatus || existingArticle.status) !== "published"
+      ) {
+
+        showToast("NO PUEDES MOVER ESTA NOTICIA A BORRADOR.");
+        return;
+
+      }
+
+    }
+
+    if (isSportsJournalJournalist()) {
+
+      const editorialState =
+        existingArticle?.workflowStatus || existingArticle?.status;
+
+      if (
+        !["draft", "review"].includes(targetStatus) ||
+        (existingId && (
+          !existingArticle ||
+          existingArticle.authorId !== user.id ||
+          existingArticle.archivedAt ||
+          existingArticle.status === "published" ||
+          !["draft", "review"].includes(editorialState)
+        ))
+      ) {
+
+        showToast("NO PUEDES MODIFICAR ESTA NOTICIA.");
+        return;
+
+      }
+
+    }
 
 
     const now =
@@ -15572,7 +15436,9 @@ saveArticle =
 
 
     const authorName =
-      authorInput
+      isSportsJournalJournalist()
+        ? (sportsJournalAuth.profile.display_name || "SPORTS JOURNAL")
+        : authorInput
         .value
         .trim() ||
       sportsJournalAuth
@@ -15816,6 +15682,26 @@ confirmArchiveArticle =
     const articleId =
       pendingArchiveArticleId;
 
+    const profileSessionVersion = sportsJournalProfileSessionVersion;
+    const user = await requireSportsJournalCloudUser();
+
+    if (
+      !user ||
+      profileSessionVersion !== sportsJournalProfileSessionVersion ||
+      !hasSportsJournalCurrentProfile(user.id)
+    ) {
+
+      return;
+
+    }
+
+    if (!isSportsJournalAdmin() && !isSportsJournalEditor()) {
+
+      showToast("NO PUEDES MODIFICAR ESTA NOTICIA.");
+      return;
+
+    }
+
 
     const article =
       findArticle(
@@ -15832,11 +15718,11 @@ confirmArchiveArticle =
     }
 
 
-    const user =
-      await requireSportsJournalCloudUser();
-
-
-    if (!user) {
+    if (
+      article.status !== "published" ||
+      (article.workflowStatus || article.status) !== "published" ||
+      article.archivedAt
+    ) {
 
       return;
 
@@ -15952,6 +15838,26 @@ republishArchivedArticle =
     articleId
   ) {
 
+    const profileSessionVersion = sportsJournalProfileSessionVersion;
+    const user = await requireSportsJournalCloudUser();
+
+    if (
+      !user ||
+      profileSessionVersion !== sportsJournalProfileSessionVersion ||
+      !hasSportsJournalCurrentProfile(user.id)
+    ) {
+
+      return;
+
+    }
+
+    if (!isSportsJournalAdmin() && !isSportsJournalEditor()) {
+
+      showToast("NO PUEDES MODIFICAR ESTA NOTICIA.");
+      return;
+
+    }
+
     const article =
       findArticle(
         articleId
@@ -15960,19 +15866,10 @@ republishArchivedArticle =
 
     if (
       !article ||
-      !article.archivedAt
+      article.status !== "published" ||
+      !article.archivedAt ||
+      (article.workflowStatus || "archived") !== "archived"
     ) {
-
-      return;
-
-    }
-
-
-    const user =
-      await requireSportsJournalCloudUser();
-
-
-    if (!user) {
 
       return;
 
@@ -16051,6 +15948,26 @@ moveArchivedArticleToDraft =
     articleId
   ) {
 
+    const profileSessionVersion = sportsJournalProfileSessionVersion;
+    const user = await requireSportsJournalCloudUser();
+
+    if (
+      !user ||
+      profileSessionVersion !== sportsJournalProfileSessionVersion ||
+      !hasSportsJournalCurrentProfile(user.id)
+    ) {
+
+      return;
+
+    }
+
+    if (!isSportsJournalAdmin() && !isSportsJournalEditor()) {
+
+      showToast("NO PUEDES MODIFICAR ESTA NOTICIA.");
+      return;
+
+    }
+
     const article =
       findArticle(
         articleId
@@ -16059,19 +15976,10 @@ moveArchivedArticleToDraft =
 
     if (
       !article ||
-      !article.archivedAt
+      article.status !== "published" ||
+      !article.archivedAt ||
+      (article.workflowStatus || "archived") !== "archived"
     ) {
-
-      return;
-
-    }
-
-
-    const user =
-      await requireSportsJournalCloudUser();
-
-
-    if (!user) {
 
       return;
 
@@ -16149,6 +16057,26 @@ publishDraftFromArticleManager =
     articleId
   ) {
 
+    const profileSessionVersion = sportsJournalProfileSessionVersion;
+    const user = await requireSportsJournalCloudUser();
+
+    if (
+      !user ||
+      profileSessionVersion !== sportsJournalProfileSessionVersion ||
+      !hasSportsJournalCurrentProfile(user.id)
+    ) {
+
+      return;
+
+    }
+
+    if (!canSportsJournalPublish()) {
+
+      showToast("TU CUENTA NO PUEDE PUBLICAR NOTICIAS.");
+      return;
+
+    }
+
     const article =
       findArticle(
         articleId
@@ -16158,6 +16086,7 @@ publishDraftFromArticleManager =
     if (
       !article ||
       article.status !== "draft" ||
+      (article.workflowStatus || article.status) !== "draft" ||
       article.archivedAt
     ) {
 
@@ -16184,17 +16113,6 @@ publishDraftFromArticleManager =
         "COMPLETA LA NOTICIA ANTES DE PUBLICAR."
       );
 
-
-      return;
-
-    }
-
-
-    const user =
-      await requireSportsJournalCloudUser();
-
-
-    if (!user) {
 
       return;
 
@@ -16287,13 +16205,57 @@ permanentlyDeleteArticle =
     const articleId =
       pendingDeleteArticleId;
 
+    const profileSessionVersion = sportsJournalProfileSessionVersion;
 
     const user =
       await requireSportsJournalCloudUser();
 
 
-    if (!user) {
+    if (
+      !user ||
+      profileSessionVersion !== sportsJournalProfileSessionVersion ||
+      !hasSportsJournalCurrentProfile(user.id)
+    ) {
 
+      return;
+
+    }
+
+
+    const article = findArticle(articleId);
+
+    if (!article) {
+
+      return;
+
+    }
+
+    const workflowStatus =
+      article.workflowStatus ||
+      (article.archivedAt ? "archived" : article.status);
+
+    const isDraftOrReview =
+      article.status === "draft" &&
+      !article.archivedAt &&
+      ["draft", "review"].includes(workflowStatus);
+
+    const isPublishedOrArchived =
+      article.status === "published" &&
+      workflowStatus === (article.archivedAt ? "archived" : "published");
+
+    if (!isDraftOrReview && !isPublishedOrArchived) {
+
+      return;
+
+    }
+
+    if (
+      !isSportsJournalAdmin() &&
+      !isSportsJournalEditor() &&
+      !(isSportsJournalJournalist() && article.authorId === user.id && isDraftOrReview)
+    ) {
+
+      showToast("NO PUEDES MODIFICAR ESTA NOTICIA.");
       return;
 
     }
@@ -16315,6 +16277,16 @@ permanentlyDeleteArticle =
           "id",
           articleId
         );
+
+
+    if (
+      profileSessionVersion !== sportsJournalProfileSessionVersion ||
+      !hasSportsJournalCurrentProfile(user.id)
+    ) {
+
+      return;
+
+    }
 
 
     if (error) {
@@ -16370,6 +16342,16 @@ permanentlyDeleteArticle =
     await loadSportsJournalArticlesFromCloud({
       silent: true
     });
+
+
+    if (
+      profileSessionVersion !== sportsJournalProfileSessionVersion ||
+      !hasSportsJournalCurrentProfile(user.id)
+    ) {
+
+      return;
+
+    }
 
 
     createInternalBackup(
@@ -16857,6 +16839,8 @@ async function handleSportsJournalCloudBackupFile(
   event
 ) {
 
+  const uiContext = sportsJournalPrivateUiContext;
+
   const file =
     event.target.files[0];
 
@@ -16874,6 +16858,8 @@ async function handleSportsJournalCloudBackupFile(
       JSON.parse(
         await file.text()
       );
+
+    if (!hasSportsJournalCurrentAdminUiContext(uiContext)) return;
 
 
     const importedArticles =
@@ -16963,6 +16949,8 @@ async function handleSportsJournalCloudBackupFile(
     openSportsJournalCloudRestore();
 
   } catch (error) {
+
+    if (!hasSportsJournalCurrentAdminUiContext(uiContext)) return;
 
     console.error(
       "SPORTS JOURNAL → Respaldo inválido:",
@@ -18237,7 +18225,22 @@ function createSportsJournalReviewInterface() {
    OPEN / CLOSE REVIEW
 ========================================================= */
 
-function openSportsJournalReviewManager() {
+async function openSportsJournalReviewManager() {
+
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+  const user = await requireSportsJournalCloudUser();
+
+  if (
+    !user ||
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(user.id) ||
+    (!isSportsJournalAdmin() && !isSportsJournalEditor())
+  ) {
+
+    return;
+
+  }
+
 
   renderSportsJournalReviewManager();
 
@@ -18691,6 +18694,19 @@ async function publishSportsJournalReview(
   articleId
 ) {
 
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+  const user = await requireSportsJournalCloudUser();
+
+  if (
+    !user ||
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(user.id)
+  ) {
+
+    return;
+
+  }
+
   if (
     !canSportsJournalPublish()
   ) {
@@ -18705,17 +18721,6 @@ async function publishSportsJournalReview(
   }
 
 
-  const user =
-    await requireSportsJournalCloudUser();
-
-
-  if (!user) {
-
-    return;
-
-  }
-
-
   const article =
     findArticle(
       articleId
@@ -18724,6 +18729,8 @@ async function publishSportsJournalReview(
 
   if (
     !article ||
+    article.status !== "draft" ||
+    article.archivedAt ||
     article.workflowStatus !==
       "review"
   ) {
@@ -18814,11 +18821,17 @@ async function returnSportsJournalReviewToDraft(
   articleId
 ) {
 
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+
   const user =
     await requireSportsJournalCloudUser();
 
 
-  if (!user) {
+  if (
+    !user ||
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(user.id)
+  ) {
 
     return;
 
@@ -18850,11 +18863,10 @@ async function returnSportsJournalReviewToDraft(
 
   if (
     isSportsJournalJournalist() &&
-    String(
-      article.authorId
-    ) !==
-    String(
-      user.id
+    (
+      article.authorId !== user.id ||
+      article.archivedAt ||
+      article.status === "published"
     )
   ) {
 
@@ -18950,6 +18962,19 @@ saveArticle =
     requestedStatus
   ) {
 
+    const profileSessionVersion = sportsJournalProfileSessionVersion;
+    const user = await requireSportsJournalCloudUser();
+
+    if (
+      !user ||
+      profileSessionVersion !== sportsJournalProfileSessionVersion ||
+      !hasSportsJournalCurrentProfile(user.id)
+    ) {
+
+      return;
+
+    }
+
     let targetStatus =
       requestedStatus;
 
@@ -19013,7 +19038,8 @@ saveArticle =
 
 
     return step132BaseSaveArticle(
-      targetStatus
+      targetStatus,
+      user
     );
 
   };
@@ -19145,9 +19171,22 @@ const step132BaseOpenEditor =
 
 
 openEditor =
-  function (
+  async function (
     articleId = null
   ) {
+
+    const profileSessionVersion = sportsJournalProfileSessionVersion;
+    const user = await requireSportsJournalCloudUser();
+
+    if (
+      !user ||
+      profileSessionVersion !== sportsJournalProfileSessionVersion ||
+      !hasSportsJournalCurrentProfile(user.id)
+    ) {
+
+      return;
+
+    }
 
     const role =
       getSportsJournalRole();
@@ -19302,6 +19341,10 @@ updateManagementCounts =
 
 function syncSportsJournalRoleInterface() {
 
+  syncSportsJournalPrivateUiForAuthContext();
+
+  syncSportsJournalBackupExportAccess();
+
   document.body
     .classList
     .remove(
@@ -19322,7 +19365,7 @@ function syncSportsJournalRoleInterface() {
 
 
   const role =
-    getSportsJournalRole();
+    hasSportsJournalCurrentProfile() ? getSportsJournalRole() : null;
 
 
   if (role) {
@@ -21648,6 +21691,8 @@ function bindSportsJournalNewsroomEvents() {
 
 async function openSportsJournalNewsroom() {
 
+  const uiContext = sportsJournalPrivateUiContext;
+
   if (
     !isSportsJournalAdmin()
   ) {
@@ -21669,7 +21714,7 @@ async function openSportsJournalNewsroom() {
     await loadSportsJournalNewsroomMembers();
 
 
-  if (!loaded) {
+  if (!loaded || !hasSportsJournalCurrentAdminUiContext(uiContext)) {
 
     return;
 
@@ -22697,8 +22742,14 @@ async function refreshSportsJournalCurrentProfile() {
     const previousRole =
       getSportsJournalRole();
 
+    const editorDiscardSequence = sportsJournalEditorContextDiscardSequence;
 
-    await loadSportsJournalProfile();
+
+    if (await loadSportsJournalProfile() === false) {
+
+      return;
+
+    }
 
 
     const nextRole =
@@ -22723,7 +22774,7 @@ async function refreshSportsJournalCurrentProfile() {
       });
 
 
-      showToast(
+      if (editorDiscardSequence === sportsJournalEditorContextDiscardSequence) showToast(
         `TU ROL AHORA ES ${getSportsJournalRoleLabel(
           nextRole
         )}.`
@@ -23034,7 +23085,11 @@ function createSportsJournalInviteInterface() {
 
     <section
       class="newsroom-invite-panel"
-      aria-label="Invitar miembro"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="newsroomInviteHeading"
+      aria-describedby="newsroomInviteIntro"
+      tabindex="-1"
     >
 
       <header
@@ -23047,7 +23102,7 @@ function createSportsJournalInviteInterface() {
             SPORTS JOURNAL · ADMIN
           </span>
 
-          <h2>
+          <h2 id="newsroomInviteHeading">
             INVITAR
           </h2>
 
@@ -23072,6 +23127,7 @@ function createSportsJournalInviteInterface() {
 
         <p
           class="newsroom-invite-intro"
+          id="newsroomInviteIntro"
         >
           El nuevo miembro recibirá un correo
           para crear su contraseña y acceder
@@ -23246,6 +23302,7 @@ function openSportsJournalInviteModal() {
 
 
   syncBodyScrollState();
+  startSportsJournalModalFocus(modal, '#newsroomInviteName');
 
 }
 
@@ -23284,6 +23341,7 @@ function closeSportsJournalInviteModal() {
 
 
   syncBodyScrollState();
+  stopSportsJournalModalFocus(modal);
 
 }
 
@@ -23988,7 +24046,11 @@ openReader =
       );
 
 
-    if (!article) {
+    if (
+      !article ||
+      !readerModal.classList.contains("open") ||
+      String(currentReaderArticleId) !== String(article.id)
+    ) {
 
       return result;
 
@@ -24129,6 +24191,8 @@ function syncSportsJournalStoryFromUrl(
 
   if (!article) {
 
+    closeReader();
+
     if (
       showNotFound
     ) {
@@ -24236,6 +24300,10 @@ window.addEventListener(
         setSportsJournalArticleDocumentTitle(
           article
         );
+
+      } else {
+
+        closeReader();
 
       }
 
