@@ -6062,6 +6062,8 @@ async function handleBackupFileSelection(
   event
 ) {
 
+  const uiContext = sportsJournalPrivateUiContext;
+
   const file =
     event.target.files[0];
 
@@ -6079,6 +6081,8 @@ async function handleBackupFileSelection(
       JSON.parse(
         await file.text()
       );
+
+    if (!hasSportsJournalCurrentAdminUiContext(uiContext)) return;
 
 
     const imported =
@@ -6154,6 +6158,8 @@ async function handleBackupFileSelection(
     syncBodyScrollState();
 
   } catch (error) {
+
+    if (!hasSportsJournalCurrentAdminUiContext(uiContext)) return;
 
     console.error(error);
 
@@ -12643,6 +12649,85 @@ const sportsJournalAuth = {
 let sportsJournalProfileSessionVersion = 0;
 let sportsJournalProfileLoadSequence = 0;
 let sportsJournalProfileAppliedLoadSequence = 0;
+let sportsJournalPrivateUiContext = null;
+let sportsJournalEditorContextDiscardSequence = 0;
+
+function syncSportsJournalPrivateUiForAuthContext() {
+  const userId = sportsJournalAuth.session?.user?.id || null;
+  const role = hasSportsJournalCurrentProfile(userId) ? getSportsJournalRole() : null;
+  const version = sportsJournalProfileSessionVersion;
+  const previous = sportsJournalPrivateUiContext;
+  const changedSession = Boolean(previous &&
+    (previous.version !== version || previous.userId !== userId));
+  const editorial = role === "admin" || role === "editor";
+  const admin = role === "admin";
+
+  // Hide invalid openers before a modal attempts to restore focus.
+  const accesses = {
+    adminDashboardMenuButton: editorial,
+    allArticlesMenuButton: editorial,
+    draftsMenuButton: editorial,
+    reviewMenuButton: editorial,
+    publishedMenuButton: editorial,
+    archivedMenuButton: editorial,
+    journalistDashboardMenuButton: role === "journalist",
+    newsroomMenuButton: admin,
+    newsroomInviteLaunch: admin,
+    restoreBackupButton: admin
+  };
+  Object.entries(accesses).forEach(([id, allowed]) => {
+    const control = document.getElementById(id);
+    if (control) control.hidden = !allowed;
+  });
+  const dataBlock = document.querySelector(".data-block");
+  if (dataBlock) dataBlock.hidden = !admin;
+  syncSportsJournalBackupExportAccess();
+
+  const surfaces = [
+    ["adminDashboardModal", editorial, closeAdminDashboard],
+    ["adminArticleManagerModal", editorial, closeAdminArticleManager],
+    ["draftsModal", editorial, closeDraftsManager],
+    ["reviewManagerModal", editorial, closeSportsJournalReviewManager],
+    ["archiveManagerModal", editorial, closeArchivedManager],
+    ["journalistDashboardModal", role === "journalist", closeJournalistDashboard],
+    ["newsroomModal", admin, closeSportsJournalNewsroom],
+    ["newsroomInviteModal", admin, closeSportsJournalInviteModal],
+    ["restoreModal", admin, closeRestoreModal],
+    ["cloudRestoreModal", admin, closeSportsJournalCloudRestore]
+  ];
+  surfaces.forEach(([id, allowed, close]) => {
+    if ((changedSession || !allowed) &&
+        document.getElementById(id)?.classList.contains("open")) close();
+  });
+
+  const changedEditorRole = previous && previous.role !== role &&
+    !(editorial && ["admin", "editor"].includes(previous.role));
+  if (changedSession || !role || changedEditorRole) {
+    const open = editorModal.classList.contains("open");
+    if (open) updateEditorDirtyState();
+    const lostChanges = open && editorHasUnsavedChanges;
+    if (unsavedModal.classList.contains("open")) closeUnsavedModal();
+    if (moveDraftModal.classList.contains("open")) closeMoveDraftModal();
+    if (open) closeEditorImmediately();
+    if (open || changedSession) resetEditor();
+    if (lostChanges) {
+      sportsJournalEditorContextDiscardSequence += 1;
+      showToast("LA SESIÓN O EL ROL CAMBIÓ. LOS CAMBIOS SIN GUARDAR NO PUDIERON GUARDARSE Y EL EDITOR SE CERRÓ.");
+    }
+  }
+  if (changedSession && sideMenu.classList.contains("open")) closeSideMenu();
+  if (changedSession &&
+      document.getElementById("sportsJournalAuthModal")?.classList.contains("open") &&
+      document.getElementById("sjAuthAccountView")?.hidden === false) closeSportsJournalAuthModal();
+  if (!previous || changedSession || previous.role !== role) {
+    sportsJournalPrivateUiContext = { userId, role, version };
+  }
+}
+
+function hasSportsJournalCurrentAdminUiContext(context) {
+  return context === sportsJournalPrivateUiContext &&
+    hasSportsJournalCurrentProfile() && isSportsJournalAdmin();
+}
 
 
 function setSportsJournalAuthSession(session) {
@@ -12667,6 +12752,7 @@ function setSportsJournalAuthSession(session) {
 
   syncSportsJournalCloudArticleContext();
 
+  syncSportsJournalAuthUi();
 }
 
 
@@ -13751,6 +13837,13 @@ async function handleSportsJournalPasswordSetup(
 
 async function handleSportsJournalLogout() {
 
+  if (editorModal.classList.contains("open")) {
+    updateEditorDirtyState();
+    if (editorHasUnsavedChanges && !window.confirm(
+      "HAY CAMBIOS SIN GUARDAR. ¿CERRAR SESIÓN Y DESCARTARLOS?"
+    )) return;
+  }
+
   const {
     error
   } =
@@ -13816,6 +13909,7 @@ async function loadSportsJournalProfile() {
 
     syncSportsJournalCloudArticleContext();
 
+    syncSportsJournalAuthUi();
 
     return;
 
@@ -13885,6 +13979,7 @@ async function loadSportsJournalProfile() {
 
     syncSportsJournalCloudArticleContext();
 
+    syncSportsJournalAuthUi();
 
     return;
 
@@ -13899,6 +13994,8 @@ async function loadSportsJournalProfile() {
 
   sportsJournalAuth.profile =
     data;
+
+  syncSportsJournalAuthUi();
 
   if (
     syncSportsJournalCloudArticleContext() &&
@@ -16687,6 +16784,8 @@ async function handleSportsJournalCloudBackupFile(
   event
 ) {
 
+  const uiContext = sportsJournalPrivateUiContext;
+
   const file =
     event.target.files[0];
 
@@ -16704,6 +16803,8 @@ async function handleSportsJournalCloudBackupFile(
       JSON.parse(
         await file.text()
       );
+
+    if (!hasSportsJournalCurrentAdminUiContext(uiContext)) return;
 
 
     const importedArticles =
@@ -16793,6 +16894,8 @@ async function handleSportsJournalCloudBackupFile(
     openSportsJournalCloudRestore();
 
   } catch (error) {
+
+    if (!hasSportsJournalCurrentAdminUiContext(uiContext)) return;
 
     console.error(
       "SPORTS JOURNAL → Respaldo inválido:",
@@ -19183,6 +19286,8 @@ updateManagementCounts =
 
 function syncSportsJournalRoleInterface() {
 
+  syncSportsJournalPrivateUiForAuthContext();
+
   syncSportsJournalBackupExportAccess();
 
   document.body
@@ -19205,7 +19310,7 @@ function syncSportsJournalRoleInterface() {
 
 
   const role =
-    getSportsJournalRole();
+    hasSportsJournalCurrentProfile() ? getSportsJournalRole() : null;
 
 
   if (role) {
@@ -21531,6 +21636,8 @@ function bindSportsJournalNewsroomEvents() {
 
 async function openSportsJournalNewsroom() {
 
+  const uiContext = sportsJournalPrivateUiContext;
+
   if (
     !isSportsJournalAdmin()
   ) {
@@ -21552,7 +21659,7 @@ async function openSportsJournalNewsroom() {
     await loadSportsJournalNewsroomMembers();
 
 
-  if (!loaded) {
+  if (!loaded || !hasSportsJournalCurrentAdminUiContext(uiContext)) {
 
     return;
 
@@ -22580,6 +22687,8 @@ async function refreshSportsJournalCurrentProfile() {
     const previousRole =
       getSportsJournalRole();
 
+    const editorDiscardSequence = sportsJournalEditorContextDiscardSequence;
+
 
     if (await loadSportsJournalProfile() === false) {
 
@@ -22610,7 +22719,7 @@ async function refreshSportsJournalCurrentProfile() {
       });
 
 
-      showToast(
+      if (editorDiscardSequence === sportsJournalEditorContextDiscardSequence) showToast(
         `TU ROL AHORA ES ${getSportsJournalRoleLabel(
           nextRole
         )}.`
