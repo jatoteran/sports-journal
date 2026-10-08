@@ -3197,7 +3197,22 @@ function createCustomEmptyState(
    DRAFT MANAGER
 ========================================================= */
 
-function openDraftsManager() {
+async function openDraftsManager() {
+
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+  const user = await requireSportsJournalCloudUser();
+
+  if (
+    !user ||
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(user.id) ||
+    (!isSportsJournalAdmin() && !isSportsJournalEditor())
+  ) {
+
+    return;
+
+  }
+
 
   renderDraftsManager();
 
@@ -8627,7 +8642,22 @@ function confirmArchiveArticle() {
    ARCHIVED MANAGER
 ========================================================= */
 
-function openArchivedManager() {
+async function openArchivedManager() {
+
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+  const user = await requireSportsJournalCloudUser();
+
+  if (
+    !user ||
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(user.id) ||
+    (!isSportsJournalAdmin() && !isSportsJournalEditor())
+  ) {
+
+    return;
+
+  }
+
 
   closeSideMenu();
 
@@ -9869,7 +9899,22 @@ function bindAdminDashboardEvents() {
    OPEN / CLOSE
 ========================================================= */
 
-function openAdminDashboard() {
+async function openAdminDashboard() {
+
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+  const user = await requireSportsJournalCloudUser();
+
+  if (
+    !user ||
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(user.id) ||
+    (!isSportsJournalAdmin() && !isSportsJournalEditor())
+  ) {
+
+    return;
+
+  }
+
 
   closeSideMenu();
 
@@ -11315,7 +11360,22 @@ function bindAdminArticleManagerEvents() {
    OPEN / CLOSE
 ========================================================= */
 
-function openAdminArticleManager() {
+async function openAdminArticleManager() {
+
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+  const user = await requireSportsJournalCloudUser();
+
+  if (
+    !user ||
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(user.id) ||
+    (!isSportsJournalAdmin() && !isSportsJournalEditor())
+  ) {
+
+    return;
+
+  }
+
 
   closeSideMenu();
 
@@ -17897,7 +17957,22 @@ function createSportsJournalReviewInterface() {
    OPEN / CLOSE REVIEW
 ========================================================= */
 
-function openSportsJournalReviewManager() {
+async function openSportsJournalReviewManager() {
+
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+  const user = await requireSportsJournalCloudUser();
+
+  if (
+    !user ||
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(user.id) ||
+    (!isSportsJournalAdmin() && !isSportsJournalEditor())
+  ) {
+
+    return;
+
+  }
+
 
   renderSportsJournalReviewManager();
 
