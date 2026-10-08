@@ -1505,7 +1505,7 @@ function bindEvents() {
 
   confirmDeleteButton.addEventListener(
     "click",
-    permanentlyDeleteArticle
+    () => permanentlyDeleteArticle()
   );
 
 
