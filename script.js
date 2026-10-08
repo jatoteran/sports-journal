@@ -5906,7 +5906,21 @@ function closeSideMenu() {
    EXPORT
 ========================================================= */
 
-function exportJournalBackup() {
+async function exportJournalBackup() {
+
+  const profileSessionVersion = sportsJournalProfileSessionVersion;
+  const user = await requireSportsJournalCloudUser();
+
+  if (
+    !user ||
+    profileSessionVersion !== sportsJournalProfileSessionVersion ||
+    !hasSportsJournalCurrentProfile(user.id) ||
+    !isSportsJournalAdmin()
+  ) {
+
+    return;
+
+  }
 
   createInternalBackup(
     "Exportación manual JSON"
@@ -6001,6 +6015,26 @@ function exportJournalBackup() {
 
 }
 
+
+function syncSportsJournalBackupExportAccess() {
+
+  const canExport =
+    hasSportsJournalCurrentProfile() && isSportsJournalAdmin();
+
+  ["exportBackupButton", "adminBackupButton"].forEach((id) => {
+
+    const button = document.getElementById(id);
+
+    if (button) {
+
+      button.hidden = !canExport;
+      button.disabled = !canExport;
+
+    }
+
+  });
+
+}
 
 /* =========================================================
    RESTORE
@@ -9588,6 +9622,8 @@ function createAdminDashboardInterface() {
               class="admin-quick-action"
               id="adminBackupButton"
               type="button"
+              hidden
+              disabled
             >
 
               <span>
@@ -9899,6 +9935,8 @@ function closeAdminDashboard() {
 ========================================================= */
 
 function renderAdminDashboard() {
+
+  syncSportsJournalBackupExportAccess();
 
   renderAdminDashboardDate();
 
@@ -18788,6 +18826,8 @@ updateManagementCounts =
 ========================================================= */
 
 function syncSportsJournalRoleInterface() {
+
+  syncSportsJournalBackupExportAccess();
 
   document.body
     .classList
