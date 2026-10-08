@@ -23705,7 +23705,7 @@ function getSportsJournalSeoImage(imageUrl) {
   if (!imageUrl) return null;
   try {
     const url = new URL(imageUrl);
-    const host = url.hostname.toLowerCase();
+    const host = url.hostname.toLowerCase().replace(/\.+$/, "");
     if (
       !["http:", "https:"].includes(url.protocol) || url.username || url.password ||
       !host.includes(".") || host.endsWith(".localhost") || host.endsWith(".local") ||
