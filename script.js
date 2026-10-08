@@ -12694,6 +12694,72 @@ function invalidateSportsJournalPendingDestructiveActions() {
    CREATE AUTH UI
 ========================================================= */
 
+const sportsJournalModalFocus = new Map();
+
+function getSportsJournalModalFocusables(panel) {
+  return Array.from(panel.querySelectorAll(
+    'a[href], button, input:not([type="hidden"]), select, textarea, [tabindex]'
+  )).filter(element => element.tabIndex >= 0 &&
+    !element.matches(':disabled') &&
+    !element.closest('[hidden], [inert], [aria-hidden="true"]') &&
+    element.getClientRects().length > 0 &&
+    getComputedStyle(element).visibility === 'visible');
+}
+
+function startSportsJournalModalFocus(modal, initialSelector) {
+  const panel = modal.querySelector('[role="dialog"]');
+  if (!sportsJournalModalFocus.has(modal)) {
+    const opener = document.activeElement;
+    sportsJournalModalFocus.set(modal, {
+      opener: opener !== document.body && !modal.contains(opener) ? opener : null,
+      openerText: opener?.textContent
+    });
+  }
+  const focusables = getSportsJournalModalFocusables(panel);
+  const initial = panel.querySelector(initialSelector);
+  (focusables.includes(initial) ? initial : focusables[0] || panel).focus();
+}
+
+function stopSportsJournalModalFocus(modal) {
+  const saved = sportsJournalModalFocus.get(modal);
+  sportsJournalModalFocus.delete(modal);
+  const opener = saved?.opener;
+  if (opener?.isConnected && opener.textContent === saved.openerText &&
+      !opener.matches(':disabled') && opener.getClientRects().length &&
+      !opener.closest('[hidden], [inert], [aria-hidden="true"]') &&
+      getComputedStyle(opener).visibility === 'visible') {
+    opener.focus({ preventScroll: true });
+  }
+}
+
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Tab' && event.key !== 'Escape') return;
+  const modal = Array.from(sportsJournalModalFocus.keys())
+    .filter(element => element.classList.contains('open'))
+    .sort((a, b) => Number(getComputedStyle(b).zIndex) - Number(getComputedStyle(a).zIndex))[0];
+  if (!modal) return;
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    if (modal.id === 'newsroomInviteModal') closeSportsJournalInviteModal();
+    else if (document.getElementById('sjAuthSetupView').hidden) closeSportsJournalAuthModal();
+    return;
+  }
+  const panel = modal.querySelector('[role="dialog"]');
+  const focusables = getSportsJournalModalFocusables(panel);
+  const first = focusables[0];
+  const last = focusables[focusables.length - 1];
+  if (!first) {
+    event.preventDefault();
+    panel.focus();
+  } else if (!focusables.includes(document.activeElement) ||
+      (event.shiftKey && document.activeElement === first) ||
+      (!event.shiftKey && document.activeElement === last)) {
+    event.preventDefault();
+    (event.shiftKey ? last : first).focus();
+  }
+}, true);
+
 function createSportsJournalAuthInterface() {
 
   if (
@@ -12735,7 +12801,10 @@ function createSportsJournalAuthInterface() {
 
     <section
       class="sj-auth-panel"
-      aria-label="Cuenta Sports Journal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="sjAuthHeading"
+      tabindex="-1"
     >
 
       <header
@@ -12780,6 +12849,7 @@ function createSportsJournalAuthInterface() {
 
           <p
             class="sj-auth-intro"
+            id="sjLoginIntro"
           >
             Accede a la redacción de Sports Journal.
           </p>
@@ -13333,6 +13403,12 @@ function openSportsJournalAuthModal(
 
   syncBodyScrollState();
 
+  const panel = modal.querySelector('[role="dialog"]');
+  if (mode === 'account') panel.removeAttribute('aria-describedby');
+  else panel.setAttribute('aria-describedby', mode === 'setup' ? 'sjSetupIntro' : 'sjLoginIntro');
+  startSportsJournalModalFocus(modal,
+    mode === 'login' ? '#sjLoginEmail' :
+      mode === 'setup' ? (firstSetup ? '#sjSetupName' : '#sjSetupPassword') : '#sjAuthCloseButton');
 }
 
 
@@ -13356,6 +13432,7 @@ function closeSportsJournalAuthModal() {
 
 
   syncBodyScrollState();
+  stopSportsJournalModalFocus(modal);
 
 }
 
@@ -22844,7 +22921,11 @@ function createSportsJournalInviteInterface() {
 
     <section
       class="newsroom-invite-panel"
-      aria-label="Invitar miembro"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="newsroomInviteHeading"
+      aria-describedby="newsroomInviteIntro"
+      tabindex="-1"
     >
 
       <header
@@ -22857,7 +22938,7 @@ function createSportsJournalInviteInterface() {
             SPORTS JOURNAL · ADMIN
           </span>
 
-          <h2>
+          <h2 id="newsroomInviteHeading">
             INVITAR
           </h2>
 
@@ -22882,6 +22963,7 @@ function createSportsJournalInviteInterface() {
 
         <p
           class="newsroom-invite-intro"
+          id="newsroomInviteIntro"
         >
           El nuevo miembro recibirá un correo
           para crear su contraseña y acceder
@@ -23056,6 +23138,7 @@ function openSportsJournalInviteModal() {
 
 
   syncBodyScrollState();
+  startSportsJournalModalFocus(modal, '#newsroomInviteName');
 
 }
 
@@ -23094,6 +23177,7 @@ function closeSportsJournalInviteModal() {
 
 
   syncBodyScrollState();
+  stopSportsJournalModalFocus(modal);
 
 }
 

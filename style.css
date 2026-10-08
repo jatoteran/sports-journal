@@ -6495,6 +6495,7 @@ body.sj-auth-guest .write-button {
 ========================================================= */
 
 .sj-auth-recovery {
+  min-height: 44px;
   width: 100%;
 
   margin-top: 12px;
@@ -6516,6 +6517,22 @@ body.sj-auth-guest .write-button {
 .sj-auth-recovery:hover {
   background: var(--black);
   color: var(--yellow);
+}
+
+.sj-auth-close,
+.newsroom-invite-header .close-button {
+  flex-shrink: 0;
+}
+
+.sj-auth-panel button:focus-visible,
+.newsroom-invite-panel button:focus-visible {
+  outline: 3px solid var(--black);
+  outline-offset: 3px;
+}
+
+.sj-auth-panel .sj-auth-close:focus-visible,
+.newsroom-invite-header .close-button:focus-visible {
+  outline-color: var(--yellow);
 }
 
 .sj-auth-message {
