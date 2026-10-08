@@ -4843,6 +4843,7 @@ function openReader(
     article
   );
 
+  syncSportsJournalReaderSharing(article);
 
   readerModal.classList.add(
     "open"
@@ -4868,6 +4869,8 @@ function openReader(
 
 
 function closeReader() {
+
+  syncSportsJournalReaderSharing();
 
   readerModal.classList.remove(
     "open"
@@ -15030,6 +15033,7 @@ function refreshSportsJournalCloudViews() {
 
       renderReaderRelatedStories(readerArticle);
       renderReaderNavigation(readerArticle);
+      syncSportsJournalReaderSharing(readerArticle);
 
     }
 
@@ -24412,5 +24416,120 @@ function installSportsJournalReaderCloseUrlFix() {
 
 }
 
+
+/* Article sharing uses the existing Reader and permanent story URLs. */
+function isSportsJournalPublicShareArticle(article) {
+  return Boolean(
+    article?.slug && article.status === "published" &&
+    (article.workflowStatus || article.status) === "published" &&
+    !article.archivedAt
+  );
+}
+
+function getSportsJournalReaderShareData() {
+  const article = findArticle(currentReaderArticleId);
+  if (!readerModal.classList.contains("open") || !isSportsJournalPublicShareArticle(article)) {
+    return null;
+  }
+
+  const url = new URL(getSportsJournalArticleUrl(article));
+  url.search = "";
+  url.hash = "";
+  url.searchParams.set("story", article.slug);
+  return { title: article.title, text: article.summary || "", url: url.toString() };
+}
+
+function syncSportsJournalReaderSharing(article = null) {
+  document.getElementById("readerSharing").hidden = !isSportsJournalPublicShareArticle(article);
+  document.getElementById("readerShareOptions").hidden = true;
+  document.getElementById("readerShareManual").hidden = true;
+  document.getElementById("readerShareUrl").value = "";
+  document.getElementById("readerShareButton").setAttribute("aria-expanded", "false");
+  ["readerShareWhatsapp", "readerShareFacebook", "readerShareX"].forEach(id => {
+    document.getElementById(id).removeAttribute("href");
+  });
+}
+
+function setSportsJournalShareLinks(data) {
+  document.getElementById("readerShareWhatsapp").href =
+    `https://wa.me/?text=${encodeURIComponent(`${data.title}\n${data.url}`)}`;
+  document.getElementById("readerShareFacebook").href =
+    `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(data.url)}`;
+  document.getElementById("readerShareX").href =
+    `https://twitter.com/intent/tweet?text=${encodeURIComponent(data.title)}&url=${encodeURIComponent(data.url)}`;
+}
+
+function showSportsJournalShareOptions(data) {
+  if (getSportsJournalReaderShareData()?.url !== data.url) return;
+  setSportsJournalShareLinks(data);
+  document.getElementById("readerShareOptions").hidden = false;
+  document.getElementById("readerShareButton").setAttribute("aria-expanded", "true");
+}
+
+async function shareSportsJournalReaderArticle() {
+  const data = getSportsJournalReaderShareData();
+  if (!data) return;
+  const button = document.getElementById("readerShareButton");
+  if (button.disabled) return;
+
+  if (typeof navigator.share === "function") {
+    button.disabled = true;
+    try {
+      await navigator.share(data);
+    } catch (error) {
+      if (error.name !== "AbortError") showSportsJournalShareOptions(data);
+    } finally {
+      button.disabled = false;
+    }
+    return;
+  }
+
+  const options = document.getElementById("readerShareOptions");
+  if (options.hidden) {
+    showSportsJournalShareOptions(data);
+  } else {
+    options.hidden = true;
+    button.setAttribute("aria-expanded", "false");
+  }
+}
+
+async function copySportsJournalReaderLink() {
+  const data = getSportsJournalReaderShareData();
+  if (!data) return;
+
+  try {
+    await navigator.clipboard.writeText(data.url);
+    if (getSportsJournalReaderShareData()?.url === data.url) showToast("ENLACE COPIADO ✓");
+  } catch {
+    if (getSportsJournalReaderShareData()?.url !== data.url) return;
+    showSportsJournalShareOptions(data);
+    document.getElementById("readerShareManual").hidden = false;
+    const input = document.getElementById("readerShareUrl");
+    input.value = data.url;
+    input.focus();
+    input.select();
+  }
+}
+
+document.getElementById("readerShareButton").addEventListener("click", shareSportsJournalReaderArticle);
+document.getElementById("readerCopyLinkButton").addEventListener("click", copySportsJournalReaderLink);
+["readerShareWhatsapp", "readerShareFacebook", "readerShareX"].forEach(id => {
+  document.getElementById(id).addEventListener("click", event => {
+    const data = getSportsJournalReaderShareData();
+    if (!data) {
+      event.preventDefault();
+      return;
+    }
+    setSportsJournalShareLinks(data);
+  });
+});
+document.getElementById("readerShareOptions").addEventListener("keydown", event => {
+  if (event.key !== "Escape") return;
+  event.preventDefault();
+  event.stopPropagation();
+  document.getElementById("readerShareOptions").hidden = true;
+  document.getElementById("readerShareButton").setAttribute("aria-expanded", "false");
+  document.getElementById("readerShareButton").focus();
+});
 
 installSportsJournalReaderCloseUrlFix();

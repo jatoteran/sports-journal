@@ -2266,6 +2266,59 @@ main {
   cursor: pointer;
 }
 
+.reader-sharing {
+  margin: 20px 0;
+}
+
+.reader-sharing button,
+.reader-sharing a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: var(--border);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--black);
+  font: 900 11px Arial, sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#readerShareButton {
+  background: var(--yellow);
+}
+
+.reader-share-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 420px;
+  margin-top: 10px;
+}
+
+.reader-sharing button:focus-visible,
+.reader-sharing a:focus-visible,
+.reader-sharing input:focus-visible {
+  outline: 2px solid var(--black);
+  outline-offset: 2px;
+}
+
+.reader-share-manual {
+  grid-column: 1 / -1;
+  min-width: 0;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.reader-share-manual input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  margin-top: 6px;
+}
+
 .reader-topbar-brand {
   font-family: Impact, "Arial Black", sans-serif;
   font-size: 20px;
