@@ -15360,6 +15360,26 @@ confirmArchiveArticle =
     const articleId =
       pendingArchiveArticleId;
 
+    const profileSessionVersion = sportsJournalProfileSessionVersion;
+    const user = await requireSportsJournalCloudUser();
+
+    if (
+      !user ||
+      profileSessionVersion !== sportsJournalProfileSessionVersion ||
+      !hasSportsJournalCurrentProfile(user.id)
+    ) {
+
+      return;
+
+    }
+
+    if (!isSportsJournalAdmin() && !isSportsJournalEditor()) {
+
+      showToast("NO PUEDES MODIFICAR ESTA NOTICIA.");
+      return;
+
+    }
+
 
     const article =
       findArticle(
@@ -15376,11 +15396,11 @@ confirmArchiveArticle =
     }
 
 
-    const user =
-      await requireSportsJournalCloudUser();
-
-
-    if (!user) {
+    if (
+      article.status !== "published" ||
+      (article.workflowStatus || article.status) !== "published" ||
+      article.archivedAt
+    ) {
 
       return;
 
@@ -15496,6 +15516,26 @@ republishArchivedArticle =
     articleId
   ) {
 
+    const profileSessionVersion = sportsJournalProfileSessionVersion;
+    const user = await requireSportsJournalCloudUser();
+
+    if (
+      !user ||
+      profileSessionVersion !== sportsJournalProfileSessionVersion ||
+      !hasSportsJournalCurrentProfile(user.id)
+    ) {
+
+      return;
+
+    }
+
+    if (!isSportsJournalAdmin() && !isSportsJournalEditor()) {
+
+      showToast("NO PUEDES MODIFICAR ESTA NOTICIA.");
+      return;
+
+    }
+
     const article =
       findArticle(
         articleId
@@ -15504,19 +15544,10 @@ republishArchivedArticle =
 
     if (
       !article ||
-      !article.archivedAt
+      article.status !== "published" ||
+      !article.archivedAt ||
+      (article.workflowStatus || "archived") !== "archived"
     ) {
-
-      return;
-
-    }
-
-
-    const user =
-      await requireSportsJournalCloudUser();
-
-
-    if (!user) {
 
       return;
 
@@ -15595,6 +15626,26 @@ moveArchivedArticleToDraft =
     articleId
   ) {
 
+    const profileSessionVersion = sportsJournalProfileSessionVersion;
+    const user = await requireSportsJournalCloudUser();
+
+    if (
+      !user ||
+      profileSessionVersion !== sportsJournalProfileSessionVersion ||
+      !hasSportsJournalCurrentProfile(user.id)
+    ) {
+
+      return;
+
+    }
+
+    if (!isSportsJournalAdmin() && !isSportsJournalEditor()) {
+
+      showToast("NO PUEDES MODIFICAR ESTA NOTICIA.");
+      return;
+
+    }
+
     const article =
       findArticle(
         articleId
@@ -15603,19 +15654,10 @@ moveArchivedArticleToDraft =
 
     if (
       !article ||
-      !article.archivedAt
+      article.status !== "published" ||
+      !article.archivedAt ||
+      (article.workflowStatus || "archived") !== "archived"
     ) {
-
-      return;
-
-    }
-
-
-    const user =
-      await requireSportsJournalCloudUser();
-
-
-    if (!user) {
 
       return;
 
