@@ -3589,16 +3589,35 @@ main {
 
 
   .reader-related-card {
-    min-height: 220px;
+    min-height: 0;
 
-    padding: 21px;
+    padding: 18px;
   }
 
 
   .reader-navigation-button {
-    min-height: 145px;
+    min-height: 44px;
+    min-width: 0;
+    justify-content: flex-start;
+    gap: 12px;
 
-    padding: 23px 18px;
+    padding: 18px;
+  }
+
+  .reader-navigation-button span {
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+  .reader-navigation-button strong {
+    font-size: clamp(23px, 6vw, 26px);
+    line-height: 1.05;
+    overflow-wrap: anywhere;
+  }
+
+  .reader-navigation-button:focus-visible {
+    outline: 3px solid var(--yellow);
+    outline-offset: -6px;
   }
 
 
