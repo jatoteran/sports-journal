@@ -7967,7 +7967,7 @@ function createArchiveInterface() {
     )
     .addEventListener(
       "click",
-      confirmArchiveArticle
+      () => confirmArchiveArticle()
     );
 
 
