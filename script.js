@@ -4843,6 +4843,7 @@ function openReader(
     article
   );
 
+  syncSportsJournalReaderSharing(article);
 
   readerModal.classList.add(
     "open"
@@ -4868,6 +4869,8 @@ function openReader(
 
 
 function closeReader() {
+
+  syncSportsJournalReaderSharing();
 
   readerModal.classList.remove(
     "open"
@@ -15030,6 +15033,8 @@ function refreshSportsJournalCloudViews() {
 
       renderReaderRelatedStories(readerArticle);
       renderReaderNavigation(readerArticle);
+      syncSportsJournalReaderSharing(readerArticle);
+      setSportsJournalArticleDocumentTitle(readerArticle);
 
     }
 
@@ -23675,6 +23680,83 @@ createSportsJournalInviteInterface();
 const SPORTS_JOURNAL_BASE_DOCUMENT_TITLE =
   document.title;
 
+const SPORTS_JOURNAL_BASE_METADATA = Array.from(document.head.querySelectorAll(
+  'meta[name="description"], meta[name="robots"], meta[property^="og:"], meta[name^="twitter:"], link[rel="canonical"]'
+)).map(node => ({ node, attribute: node.tagName === "LINK" ? "href" : "content",
+  value: node.getAttribute(node.tagName === "LINK" ? "href" : "content") }));
+
+function setSportsJournalSeoMeta(attribute, key, value) {
+  let node = document.head.querySelector(`meta[${attribute}="${key}"]`);
+  if (!node) {
+    node = document.createElement("meta");
+    node.setAttribute(attribute, key);
+    document.head.appendChild(node);
+  }
+  node.setAttribute("content", value);
+}
+
+function restoreSportsJournalBaseMetadata() {
+  document.head.querySelectorAll('meta[property="og:image"], meta[name="twitter:image"]').forEach(node => node.remove());
+  SPORTS_JOURNAL_BASE_METADATA.forEach(({ node, attribute, value }) => node.setAttribute(attribute, value));
+  document.getElementById("sportsJournalArticleSchema")?.remove();
+}
+
+function getSportsJournalSeoImage(imageUrl) {
+  if (!imageUrl) return null;
+  try {
+    const url = new URL(imageUrl);
+    const host = url.hostname.toLowerCase().replace(/\.+$/, "");
+    if (
+      !["http:", "https:"].includes(url.protocol) || url.username || url.password ||
+      !host.includes(".") || host.endsWith(".localhost") || host.endsWith(".local") ||
+      host.endsWith(".test") || host.endsWith(".invalid") ||
+      /^(127\.|10\.|192\.168\.|169\.254\.|0\.|172\.(1[6-9]|2\d|3[01])\.)/.test(host)
+    ) return null;
+    url.hash = "";
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
+function updateSportsJournalArticleMetadata(article) {
+  const canonical = document.head.querySelector('link[rel="canonical"]');
+  const url = new URL(canonical.href);
+  url.searchParams.set("story", article.slug);
+  const articleUrl = url.toString();
+  const description = (article.summary || "").trim();
+  const image = getSportsJournalSeoImage(article.imageUrl);
+
+  canonical.href = articleUrl;
+  setSportsJournalSeoMeta("name", "description", description);
+  setSportsJournalSeoMeta("property", "og:type", "article");
+  setSportsJournalSeoMeta("property", "og:title", article.title);
+  setSportsJournalSeoMeta("property", "og:description", description);
+  setSportsJournalSeoMeta("property", "og:url", articleUrl);
+  setSportsJournalSeoMeta("name", "twitter:title", article.title);
+  setSportsJournalSeoMeta("name", "twitter:description", description);
+  setSportsJournalSeoMeta("name", "twitter:card", image ? "summary_large_image" : "summary");
+  if (image) {
+    setSportsJournalSeoMeta("property", "og:image", image);
+    setSportsJournalSeoMeta("name", "twitter:image", image);
+  }
+
+  const schema = {
+    "@context": "https://schema.org", "@type": "NewsArticle",
+    headline: article.title, description, inLanguage: "es",
+    mainEntityOfPage: { "@type": "WebPage", "@id": articleUrl }
+  };
+  if (article.author) schema.author = { "@type": "Person", name: article.author };
+  if (image) schema.image = [image];
+  [["datePublished", article.publishedAt], ["dateModified", article.updatedAt]].forEach(([key, value]) => {
+    if (value && Number.isFinite(Date.parse(value))) schema[key] = new Date(value).toISOString();
+  });
+  const node = document.createElement("script");
+  node.id = "sportsJournalArticleSchema";
+  node.type = "application/ld+json";
+  node.textContent = JSON.stringify(schema);
+  document.head.appendChild(node);
+}
 
 /* =========================================================
    CLOUD ARTICLE -> INCLUDE SLUG
@@ -23990,6 +24072,18 @@ function setSportsJournalArticleDocumentTitle(
 ) {
 
   if (
+    !readerModal.classList.contains("open") ||
+    String(currentReaderArticleId) !== String(article?.id)
+  ) return;
+
+  resetSportsJournalDocumentTitle();
+
+  if (!isSportsJournalPublicShareArticle(article)) {
+    setSportsJournalSeoMeta("name", "robots", "noindex, nofollow");
+    return;
+  }
+
+  if (
     !article?.title
   ) {
 
@@ -24005,6 +24099,7 @@ function setSportsJournalArticleDocumentTitle(
   document.title =
     `${article.title} | Sports Journal`;
 
+  updateSportsJournalArticleMetadata(article);
 }
 
 
@@ -24013,6 +24108,7 @@ function resetSportsJournalDocumentTitle() {
   document.title =
     SPORTS_JOURNAL_BASE_DOCUMENT_TITLE;
 
+  restoreSportsJournalBaseMetadata();
 }
 
 
@@ -24412,5 +24508,120 @@ function installSportsJournalReaderCloseUrlFix() {
 
 }
 
+
+/* Article sharing uses the existing Reader and permanent story URLs. */
+function isSportsJournalPublicShareArticle(article) {
+  return Boolean(
+    article?.slug && article.status === "published" &&
+    (article.workflowStatus || article.status) === "published" &&
+    !article.archivedAt
+  );
+}
+
+function getSportsJournalReaderShareData() {
+  const article = findArticle(currentReaderArticleId);
+  if (!readerModal.classList.contains("open") || !isSportsJournalPublicShareArticle(article)) {
+    return null;
+  }
+
+  const url = new URL(getSportsJournalArticleUrl(article));
+  url.search = "";
+  url.hash = "";
+  url.searchParams.set("story", article.slug);
+  return { title: article.title, text: article.summary || "", url: url.toString() };
+}
+
+function syncSportsJournalReaderSharing(article = null) {
+  document.getElementById("readerSharing").hidden = !isSportsJournalPublicShareArticle(article);
+  document.getElementById("readerShareOptions").hidden = true;
+  document.getElementById("readerShareManual").hidden = true;
+  document.getElementById("readerShareUrl").value = "";
+  document.getElementById("readerShareButton").setAttribute("aria-expanded", "false");
+  ["readerShareWhatsapp", "readerShareFacebook", "readerShareX"].forEach(id => {
+    document.getElementById(id).removeAttribute("href");
+  });
+}
+
+function setSportsJournalShareLinks(data) {
+  document.getElementById("readerShareWhatsapp").href =
+    `https://wa.me/?text=${encodeURIComponent(`${data.title}\n${data.url}`)}`;
+  document.getElementById("readerShareFacebook").href =
+    `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(data.url)}`;
+  document.getElementById("readerShareX").href =
+    `https://twitter.com/intent/tweet?text=${encodeURIComponent(data.title)}&url=${encodeURIComponent(data.url)}`;
+}
+
+function showSportsJournalShareOptions(data) {
+  if (getSportsJournalReaderShareData()?.url !== data.url) return;
+  setSportsJournalShareLinks(data);
+  document.getElementById("readerShareOptions").hidden = false;
+  document.getElementById("readerShareButton").setAttribute("aria-expanded", "true");
+}
+
+async function shareSportsJournalReaderArticle() {
+  const data = getSportsJournalReaderShareData();
+  if (!data) return;
+  const button = document.getElementById("readerShareButton");
+  if (button.disabled) return;
+
+  if (typeof navigator.share === "function") {
+    button.disabled = true;
+    try {
+      await navigator.share(data);
+    } catch (error) {
+      if (error.name !== "AbortError") showSportsJournalShareOptions(data);
+    } finally {
+      button.disabled = false;
+    }
+    return;
+  }
+
+  const options = document.getElementById("readerShareOptions");
+  if (options.hidden) {
+    showSportsJournalShareOptions(data);
+  } else {
+    options.hidden = true;
+    button.setAttribute("aria-expanded", "false");
+  }
+}
+
+async function copySportsJournalReaderLink() {
+  const data = getSportsJournalReaderShareData();
+  if (!data) return;
+
+  try {
+    await navigator.clipboard.writeText(data.url);
+    if (getSportsJournalReaderShareData()?.url === data.url) showToast("ENLACE COPIADO ✓");
+  } catch {
+    if (getSportsJournalReaderShareData()?.url !== data.url) return;
+    showSportsJournalShareOptions(data);
+    document.getElementById("readerShareManual").hidden = false;
+    const input = document.getElementById("readerShareUrl");
+    input.value = data.url;
+    input.focus();
+    input.select();
+  }
+}
+
+document.getElementById("readerShareButton").addEventListener("click", shareSportsJournalReaderArticle);
+document.getElementById("readerCopyLinkButton").addEventListener("click", copySportsJournalReaderLink);
+["readerShareWhatsapp", "readerShareFacebook", "readerShareX"].forEach(id => {
+  document.getElementById(id).addEventListener("click", event => {
+    const data = getSportsJournalReaderShareData();
+    if (!data) {
+      event.preventDefault();
+      return;
+    }
+    setSportsJournalShareLinks(data);
+  });
+});
+document.getElementById("readerShareOptions").addEventListener("keydown", event => {
+  if (event.key !== "Escape") return;
+  event.preventDefault();
+  event.stopPropagation();
+  document.getElementById("readerShareOptions").hidden = true;
+  document.getElementById("readerShareButton").setAttribute("aria-expanded", "false");
+  document.getElementById("readerShareButton").focus();
+});
 
 installSportsJournalReaderCloseUrlFix();
