@@ -4,6 +4,8 @@ A lightweight full-stack sports editorial platform with a public reading experie
 
 **Live demo:** [SPORTS JOURNAL](https://jatoteran.github.io/sports-journal/)
 
+**Portfolio Case Study:** [SPORTS JOURNAL V1 Case Study](docs/CASE_STUDY.md)
+
 Built with HTML, CSS and vanilla JavaScript, backed by Supabase and hosted on GitHub Pages. The product's interface and editorial content are in Spanish.
 
 ## Overview
