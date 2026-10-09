@@ -85,6 +85,9 @@ let editorInitialState =
 let editorHasUnsavedChanges =
   false;
 
+let sportsJournalEditorContextVersion = 0;
+let sportsJournalArticleSaveSequence = 0;
+
 
 /* =========================================================
    DOM
@@ -3589,6 +3592,8 @@ function requestCloseEditor() {
 
 function closeEditorImmediately() {
 
+  sportsJournalEditorContextVersion += 1;
+
   editorModal.classList.remove(
     "open"
   );
@@ -3617,6 +3622,8 @@ function closeEditorImmediately() {
 
 
 function resetEditor() {
+
+  sportsJournalEditorContextVersion += 1;
 
   articleForm.reset();
 
@@ -14807,7 +14814,8 @@ async function loadSportsJournalArticlesFromCloud(
   if (
     currentSequence !==
     sportsJournalCloudLoadSequence ||
-    contextVersion !== sportsJournalCloudArticleContextVersion
+    contextVersion !== sportsJournalCloudArticleContextVersion ||
+    (options.isCurrentSave && !options.isCurrentSave())
   ) {
 
     return false;
@@ -15284,19 +15292,42 @@ function showSportsJournalCloudError(
    SAVE ARTICLE — CLOUD VERSION
 ========================================================= */
 
+function captureSportsJournalArticleSaveContext() {
+  return Object.freeze({
+    initiatingUserId: sportsJournalAuth.session?.user?.id,
+    initiatingSessionVersion: sportsJournalProfileSessionVersion,
+    initiatingArticleId: articleIdInput.value.trim(),
+    editorVersion: sportsJournalEditorContextVersion,
+    saveSequence: ++sportsJournalArticleSaveSequence
+  });
+}
+
+function isSportsJournalArticleSaveContextCurrent(context) {
+  return Boolean(context.initiatingUserId &&
+    context.initiatingUserId === sportsJournalAuth.session?.user?.id &&
+    context.initiatingSessionVersion === sportsJournalProfileSessionVersion &&
+    context.editorVersion === sportsJournalEditorContextVersion &&
+    context.saveSequence === sportsJournalArticleSaveSequence &&
+    context.initiatingArticleId === articleIdInput.value.trim() &&
+    editorModal.classList.contains("open"));
+}
+
 saveArticle =
   async function (
     targetStatus,
-    resolvedUser = null
+    resolvedUser = null,
+    initiatingContext = null
   ) {
 
+    const saveContext = initiatingContext || captureSportsJournalArticleSaveContext();
     const profileSessionVersion = sportsJournalProfileSessionVersion;
     const user = resolvedUser || await requireSportsJournalCloudUser();
 
     if (
       !user ||
       profileSessionVersion !== sportsJournalProfileSessionVersion ||
-      !hasSportsJournalCurrentProfile(user.id)
+      !hasSportsJournalCurrentProfile(user.id) ||
+      !isSportsJournalArticleSaveContextCurrent(saveContext)
     ) {
 
       return;
@@ -15533,6 +15564,10 @@ saveArticle =
 
     let response;
 
+    const submittedEditorState = getEditorState();
+    const isCurrentSave = () => isSportsJournalArticleSaveContextCurrent(saveContext) &&
+      hasSportsJournalCurrentProfile(user.id) && getEditorState() === submittedEditorState;
+
 
     /* -----------------------------------------------------
        UPDATE EXISTING ARTICLE
@@ -15593,6 +15628,8 @@ saveArticle =
     }
 
 
+    if (!isCurrentSave()) return;
+
     if (
       response.error
     ) {
@@ -15614,9 +15651,11 @@ saveArticle =
     */
 
     await loadSportsJournalArticlesFromCloud({
-      silent: true
+      silent: true,
+      isCurrentSave
     });
 
+    if (!isCurrentSave()) return;
 
     createInternalBackup(
       targetStatus === "draft"
@@ -18982,13 +19021,15 @@ saveArticle =
     requestedStatus
   ) {
 
+    const saveContext = captureSportsJournalArticleSaveContext();
     const profileSessionVersion = sportsJournalProfileSessionVersion;
     const user = await requireSportsJournalCloudUser();
 
     if (
       !user ||
       profileSessionVersion !== sportsJournalProfileSessionVersion ||
-      !hasSportsJournalCurrentProfile(user.id)
+      !hasSportsJournalCurrentProfile(user.id) ||
+      !isSportsJournalArticleSaveContextCurrent(saveContext)
     ) {
 
       return;
@@ -19059,7 +19100,8 @@ saveArticle =
 
     return step132BaseSaveArticle(
       targetStatus,
-      user
+      user,
+      saveContext
     );
 
   };
