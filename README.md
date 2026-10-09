@@ -12,6 +12,23 @@ SPORTS JOURNAL brings a sports publication and its editorial workflow into one a
 
 The project combines a static frontend with cloud persistence, authentication and role-aware editorial tools, without a frontend framework or application build step.
 
+## Screenshots
+
+| Public homepage | Mobile layout |
+| --- | --- |
+| ![SPORTS JOURNAL desktop homepage](docs/screenshots/home-desktop.png) | ![SPORTS JOURNAL mobile homepage](docs/screenshots/home-mobile.png) |
+| Sports navigation, search and the lead story. | Public homepage at a mobile viewport. |
+
+| Article reader | Public author profile |
+| --- | --- |
+| ![Article reader with headline, summary and sharing controls](docs/screenshots/article-reader.png) | ![Public author profile with published articles](docs/screenshots/author-profile.png) |
+| Headline, summary, sharing and author attribution. | Author identity and published stories. |
+
+| Newsroom management | Article editor |
+| --- | --- |
+| ![Administrator newsroom view with member roles and invitations](docs/screenshots/editorial-dashboard.png) | ![Article editor with cover image settings and preview](docs/screenshots/article-editor.png) |
+| Member roles, invitations and newsroom filters. | Cover image display modes and preview. |
+
 ## Features
 
 ### Public Experience
